@@ -10,10 +10,10 @@ cd "$PRISMA_DIR"
 supabase start
 
 echo "[supabase] Pushing Prisma schema..."
-npx prisma db push --skip-generate
+npm run db:push
 
 echo "[supabase] Seeding dev data..."
-npx tsx prisma/seed-dev.ts
+npm run seed:dev
 
 echo "[supabase] Ready. Tailing logs (Ctrl+C to stop)..."
 supabase logs --follow

@@ -54,57 +54,46 @@ jobs:
       - name: Write Vercel config
         run: printf '{"github":{"enabled":false},"cleanUrls":true}\n' > apps/storybook/storybook-static/vercel.json
 
-      - name: Configure Vercel project
-        working-directory: apps/storybook/storybook-static
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_STORYBOOK_PROJECT_ID }}
-        run: |
-          mkdir -p .vercel
-          jq -n --arg org "$VERCEL_ORG_ID" --arg proj "$VERCEL_PROJECT_ID" '{"orgId":$org,"projectId":$proj}' > .vercel/project.json
-
       - name: Resolve environment
         id: env
         run: |
           ENV="${{ inputs.environment || 'master' }}"
           echo "name=$ENV" >> "$GITHUB_OUTPUT"
           if [[ "$ENV" == "master" ]]; then
-            echo "prod=--prod" >> "$GITHUB_OUTPUT"
-            echo "alias=" >> "$GITHUB_OUTPUT"
+            echo "project_id=${{ secrets.VERCEL_STORYBOOK_PROJECT_ID }}" >> "$GITHUB_OUTPUT"
+            echo "domain=storybook.stocktracker.arami.so" >> "$GITHUB_OUTPUT"
+          elif [[ "$ENV" == "develop" ]]; then
+            echo "project_id=${{ secrets.VERCEL_STORYBOOK_DEVELOP_PROJECT_ID }}" >> "$GITHUB_OUTPUT"
+            echo "domain=develop.storybook.stocktracker.arami.so" >> "$GITHUB_OUTPUT"
           else
-            echo "prod=" >> "$GITHUB_OUTPUT"
-            echo "alias=${ENV}.storybook.stocktracker.arami.so" >> "$GITHUB_OUTPUT"
+            echo "project_id=${{ secrets.VERCEL_STORYBOOK_STAGE_PROJECT_ID }}" >> "$GITHUB_OUTPUT"
+            echo "domain=stage.storybook.stocktracker.arami.so" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Configure Vercel project
+        working-directory: apps/storybook/storybook-static
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ steps.env.outputs.project_id }}
+        run: |
+          mkdir -p .vercel
+          jq -n --arg org "$VERCEL_ORG_ID" --arg proj "$VERCEL_PROJECT_ID" '{"orgId":$org,"projectId":$proj}' > .vercel/project.json
 
       - name: Deploy
         id: deploy
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_STORYBOOK_PROJECT_ID }}
+          VERCEL_PROJECT_ID: ${{ steps.env.outputs.project_id }}
         run: |
-          DEPLOY_URL=$(npx vercel deploy --yes ${{ steps.env.outputs.prod }} \
+          DEPLOY_URL=$(npx vercel deploy --yes --prod \
             --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
-        working-directory: apps/storybook/storybook-static
-
-      - name: Set environment alias
-        if: steps.env.outputs.alias != ''
-        run: |
-          npx vercel alias set "${{ steps.deploy.outputs.url }}" \
-            "${{ steps.env.outputs.alias }}" \
-            --scope="${{ secrets.VERCEL_ORG_ID }}" \
-            --token="${{ secrets.VERCEL_TOKEN }}"
         working-directory: apps/storybook/storybook-static
 
       - name: Deployment summary
         run: |
           echo "### Storybook deployed" >> "$GITHUB_STEP_SUMMARY"
-          echo "URL: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
-          if [[ -n "${{ steps.env.outputs.alias }}" ]]; then
-            echo "Alias: https://${{ steps.env.outputs.alias }}" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "Alias: https://storybook.stocktracker.arami.so" >> "$GITHUB_STEP_SUMMARY"
-          fi
+          echo "URL: https://${{ steps.env.outputs.domain }}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Notify Slack
         if: always()
@@ -113,16 +102,13 @@ jobs:
         run: |
           STATUS="${{ job.status == 'success' && '✅' || '❌' }}"
           ENV="${{ steps.env.outputs.name }}"
-          DEPLOY_URL="${{ steps.deploy.outputs.url }}"
-          ALIAS="${{ steps.env.outputs.alias }}"
+          DOMAIN="${{ steps.env.outputs.domain }}"
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          URL="${ALIAS:+https://${ALIAS}}"
-          URL="${URL:-$DEPLOY_URL}"
 
           curl -s -X POST https://slack.com/api/chat.postMessage \
             -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{
               \"channel\": \"${{ vars.SLACK_CHANNEL_ENGINEERING_UPDATES }}\",
-              \"text\": \"${STATUS} *Storybook Deploy* — ${ENV}\n📖 ${URL}\n🔗 <${RUN_URL}|View run>\"
+              \"text\": \"${STATUS} *Storybook Deploy* — ${ENV}\n📖 https://${DOMAIN}\n🔗 <${RUN_URL}|View run>\"
             }"

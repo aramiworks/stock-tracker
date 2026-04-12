@@ -99,8 +99,8 @@ export const TrackerAccountsDetailControllers =
       totalSpend === 0
         ? ("noPurchases" as const)
         : totalSpend >= GOAL_AMOUNT
-          ? ("eligible" as const)
-          : ("notEligible" as const);
+        ? ("eligible" as const)
+        : ("notEligible" as const);
 
     const onBack = useCallback(() => {
       router.back();
@@ -116,7 +116,7 @@ export const TrackerAccountsDetailControllers =
           variables: { input: { id: accountId, ...input } },
         });
       },
-      [updateAccountMutation, accountId],
+      [updateAccountMutation, accountId]
     );
 
     const onDeleteAccount = useCallback(async () => {
@@ -138,7 +138,7 @@ export const TrackerAccountsDetailControllers =
           variables: { input: { accountId, ...input } },
         });
       },
-      [createPurchaseMutation, accountId],
+      [createPurchaseMutation, accountId]
     );
 
     const onUpdatePurchase = useCallback(
@@ -152,20 +152,20 @@ export const TrackerAccountsDetailControllers =
           purchaseDate?: string;
           storeLocation?: string;
           notes?: string;
-        },
+        }
       ) => {
         await updatePurchaseMutation({
           variables: { input: { id, ...input } },
         });
       },
-      [updatePurchaseMutation],
+      [updatePurchaseMutation]
     );
 
     const onDeletePurchase = useCallback(
       async (id: string) => {
         await deletePurchaseMutation({ variables: { id } });
       },
-      [deletePurchaseMutation],
+      [deletePurchaseMutation]
     );
 
     const value: TrackerAccountsDetailControllersOutput = {
@@ -203,7 +203,7 @@ export const useTrackerAccountsDetailControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
     throw new Error(
-      "useTrackerAccountsDetailControllers must be used within TrackerAccountsDetailControllers",
+      "useTrackerAccountsDetailControllers must be used within TrackerAccountsDetailControllers"
     );
   }
   return context;

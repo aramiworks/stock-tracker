@@ -28,7 +28,7 @@ interface TrackerHistoryBrowseControllersProps {
 }
 
 function dateFilterToDateRange(
-  filter: DateFilter,
+  filter: DateFilter
 ): { from?: string; to?: string } | undefined {
   if (filter === "all") return undefined;
   const now = new Date();
@@ -83,7 +83,7 @@ export const TrackerHistoryBrowseControllers =
       async (id: string) => {
         await deletePurchaseMutation({ variables: { id } });
       },
-      [deletePurchaseMutation],
+      [deletePurchaseMutation]
     );
 
     const purchases = useMemo(() => {
@@ -144,7 +144,7 @@ export const useTrackerHistoryBrowseControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
     throw new Error(
-      "useTrackerHistoryBrowseControllers must be used within TrackerHistoryBrowseControllers",
+      "useTrackerHistoryBrowseControllers must be used within TrackerHistoryBrowseControllers"
     );
   }
   return context;

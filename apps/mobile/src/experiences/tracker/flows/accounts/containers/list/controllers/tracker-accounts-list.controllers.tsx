@@ -75,14 +75,14 @@ export const TrackerAccountsListControllers =
       async (input: { storeName: string; saName?: string; notes?: string }) => {
         await createAccountMutation({ variables: { input } });
       },
-      [createAccountMutation],
+      [createAccountMutation]
     );
 
     const onDeleteAccount = useCallback(
       async (id: string) => {
         await deleteAccountMutation({ variables: { id } });
       },
-      [deleteAccountMutation],
+      [deleteAccountMutation]
     );
 
     const screenState: TrackerAccountsListScreenState = !data?.accounts?.length
@@ -94,12 +94,12 @@ export const TrackerAccountsListControllers =
       return data.accounts
         .filter(
           (acc): acc is typeof acc & { id: string; storeName: string } =>
-            acc.id != null && acc.storeName != null,
+            acc.id != null && acc.storeName != null
         )
         .map((acc) => {
           const spend = (acc.purchases ?? []).reduce(
             (sum, p) => sum + (p.amount ?? 0),
-            0,
+            0
           );
           return {
             id: acc.id,
@@ -111,8 +111,8 @@ export const TrackerAccountsListControllers =
               spend === 0
                 ? ("noPurchases" as const)
                 : spend >= GOAL_AMOUNT
-                  ? ("eligible" as const)
-                  : ("notEligible" as const),
+                ? ("eligible" as const)
+                : ("notEligible" as const),
           };
         });
     }, [data?.accounts]);
@@ -121,7 +121,7 @@ export const TrackerAccountsListControllers =
       (id: string) => {
         router.push(`/tracker/accounts/detail/${id}`);
       },
-      [router],
+      [router]
     );
 
     const onSearchChange = useCallback((query: string) => {
@@ -130,7 +130,7 @@ export const TrackerAccountsListControllers =
 
     const onSortByToggle = useCallback(() => {
       setSortBy((prev) =>
-        prev === "created_at" ? "store_name" : "created_at",
+        prev === "created_at" ? "store_name" : "created_at"
       );
     }, []);
 
@@ -161,7 +161,7 @@ export const useTrackerAccountsListControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
     throw new Error(
-      "useTrackerAccountsListControllers must be used within TrackerAccountsListControllers",
+      "useTrackerAccountsListControllers must be used within TrackerAccountsListControllers"
     );
   }
   return context;

@@ -77,25 +77,19 @@ jobs:
       - name: Write Vercel config
         run: printf '{"github":{"enabled":false},"rewrites":[{"source":"/(.*)","destination":"/index.html"}]}\n' > apps/mobile/dist/vercel.json
 
-      - name: Configure Vercel project
-        working-directory: apps/mobile/dist
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ steps.env.outputs.project_id }}
-        run: |
-          mkdir -p .vercel
-          jq -n --arg org "$VERCEL_ORG_ID" --arg proj "$VERCEL_PROJECT_ID" '{"orgId":$org,"projectId":$proj}' > .vercel/project.json
-
       - name: Deploy
         id: deploy
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ steps.env.outputs.project_id }}
         run: |
-          DEPLOY_URL=$(npx vercel deploy --yes --prod \
+          cp -r apps/mobile/dist /tmp/vercel-dist
+          mkdir -p /tmp/vercel-dist/.vercel
+          jq -n --arg org "$VERCEL_ORG_ID" --arg proj "$VERCEL_PROJECT_ID" \
+            '{"orgId":$org,"projectId":$proj}' > /tmp/vercel-dist/.vercel/project.json
+          DEPLOY_URL=$(npx vercel deploy /tmp/vercel-dist --yes --prod \
             --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
-        working-directory: apps/mobile/dist
 
       - name: Deployment summary
         run: |

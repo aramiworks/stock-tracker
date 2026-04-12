@@ -183,19 +183,19 @@ describe("auth enforcement E2E", () => {
 
   it("throws UNAUTHORIZED for tracker.accounts.list.all without userId", async () => {
     await expect(unauthCaller.tracker.accounts.list.all({})).rejects.toThrow(
-      TRPCError,
+      TRPCError
     );
   });
 
   it("throws UNAUTHORIZED for tracker.dashboard.home.summary without userId", async () => {
     await expect(unauthCaller.tracker.dashboard.home.summary()).rejects.toThrow(
-      TRPCError,
+      TRPCError
     );
   });
 
   it("throws UNAUTHORIZED for upsertFromSupabase without userId", async () => {
     await expect(
-      unauthCaller.auth.upsertFromSupabase({ email: "public@test.local" }),
+      unauthCaller.auth.upsertFromSupabase({ email: "public@test.local" })
     ).rejects.toThrow(TRPCError);
   });
 
@@ -373,7 +373,7 @@ describe("filtering E2E", () => {
     });
     expect(items.length).toBeGreaterThanOrEqual(3);
     expect(
-      items.every((i) => i.trackerAccount.storeName === "Filter Test Store"),
+      items.every((i) => i.trackerAccount.storeName === "Filter Test Store")
     ).toBe(true);
   });
 

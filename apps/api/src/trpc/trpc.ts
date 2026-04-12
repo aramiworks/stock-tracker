@@ -28,7 +28,7 @@ let _verifyJwt:
   | null = null;
 
 export function setJwtVerifier(
-  fn: (token: string) => Promise<{ sub: string; role?: string } | null>,
+  fn: (token: string) => Promise<{ sub: string; role?: string } | null>
 ) {
   _verifyJwt = fn;
 }
@@ -88,7 +88,7 @@ const logRequest = t.middleware(async ({ ctx, path, type, next }) => {
   } else {
     reqLogger.error(
       { type, duration, userId: ctx.userId, code: result.error.code },
-      "request failed",
+      "request failed"
     );
   }
 
@@ -116,6 +116,6 @@ export const router = t.router;
 export const publicProcedure = baseProcedure;
 export const protectedProcedure = baseProcedure.use(enforceAuth);
 export const adminProcedure = protectedProcedure.use(
-  enforceRole("service_role"),
+  enforceRole("service_role")
 );
 export const middleware = t.middleware;

@@ -24,7 +24,7 @@ export const createLogger = ({ service, env }: LoggerOptions) => {
 
   return pino(
     { level: "info", base: { service } },
-    pino.destination({ sync: true }),
+    pino.destination({ sync: true })
   );
 };
 

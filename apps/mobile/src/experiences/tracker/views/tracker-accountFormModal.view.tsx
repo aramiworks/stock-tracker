@@ -49,7 +49,7 @@ export const TrackerAccountFormModalView = memo(
         reset();
         onClose();
       },
-      [onSubmit, reset, onClose],
+      [onSubmit, reset, onClose]
     );
 
     return (
@@ -88,7 +88,7 @@ export const TrackerAccountFormModalView = memo(
         />
       </FormModal>
     );
-  },
+  }
 );
 
 TrackerAccountFormModalView.displayName = "TrackerAccountFormModalView";

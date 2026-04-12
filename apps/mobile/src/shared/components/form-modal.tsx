@@ -68,7 +68,7 @@ export const FormModal = memo(
         </KeyboardAvoidingView>
       </Modal>
     );
-  },
+  }
 );
 
 FormModal.displayName = "FormModal";

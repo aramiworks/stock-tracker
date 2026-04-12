@@ -5,7 +5,7 @@ import type { AppRouter } from "@stock-tracker/api/trpc";
 export type TrpcClient = ReturnType<typeof createTrpcClient>;
 
 export const createTrpcClient = (
-  headers: Record<string, string | undefined>,
+  headers: Record<string, string | undefined>
 ) => {
   return createTRPCClient<AppRouter>({
     links: [

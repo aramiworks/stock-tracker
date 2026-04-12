@@ -16,7 +16,7 @@ async function main() {
   }
 
   console.log(
-    `Seeding E2E data for ${E2E_EMAIL} (supabase_id: ${E2E_SUPABASE_ID})`,
+    `Seeding E2E data for ${E2E_EMAIL} (supabase_id: ${E2E_SUPABASE_ID})`
   );
 
   // Upsert auth user
@@ -165,7 +165,7 @@ async function main() {
   });
 
   console.log(
-    `Done. Created user ${user.id}, 3 accounts, 9 purchases (including edge cases).`,
+    `Done. Created user ${user.id}, 3 accounts, 9 purchases (including edge cases).`
   );
 }
 

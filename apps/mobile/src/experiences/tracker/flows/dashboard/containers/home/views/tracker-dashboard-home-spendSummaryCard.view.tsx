@@ -63,7 +63,7 @@ export const TrackerDashboardHomeSpendSummaryCardView = memo(
         </View>
       </View>
     );
-  },
+  }
 );
 
 TrackerDashboardHomeSpendSummaryCardView.displayName =

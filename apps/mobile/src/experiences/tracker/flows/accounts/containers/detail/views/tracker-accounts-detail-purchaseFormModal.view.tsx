@@ -85,7 +85,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
         reset();
         onClose();
       },
-      [onSubmit, reset, onClose],
+      [onSubmit, reset, onClose]
     );
 
     return (
@@ -157,7 +157,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
         />
       </FormModal>
     );
-  },
+  }
 );
 
 TrackerAccountsDetailPurchaseFormModalView.displayName =

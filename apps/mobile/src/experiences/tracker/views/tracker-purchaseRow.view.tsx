@@ -31,7 +31,7 @@ export const TrackerPurchaseRowView = memo(
         <Text style={styles.amount}>{formattedAmount}</Text>
       </View>
     );
-  },
+  }
 );
 
 TrackerPurchaseRowView.displayName = "TrackerPurchaseRowView";

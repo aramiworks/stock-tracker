@@ -7,7 +7,7 @@ const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
 const makePrisma = (
   accountCount: number,
   purchaseCount: number,
-  totalSpent: Decimal | null,
+  totalSpent: Decimal | null
 ) =>
   ({
     tracker_accounts: {
@@ -19,7 +19,7 @@ const makePrisma = (
         _sum: { amount: totalSpent },
       }),
     },
-  }) as any;
+  } as any);
 
 describe("trackerDashboardHomeControllers", () => {
   describe("summary()", () => {

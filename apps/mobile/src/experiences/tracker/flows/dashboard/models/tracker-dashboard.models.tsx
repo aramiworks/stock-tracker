@@ -7,7 +7,7 @@ interface TrackerDashboardModelsProps {
 export const TrackerDashboardModels = memo<TrackerDashboardModelsProps>(
   ({ children }) => {
     return <>{children}</>;
-  },
+  }
 );
 
 TrackerDashboardModels.displayName = "TrackerDashboardModels";

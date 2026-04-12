@@ -41,7 +41,7 @@ export const TrackerAccountsListSortToggleView = memo(
         </Pressable>
       </View>
     );
-  },
+  }
 );
 
 TrackerAccountsListSortToggleView.displayName =

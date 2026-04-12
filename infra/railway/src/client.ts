@@ -16,7 +16,7 @@ interface ProjectNode {
 }
 
 export async function listProjects(
-  client: GraphQLClient,
+  client: GraphQLClient
 ): Promise<ProjectNode[]> {
   const data = await client.request<{
     projects: { edges: { node: ProjectNode }[] };
@@ -38,7 +38,7 @@ export async function listProjects(
 export async function createProject(
   client: GraphQLClient,
   name: string,
-  defaultEnvironmentName = "production",
+  defaultEnvironmentName = "production"
 ): Promise<ProjectNode> {
   const data = await client.request<{ projectCreate: ProjectNode }>(
     gql`
@@ -49,14 +49,14 @@ export async function createProject(
         }
       }
     `,
-    { input: { name, defaultEnvironmentName } },
+    { input: { name, defaultEnvironmentName } }
   );
   return data.projectCreate;
 }
 
 export async function getOrCreateProject(
   client: GraphQLClient,
-  name: string,
+  name: string
 ): Promise<ProjectNode> {
   const projects = await listProjects(client);
   const existing = projects.find((p) => p.name === name);
@@ -78,7 +78,7 @@ interface EnvironmentNode {
 
 export async function listEnvironments(
   client: GraphQLClient,
-  projectId: string,
+  projectId: string
 ): Promise<EnvironmentNode[]> {
   const data = await client.request<{
     environments: { edges: { node: EnvironmentNode }[] };
@@ -95,7 +95,7 @@ export async function listEnvironments(
         }
       }
     `,
-    { projectId },
+    { projectId }
   );
   return data.environments.edges.map((e) => e.node);
 }
@@ -103,7 +103,7 @@ export async function listEnvironments(
 export async function createEnvironment(
   client: GraphQLClient,
   projectId: string,
-  name: string,
+  name: string
 ): Promise<EnvironmentNode> {
   const data = await client.request<{ environmentCreate: EnvironmentNode }>(
     gql`
@@ -114,7 +114,7 @@ export async function createEnvironment(
         }
       }
     `,
-    { input: { projectId, name } },
+    { input: { projectId, name } }
   );
   return data.environmentCreate;
 }
@@ -122,7 +122,7 @@ export async function createEnvironment(
 export async function getOrCreateEnvironment(
   client: GraphQLClient,
   projectId: string,
-  name: string,
+  name: string
 ): Promise<EnvironmentNode> {
   const envs = await listEnvironments(client, projectId);
   const existing = envs.find((e) => e.name === name);
@@ -144,7 +144,7 @@ interface ServiceNode {
 
 export async function listServices(
   client: GraphQLClient,
-  projectId: string,
+  projectId: string
 ): Promise<ServiceNode[]> {
   const data = await client.request<{
     project: { services: { edges: { node: ServiceNode }[] } };
@@ -163,7 +163,7 @@ export async function listServices(
         }
       }
     `,
-    { id: projectId },
+    { id: projectId }
   );
   return data.project.services.edges.map((e) => e.node);
 }
@@ -172,7 +172,7 @@ export async function createService(
   client: GraphQLClient,
   projectId: string,
   name: string,
-  image: string,
+  image: string
 ): Promise<ServiceNode> {
   const data = await client.request<{ serviceCreate: ServiceNode }>(
     gql`
@@ -183,7 +183,7 @@ export async function createService(
         }
       }
     `,
-    { input: { projectId, name, source: { image } } },
+    { input: { projectId, name, source: { image } } }
   );
   return data.serviceCreate;
 }
@@ -192,7 +192,7 @@ export async function getOrCreateService(
   client: GraphQLClient,
   projectId: string,
   name: string,
-  image: string,
+  image: string
 ): Promise<ServiceNode> {
   const services = await listServices(client, projectId);
   const existing = services.find((s) => s.name === name);
@@ -211,7 +211,7 @@ export async function updateServiceInstance(
   client: GraphQLClient,
   serviceId: string,
   environmentId: string,
-  input: Record<string, unknown>,
+  input: Record<string, unknown>
 ): Promise<void> {
   await client.request(
     gql`
@@ -227,7 +227,7 @@ export async function updateServiceInstance(
         )
       }
     `,
-    { serviceId, environmentId, input },
+    { serviceId, environmentId, input }
   );
 }
 
@@ -239,7 +239,7 @@ export async function upsertVariable(
   environmentId: string,
   serviceId: string,
   name: string,
-  value: string,
+  value: string
 ): Promise<void> {
   await client.request(
     gql`
@@ -247,7 +247,7 @@ export async function upsertVariable(
         variableUpsert(input: $input)
       }
     `,
-    { input: { projectId, environmentId, serviceId, name, value } },
+    { input: { projectId, environmentId, serviceId, name, value } }
   );
 }
 
@@ -257,7 +257,7 @@ export async function createServiceDomain(
   client: GraphQLClient,
   serviceId: string,
   environmentId: string,
-  targetPort: number,
+  targetPort: number
 ): Promise<string> {
   const data = await client.request<{
     serviceDomainCreate: { domain: string };
@@ -269,7 +269,7 @@ export async function createServiceDomain(
         }
       }
     `,
-    { input: { serviceId, environmentId, targetPort } },
+    { input: { serviceId, environmentId, targetPort } }
   );
   return data.serviceDomainCreate.domain;
 }

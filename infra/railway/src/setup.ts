@@ -28,7 +28,7 @@ const dopplerToken = process.env["DOPPLER_TOKEN"];
 const envArg = process.argv[2];
 if (!envArg || !ENVIRONMENTS[envArg]) {
   console.error(
-    `Usage: tsx src/setup.ts <${Object.keys(ENVIRONMENTS).join("|")}>`,
+    `Usage: tsx src/setup.ts <${Object.keys(ENVIRONMENTS).join("|")}>`
   );
   process.exit(1);
 }
@@ -38,7 +38,7 @@ const client = createClient(token);
 
 function readDopplerSecrets(
   config: string,
-  keys: string[],
+  keys: string[]
 ): Record<string, string> {
   if (!dopplerToken) {
     console.log("  DOPPLER_TOKEN not set — skipping secret sync");
@@ -55,7 +55,7 @@ function readDopplerSecrets(
         {
           env: { ...process.env, DOPPLER_TOKEN: dopplerToken },
           stdio: ["pipe", "pipe", "pipe"],
-        },
+        }
       ).toString();
       const parsed = JSON.parse(raw) as Record<string, { computed: string }>;
       if (parsed[key]) {
@@ -68,7 +68,7 @@ function readDopplerSecrets(
 
   if (missing.length > 0) {
     console.log(
-      `  Warning: missing from Doppler ${config}: ${missing.join(", ")}`,
+      `  Warning: missing from Doppler ${config}: ${missing.join(", ")}`
     );
   }
 
@@ -79,14 +79,14 @@ async function setupService(
   projectId: string,
   environmentId: string,
   service: ServiceDef,
-  config: EnvironmentConfig,
+  config: EnvironmentConfig
 ): Promise<void> {
   const imageWithTag = `${service.image}:${config.imageTag}`;
   const svc = await getOrCreateService(
     client,
     projectId,
     service.name,
-    imageWithTag,
+    imageWithTag
   );
 
   // Configure service instance (image source, credentials, start command)
@@ -105,17 +105,17 @@ async function setupService(
         registryCredentials: { username: "github", password: ghcrPat },
       });
       console.log(
-        `  Configured ${service.name}: ${imageWithTag} (with GHCR creds)`,
+        `  Configured ${service.name}: ${imageWithTag} (with GHCR creds)`
       );
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
       if (msg.includes("Pro users")) {
         console.log(
-          `  Registry credentials require Pro plan — retrying without`,
+          `  Registry credentials require Pro plan — retrying without`
         );
         await updateServiceInstance(client, svc.id, environmentId, baseConfig);
         console.log(
-          `  Configured ${service.name}: ${imageWithTag} (no creds — packages must be public)`,
+          `  Configured ${service.name}: ${imageWithTag} (no creds — packages must be public)`
         );
       } else {
         throw err;
@@ -149,7 +149,7 @@ async function setupService(
       client,
       svc.id,
       environmentId,
-      service.port,
+      service.port
     );
     console.log(`  Domain: https://${domain}`);
   } catch {
@@ -170,7 +170,7 @@ async function main(): Promise<void> {
   const env = await getOrCreateEnvironment(
     client,
     project.id,
-    envConfig.railwayEnvName,
+    envConfig.railwayEnvName
   );
 
   // 3. Set up each service

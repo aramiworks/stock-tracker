@@ -29,7 +29,7 @@ export const trackerAccountsListControllers = (prisma: PrismaClient) => {
         sortOrder: "asc" | "desc";
         search?: string;
       },
-      userId: string,
+      userId: string
     ) => {
       const accounts = await models.findAll({ userId, ...input });
       return accounts.map(mapAccount);
@@ -41,7 +41,7 @@ export const trackerAccountsListControllers = (prisma: PrismaClient) => {
         saName?: string;
         notes?: string;
       },
-      userId: string,
+      userId: string
     ) => {
       const account = await models.create({
         authUserId: userId,

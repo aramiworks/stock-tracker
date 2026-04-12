@@ -93,10 +93,10 @@ const MOCK_ACCOUNTS = [
 ];
 
 const ALL_PURCHASES = MOCK_ACCOUNTS.flatMap((acc) =>
-  acc.purchases.map((p) => ({ ...p })),
+  acc.purchases.map((p) => ({ ...p }))
 ).sort(
   (a, b) =>
-    new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime(),
+    new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
 );
 
 export const trackerMocks: MockedResponse[] = [

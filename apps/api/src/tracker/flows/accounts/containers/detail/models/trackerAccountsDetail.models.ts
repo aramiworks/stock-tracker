@@ -14,7 +14,7 @@ export const trackerAccountsDetailModels = (prisma: PrismaClient) => ({
       store_name?: string;
       sa_name?: string | null;
       notes?: string | null;
-    },
+    }
   ) => {
     return prisma.tracker_accounts.update({ where: { id }, data });
   },

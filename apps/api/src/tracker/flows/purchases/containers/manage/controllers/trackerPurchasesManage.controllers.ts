@@ -9,7 +9,7 @@ type PurchaseWithAccount = NonNullable<
 >;
 
 const mapPurchase = (
-  p: PurchaseWithAccount | Omit<PurchaseWithAccount, "tracker_account">,
+  p: PurchaseWithAccount | Omit<PurchaseWithAccount, "tracker_account">
 ) => ({
   id: p.id,
   trackerAccountId: p.tracker_account_id,
@@ -27,7 +27,7 @@ const mapPurchase = (
 const ensureOwnership = async (
   models: ReturnType<typeof trackerPurchasesManageModels>,
   purchaseId: string,
-  userId: string,
+  userId: string
 ) => {
   const purchase = await models.findById(purchaseId);
   if (!purchase) {
@@ -84,7 +84,7 @@ export const trackerPurchasesManageControllers = (prisma: PrismaClient) => {
         storeLocation?: string;
         notes?: string;
       },
-      userId: string,
+      userId: string
     ) => {
       await ensureAccountOwnership(input.accountId, userId);
       const purchase = await models.create({
@@ -111,7 +111,7 @@ export const trackerPurchasesManageControllers = (prisma: PrismaClient) => {
         storeLocation?: string | null;
         notes?: string | null;
       },
-      userId: string,
+      userId: string
     ) => {
       await ensureOwnership(models, input.id, userId);
       const data: Record<string, unknown> = {};

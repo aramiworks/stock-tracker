@@ -100,7 +100,7 @@ function getData(res: any): any {
 function exec(
   query: string,
   variables?: Record<string, unknown>,
-  userId?: string,
+  userId?: string
 ) {
   return executeAs({
     server,
@@ -190,7 +190,7 @@ describe("tracker queries", () => {
     expect(errors).toBeUndefined();
     expect(data?.accounts.length).toBeGreaterThanOrEqual(1);
     expect(
-      data?.accounts.some((a: { id: string }) => a.id === seededAccountId),
+      data?.accounts.some((a: { id: string }) => a.id === seededAccountId)
     ).toBe(true);
   });
 
@@ -207,7 +207,7 @@ describe("tracker queries", () => {
         }
       }
     `,
-      { id: seededAccountId },
+      { id: seededAccountId }
     );
 
     const { data, errors } = getData(res);
@@ -232,7 +232,7 @@ describe("tracker queries", () => {
         }
       }
     `,
-      { id: seededAccountId },
+      { id: seededAccountId }
     );
 
     const { data, errors } = getData(res);
@@ -241,8 +241,8 @@ describe("tracker queries", () => {
     expect(data?.account.purchases.length).toBeGreaterThanOrEqual(1);
     expect(
       data?.account.purchases.some(
-        (p: { id: string }) => p.id === seededPurchaseId,
-      ),
+        (p: { id: string }) => p.id === seededPurchaseId
+      )
     ).toBe(true);
   });
 
@@ -259,7 +259,7 @@ describe("tracker queries", () => {
         }
       }
     `,
-      { accountId: seededAccountId },
+      { accountId: seededAccountId }
     );
 
     const { data, errors } = getData(res);
@@ -323,7 +323,7 @@ describe("mutations", () => {
           storeName: "Updated Mutation Store",
           notes: "updated via subgraph e2e",
         },
-      },
+      }
     );
 
     const { data, errors } = getData(res);
@@ -353,7 +353,7 @@ describe("mutations", () => {
           currency: "KRW",
           purchaseDate: "2025-03-15",
         },
-      },
+      }
     );
 
     const { data, errors } = getData(res);
@@ -382,7 +382,7 @@ describe("mutations", () => {
           amount: 4000000,
           notes: "updated via subgraph e2e",
         },
-      },
+      }
     );
 
     const { data, errors } = getData(res);
@@ -398,7 +398,7 @@ describe("mutations", () => {
         deletePurchase(id: $id)
       }
     `,
-      { id: mutationPurchaseId },
+      { id: mutationPurchaseId }
     );
 
     const { data, errors } = getData(res);
@@ -413,7 +413,7 @@ describe("mutations", () => {
         deleteAccount(id: $id)
       }
     `,
-      { id: mutationAccountId },
+      { id: mutationAccountId }
     );
 
     const { data, errors } = getData(res);
@@ -434,7 +434,7 @@ describe("filtering and sorting", () => {
         }
       }
     `,
-      { dateRange: { from: "2025-01-01", to: "2025-01-31" } },
+      { dateRange: { from: "2025-01-01", to: "2025-01-31" } }
     );
 
     const { data, errors } = getData(res);
@@ -442,8 +442,8 @@ describe("filtering and sorting", () => {
     expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
     expect(
       data?.purchases.every((p: { itemName: string }) =>
-        p.itemName.includes("Ring"),
-      ),
+        p.itemName.includes("Ring")
+      )
     ).toBe(true);
   });
 
@@ -457,7 +457,7 @@ describe("filtering and sorting", () => {
         }
       }
     `,
-      { search: "Alpha" },
+      { search: "Alpha" }
     );
 
     const { data, errors } = getData(res);
@@ -465,8 +465,8 @@ describe("filtering and sorting", () => {
     expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
     expect(
       data?.purchases.every((p: { itemName: string }) =>
-        p.itemName.includes("Necklace"),
-      ),
+        p.itemName.includes("Necklace")
+      )
     ).toBe(true);
   });
 
@@ -480,7 +480,7 @@ describe("filtering and sorting", () => {
         }
       }
     `,
-      { itemCategory: "반지" },
+      { itemCategory: "반지" }
     );
 
     const { data, errors } = getData(res);
@@ -488,8 +488,8 @@ describe("filtering and sorting", () => {
     expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
     expect(
       data?.purchases.every((p: { itemName: string }) =>
-        p.itemName.includes("Ring"),
-      ),
+        p.itemName.includes("Ring")
+      )
     ).toBe(true);
   });
 
@@ -502,7 +502,7 @@ describe("filtering and sorting", () => {
         }
       }
     `,
-      { search: "NonExistentStore12345" },
+      { search: "NonExistentStore12345" }
     );
 
     const { data, errors } = getData(res);
@@ -537,7 +537,7 @@ describe("filtering and sorting", () => {
         }
       }
     `,
-      { search: "Alpha" },
+      { search: "Alpha" }
     );
 
     const { data, errors } = getData(res);

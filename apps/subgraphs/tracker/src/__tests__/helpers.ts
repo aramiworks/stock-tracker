@@ -117,7 +117,7 @@ export async function executeAs({
         userRole: undefined,
         trpc,
       },
-    },
+    }
   );
 
   return response;

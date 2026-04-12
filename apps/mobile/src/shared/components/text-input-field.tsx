@@ -65,7 +65,7 @@ function TextInputFieldInner<T extends FieldValues>({
 }
 
 export const TextInputField = memo(
-  TextInputFieldInner,
+  TextInputFieldInner
 ) as typeof TextInputFieldInner;
 
 const styles = StyleSheet.create({

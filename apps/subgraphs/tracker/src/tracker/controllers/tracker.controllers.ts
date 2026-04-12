@@ -14,7 +14,7 @@ export const trackerResolvers = {
     accounts: async (
       _: unknown,
       args: { sortBy?: string; sortOrder?: string; search?: string },
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       return context.trpc.tracker.accounts.list.all.query({
         sortBy: args.sortBy as "store_name" | "created_at" | undefined,
@@ -25,7 +25,7 @@ export const trackerResolvers = {
     account: async (
       _: unknown,
       args: { id: string },
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       return context.trpc.tracker.accounts.detail.byId.query(args);
     },
@@ -39,7 +39,7 @@ export const trackerResolvers = {
         itemCategory?: string;
         search?: string;
       },
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       const result = await context.trpc.tracker.history.browse.list.query({
         accountId: args.accountId ?? undefined,
@@ -66,7 +66,7 @@ export const trackerResolvers = {
     createAccount: async (
       _: unknown,
       args: { input: { storeName: string; saName?: string; notes?: string } },
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       return context.trpc.tracker.accounts.list.create.mutate(args.input);
     },
@@ -80,14 +80,14 @@ export const trackerResolvers = {
           notes?: string;
         };
       },
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       return context.trpc.tracker.accounts.detail.update.mutate(args.input);
     },
     deleteAccount: async (
       _: unknown,
       args: { id: string },
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       const result = await context.trpc.tracker.accounts.detail.delete.mutate({
         id: args.id,
@@ -97,29 +97,29 @@ export const trackerResolvers = {
     createPurchase: async (
       _: unknown,
       args: { input: Record<string, unknown> },
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       return context.trpc.tracker.purchases.manage.create.mutate(
         args.input as Parameters<
           typeof context.trpc.tracker.purchases.manage.create.mutate
-        >[0],
+        >[0]
       );
     },
     updatePurchase: async (
       _: unknown,
       args: { input: Record<string, unknown> },
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       return context.trpc.tracker.purchases.manage.update.mutate(
         args.input as Parameters<
           typeof context.trpc.tracker.purchases.manage.update.mutate
-        >[0],
+        >[0]
       );
     },
     deletePurchase: async (
       _: unknown,
       args: { id: string },
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       const result = await context.trpc.tracker.purchases.manage.delete.mutate({
         id: args.id,
@@ -130,14 +130,14 @@ export const trackerResolvers = {
   Account: {
     __resolveReference: async (
       ref: { id: string },
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       return context.trpc.tracker.accounts.detail.byId.query({ id: ref.id });
     },
     purchases: async (
       parent: { id: string },
       _: unknown,
-      context: SubgraphContext,
+      context: SubgraphContext
     ) => {
       const result = await context.trpc.tracker.history.browse.list.query({
         accountId: parent.id,

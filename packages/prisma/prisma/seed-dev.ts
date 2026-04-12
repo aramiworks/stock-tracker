@@ -445,7 +445,7 @@ async function main() {
   });
 
   console.log(
-    `Done. Created 2 users, 8 accounts, 32 purchases spanning all categories.`,
+    `Done. Created 2 users, 8 accounts, 32 purchases spanning all categories.`
   );
 }
 

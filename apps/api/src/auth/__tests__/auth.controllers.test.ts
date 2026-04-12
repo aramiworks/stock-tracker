@@ -23,10 +23,10 @@ const makePrisma = (findUniqueReturn: typeof mockUser | null = mockUser) =>
             display_name: create.display_name,
             created_at: mockUser.created_at,
             updated_at: mockUser.updated_at,
-          }),
+          })
       ),
     },
-  }) as any;
+  } as any);
 
 describe("authControllers", () => {
   describe("me()", () => {
@@ -127,7 +127,7 @@ describe("authControllers", () => {
         expect.objectContaining({
           create: expect.objectContaining({ display_name: null }),
           update: expect.objectContaining({ display_name: null }),
-        }),
+        })
       );
       expect(result.displayName).toBeNull();
     });

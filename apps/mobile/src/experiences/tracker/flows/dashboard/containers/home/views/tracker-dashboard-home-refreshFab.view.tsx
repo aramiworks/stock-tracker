@@ -16,7 +16,7 @@ export const TrackerDashboardHomeRefreshFabView = memo(
         testID="refresh-fab"
       />
     );
-  },
+  }
 );
 
 TrackerDashboardHomeRefreshFabView.displayName =

@@ -31,7 +31,7 @@ export const SearchBar = memo(
         />
       </View>
     );
-  },
+  }
 );
 
 SearchBar.displayName = "SearchBar";

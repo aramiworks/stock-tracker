@@ -7,7 +7,7 @@ interface TrackerHistoryModelsProps {
 export const TrackerHistoryModels = memo<TrackerHistoryModelsProps>(
   ({ children }) => {
     return <>{children}</>;
-  },
+  }
 );
 
 TrackerHistoryModels.displayName = "TrackerHistoryModels";

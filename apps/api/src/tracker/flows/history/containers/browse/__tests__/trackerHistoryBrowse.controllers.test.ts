@@ -29,7 +29,7 @@ const makePrisma = (mockResults: ReturnType<typeof makeMockPurchase>[]) =>
     tracker_purchases: {
       findMany: (jest.fn() as any).mockResolvedValue(mockResults),
     },
-  }) as any;
+  } as any);
 
 describe("trackerHistoryBrowseControllers", () => {
   describe("list()", () => {
@@ -44,7 +44,7 @@ describe("trackerHistoryBrowseControllers", () => {
 
       const result = await ctrl.list(
         { limit: 2, sortOrder: "desc" },
-        TEST_USER_ID,
+        TEST_USER_ID
       );
 
       expect(result.items).toHaveLength(2);
@@ -58,7 +58,7 @@ describe("trackerHistoryBrowseControllers", () => {
 
       const result = await ctrl.list(
         { limit: 2, sortOrder: "desc" },
-        TEST_USER_ID,
+        TEST_USER_ID
       );
 
       expect(result.items).toHaveLength(2);
@@ -71,7 +71,7 @@ describe("trackerHistoryBrowseControllers", () => {
 
       const result = await ctrl.list(
         { limit: 10, sortOrder: "desc" },
-        TEST_USER_ID,
+        TEST_USER_ID
       );
 
       expect(result.items).toEqual([]);
@@ -84,7 +84,7 @@ describe("trackerHistoryBrowseControllers", () => {
 
       await ctrl.list(
         { accountId: ACCOUNT_ID, limit: 10, sortOrder: "desc" },
-        TEST_USER_ID,
+        TEST_USER_ID
       );
 
       expect(prisma.tracker_purchases.findMany).toHaveBeenCalledWith(
@@ -92,7 +92,7 @@ describe("trackerHistoryBrowseControllers", () => {
           where: expect.objectContaining({
             tracker_account_id: ACCOUNT_ID,
           }),
-        }),
+        })
       );
     });
 
@@ -102,14 +102,14 @@ describe("trackerHistoryBrowseControllers", () => {
 
       await ctrl.list(
         { cursor: "pur-5", limit: 10, sortOrder: "asc" },
-        TEST_USER_ID,
+        TEST_USER_ID
       );
 
       expect(prisma.tracker_purchases.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           cursor: { id: "pur-5" },
           skip: 1,
-        }),
+        })
       );
     });
 
@@ -119,7 +119,7 @@ describe("trackerHistoryBrowseControllers", () => {
 
       const result = await ctrl.list(
         { limit: 10, sortOrder: "desc" },
-        TEST_USER_ID,
+        TEST_USER_ID
       );
 
       const item = result.items[0]!;

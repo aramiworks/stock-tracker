@@ -16,7 +16,7 @@ export const loggingPlugin: ApolloServerPlugin = {
 
     reqLogger.info(
       { operation: request.operationName ?? "anonymous" },
-      "graphql request started",
+      "graphql request started"
     );
 
     return {

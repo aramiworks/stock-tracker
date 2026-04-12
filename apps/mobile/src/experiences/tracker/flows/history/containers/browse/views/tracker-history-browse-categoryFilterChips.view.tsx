@@ -63,7 +63,7 @@ export const TrackerHistoryBrowseCategoryFilterChipsView = memo(
         })}
       </ScrollView>
     );
-  },
+  }
 );
 
 TrackerHistoryBrowseCategoryFilterChipsView.displayName =

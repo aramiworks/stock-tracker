@@ -17,7 +17,7 @@ export const TrackerHistoryBrowsePurchaseRowView = memo(
         <TrackerPurchaseRowView {...props} />
       </Pressable>
     );
-  },
+  }
 );
 
 TrackerHistoryBrowsePurchaseRowView.displayName =

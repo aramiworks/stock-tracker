@@ -42,7 +42,7 @@ export const TrackerEmptyStateView = memo(
         </Pressable>
       </View>
     );
-  },
+  }
 );
 
 TrackerEmptyStateView.displayName = "TrackerEmptyStateView";

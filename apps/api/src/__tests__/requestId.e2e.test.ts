@@ -18,7 +18,7 @@ function request(
     method?: string;
     headers?: Record<string, string>;
     body?: unknown;
-  } = {},
+  } = {}
 ): Promise<{
   status: number;
   headers: http.IncomingHttpHeaders;
@@ -49,7 +49,7 @@ function request(
           }
           resolve({ status: res.statusCode!, headers: res.headers, body });
         });
-      },
+      }
     );
     req.on("error", reject);
     if (bodyStr) req.write(bodyStr);
@@ -119,7 +119,7 @@ describe("requestId in error responses", () => {
     const body = res.body as any;
     const requestId = errorData(body).requestId;
     expect(requestId).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
     );
   });
 });

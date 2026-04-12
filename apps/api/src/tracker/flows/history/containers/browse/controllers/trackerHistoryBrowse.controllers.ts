@@ -38,7 +38,7 @@ export const trackerHistoryBrowseControllers = (prisma: PrismaClient) => {
         itemCategory?: string;
         search?: string;
       },
-      userId: string,
+      userId: string
     ) => {
       const results = await models.list({ ...input, userId });
 

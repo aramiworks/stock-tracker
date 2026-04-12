@@ -19,13 +19,13 @@ export interface EnvironmentConfig {
 export const ENVIRONMENTS: Record<string, EnvironmentConfig> = {
   develop: {
     railwayEnvName: "develop",
-    imageTag: "latest",
+    imageTag: "develop",
     nodeEnv: "development",
     dopplerConfig: "develop",
   },
   stage: {
     railwayEnvName: "stage",
-    imageTag: "latest",
+    imageTag: "stage",
     nodeEnv: "staging",
     dopplerConfig: "stage",
   },

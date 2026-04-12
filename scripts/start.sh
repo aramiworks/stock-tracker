@@ -12,8 +12,9 @@ set -euo pipefail
 #   ./scripts/start.sh ios            # Expo iOS (:8092)
 #   ./scripts/start.sh android        # Expo Android (:8093)
 #   ./scripts/start.sh web            # Expo Web (:8094)
+#   ./scripts/start.sh supabase       # Local Supabase (Docker)
 #   ./scripts/start.sh storybook      # Storybook web (:6006)
-#   ./scripts/start.sh backend        # api + subgraph + router
+#   ./scripts/start.sh backend        # supabase + api + subgraph + router
 #   ./scripts/start.sh all            # Everything
 #   ./scripts/start.sh stop           # Kill all managed services
 
@@ -85,11 +86,15 @@ SUBGRAPH_DIR="$REPO_ROOT/apps/subgraphs/tracker"
 ROUTER_DIR="$REPO_ROOT/apps/router"
 MOBILE_DIR="$REPO_ROOT/apps/mobile"
 STORYBOOK_DIR="$REPO_ROOT/apps/storybook"
-ALL_SERVICES="api subgraph router ios android web storybook"
+PRISMA_DIR="$REPO_ROOT/packages/prisma"
+ALL_SERVICES="supabase api subgraph router ios android web storybook"
 
 cmd="${1:-all}"
 
 case "$cmd" in
+  supabase)
+    start_service "supabase" "$DOPPLER bash '$REPO_ROOT/scripts/supabase-local.sh'"
+    ;;
   api)
     start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
     ;;
@@ -112,11 +117,13 @@ case "$cmd" in
     start_service "storybook" "cd '$STORYBOOK_DIR' && $DOPPLER npx storybook dev -p 6006"
     ;;
   backend)
+    start_service "supabase" "$DOPPLER bash '$REPO_ROOT/scripts/supabase-local.sh'"
     start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
     start_service "subgraph" "cd '$SUBGRAPH_DIR' && PORT=4011 $DOPPLER npx tsx watch src/server.ts"
     start_service "router" "cd '$ROUTER_DIR' && $DOPPLER rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012"
     ;;
   all)
+    start_service "supabase" "$DOPPLER bash '$REPO_ROOT/scripts/supabase-local.sh'"
     start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
     start_service "subgraph" "cd '$SUBGRAPH_DIR' && PORT=4011 $DOPPLER npx tsx watch src/server.ts"
     start_service "router" "cd '$ROUTER_DIR' && $DOPPLER rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012"
@@ -129,6 +136,8 @@ case "$cmd" in
     for svc in $ALL_SERVICES; do
       stop_service "$svc"
     done
+    log "Stopping Supabase containers..."
+    cd "$PRISMA_DIR" && supabase stop 2>/dev/null || true
     log "All services stopped"
     ;;
   *)

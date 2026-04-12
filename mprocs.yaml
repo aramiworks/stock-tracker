@@ -1,4 +1,20 @@
 procs:
+  supabase:
+    cmd:
+      [
+        "doppler",
+        "run",
+        "--project",
+        "stock-tracker",
+        "--config",
+        "local",
+        "--",
+        "bash",
+        "scripts/supabase-local.sh",
+      ]
+    stop: "SIGTERM"
+    autostart: true
+
   api:
     cmd:
       [

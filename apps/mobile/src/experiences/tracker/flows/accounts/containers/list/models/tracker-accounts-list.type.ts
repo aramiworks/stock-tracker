@@ -31,4 +31,6 @@ export type TrackerAccountsListControllersOutput = {
   onSearchChange: (query: string) => void;
   sortBy: AccountSortBy;
   onSortByToggle: () => void;
+  isRefreshing: boolean;
+  onRefresh: () => void;
 };

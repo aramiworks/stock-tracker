@@ -5,6 +5,7 @@ import {
   useMemo,
   useState,
   useCallback,
+  startTransition,
   type ReactNode,
 } from "react";
 import { useRouter } from "expo-router";
@@ -41,6 +42,7 @@ interface TrackerAccountsListControllersProps {
 export const TrackerAccountsListControllers =
   memo<TrackerAccountsListControllersProps>(({ children }) => {
     const router = useRouter();
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<AccountSortBy>("created_at");
     const debouncedSearch = useDebounce(searchQuery, 300);
@@ -54,6 +56,13 @@ export const TrackerAccountsListControllers =
       },
     });
     useTrackerAccountsListLifecycle(refetch);
+
+    const onRefresh = useCallback(() => {
+      setIsRefreshing(true);
+      startTransition(() => {
+        void refetch().finally(() => setIsRefreshing(false));
+      });
+    }, [refetch]);
 
     const [createAccountMutation] = useMutation(CreateAccountDocument, {
       refetchQueries: ["Dashboard", "Accounts"],
@@ -135,6 +144,8 @@ export const TrackerAccountsListControllers =
       onSearchChange,
       sortBy,
       onSortByToggle,
+      isRefreshing,
+      onRefresh,
     };
 
     return (

@@ -1,5 +1,5 @@
 import { memo, useState, type ReactNode } from "react";
-import { View, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView, RefreshControl, StyleSheet } from "react-native";
 import { Text, FAB } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
@@ -19,6 +19,7 @@ type TrackerDashboardHomeViewsProps =
   Partial<TrackerDashboardHomeControllersOutput> & {
     onRefresh?: () => void;
     onRetry?: () => void;
+    isRefreshing?: boolean;
   };
 
 export const TrackerDashboardHomeViews = memo(
@@ -31,6 +32,7 @@ export const TrackerDashboardHomeViews = memo(
     onSaPress,
     onRefresh,
     onCreateAccount,
+    isRefreshing = false,
   }: TrackerDashboardHomeViewsProps) => {
     const { t } = useTranslation("tracker");
     const [showAccountModal, setShowAccountModal] = useState(false);
@@ -96,6 +98,9 @@ export const TrackerDashboardHomeViews = memo(
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
         >
           {content[screenState ?? "default"]}
         </ScrollView>

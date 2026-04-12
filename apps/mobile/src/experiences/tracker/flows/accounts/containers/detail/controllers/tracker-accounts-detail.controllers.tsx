@@ -4,6 +4,8 @@ import {
   useContext,
   useMemo,
   useCallback,
+  useState,
+  startTransition,
   type ReactNode,
 } from "react";
 import { useRouter } from "expo-router";
@@ -32,10 +34,18 @@ interface TrackerAccountsDetailControllersProps {
 export const TrackerAccountsDetailControllers =
   memo<TrackerAccountsDetailControllersProps>(({ children, accountId }) => {
     const router = useRouter();
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const { data, refetch } = useSuspenseQuery(ACCOUNT_QUERY, {
       variables: { id: accountId },
     });
     useTrackerAccountsDetailLifecycle(refetch);
+
+    const onRefresh = useCallback(() => {
+      setIsRefreshing(true);
+      startTransition(() => {
+        void refetch().finally(() => setIsRefreshing(false));
+      });
+    }, [refetch]);
 
     const accountRefetchQueries = [
       { query: ACCOUNT_QUERY, variables: { id: accountId } },
@@ -175,6 +185,8 @@ export const TrackerAccountsDetailControllers =
       onCreatePurchase,
       onUpdatePurchase,
       onDeletePurchase,
+      isRefreshing,
+      onRefresh,
     };
 
     return (

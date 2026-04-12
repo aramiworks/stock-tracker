@@ -35,4 +35,6 @@ export type TrackerHistoryBrowseControllersOutput = {
   onSearchChange: (query: string) => void;
   selectedCategory: ItemCategory | null;
   onCategorySelect: (category: ItemCategory | null) => void;
+  isRefreshing: boolean;
+  onRefresh: () => void;
 };

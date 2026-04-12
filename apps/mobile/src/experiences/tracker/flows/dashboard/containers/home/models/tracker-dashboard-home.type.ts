@@ -31,4 +31,6 @@ export type TrackerDashboardHomeControllersOutput = {
   saAccounts: SaAccountData[];
   onSaPress: (id: string) => void;
   onCreateAccount: (input: CreateAccountInput) => Promise<void>;
+  isRefreshing: boolean;
+  onRefresh: () => void;
 };

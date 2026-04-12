@@ -4,6 +4,8 @@ import {
   useContext,
   useMemo,
   useCallback,
+  useState,
+  startTransition,
   type ReactNode,
 } from "react";
 import { useRouter } from "expo-router";
@@ -28,8 +30,16 @@ interface TrackerDashboardHomeControllersProps {
 export const TrackerDashboardHomeControllers =
   memo<TrackerDashboardHomeControllersProps>(({ children }) => {
     const router = useRouter();
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const { data, refetch } = useSuspenseQuery(DASHBOARD_QUERY);
     useTrackerDashboardHomeLifecycle(refetch);
+
+    const onRefresh = useCallback(() => {
+      setIsRefreshing(true);
+      startTransition(() => {
+        void refetch().finally(() => setIsRefreshing(false));
+      });
+    }, [refetch]);
 
     const [createAccountMutation] = useMutation(CreateAccountDocument, {
       refetchQueries: ["Dashboard", "Accounts"],
@@ -86,6 +96,8 @@ export const TrackerDashboardHomeControllers =
       saAccounts,
       onSaPress,
       onCreateAccount,
+      isRefreshing,
+      onRefresh,
     };
 
     return (

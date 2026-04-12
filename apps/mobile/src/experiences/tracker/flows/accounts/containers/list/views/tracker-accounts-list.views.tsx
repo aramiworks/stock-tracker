@@ -1,5 +1,5 @@
 import { memo, useState, type ReactNode } from "react";
-import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import { View, Text, ScrollView, RefreshControl, StyleSheet, Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsListScreenState,
@@ -73,6 +73,8 @@ type TrackerAccountsListViewsProps = {
   onSearchChange?: (query: string) => void;
   sortBy?: AccountSortBy;
   onSortByToggle?: () => void;
+  isRefreshing?: boolean;
+  onRefresh?: () => void;
 };
 
 export const TrackerAccountsListViews = memo(
@@ -86,6 +88,8 @@ export const TrackerAccountsListViews = memo(
     onSearchChange,
     sortBy = "created_at",
     onSortByToggle,
+    isRefreshing = false,
+    onRefresh,
   }: TrackerAccountsListViewsProps) => {
     const { t } = useTranslation("tracker");
     const [showAccountModal, setShowAccountModal] = useState(false);
@@ -169,6 +173,9 @@ export const TrackerAccountsListViews = memo(
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
         >
           {content[screenState]}
         </ScrollView>

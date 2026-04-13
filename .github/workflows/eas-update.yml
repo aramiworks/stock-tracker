@@ -50,6 +50,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build packages
+        run: npx turbo run build --filter=@stock-tracker/validation --filter=@stock-tracker/types
+
       - name: Resolve channel
         id: channel
         run: |
@@ -76,7 +79,7 @@ jobs:
       - name: Publish OTA update
         working-directory: apps/mobile
         env:
-          DOPPLER_TOKEN: ${{ steps.channel.outputs.name == 'develop' && secrets.DOPPLER_TOKEN_DEVELOP || steps.channel.outputs.name == 'stage' && secrets.DOPPLER_TOKEN_STAGE || secrets.DOPPLER_TOKEN_MASTER }}
+          DOPPLER_TOKEN: ${{ steps.channel.outputs.name == 'develop' && secrets.DOPPLER_TOKEN_DEVELOP || steps.channel.outputs.name == 'stage' && secrets.DOPPLER_TOKEN_STAGE || secrets.DOPPLER_TOKEN }}
           APP_ENV: ${{ steps.channel.outputs.name }}
         run: |
           doppler run -- eas update \

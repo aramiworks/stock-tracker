@@ -9,6 +9,12 @@ on:
 
 jobs:
   autofix:
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      actions: read
+      id-token: write
     uses: aramiworks/.github/.github/workflows/ci-autofix.yml@main
     with:
       format_fix_command: "npx prettier --write '**/*.{ts,tsx,md,json}'"

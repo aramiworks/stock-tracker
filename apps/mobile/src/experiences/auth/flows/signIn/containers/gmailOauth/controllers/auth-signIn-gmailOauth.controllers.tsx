@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { Platform } from "react-native";
+import * as Crypto from "expo-crypto";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import {
@@ -23,7 +24,7 @@ const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
 
 if (Platform.OS !== "web") {
-  // Configure once at module load — not inside a component.
+  // Initial configure at module load (no nonce yet — re-configured per sign-in with a fresh nonce).
   // webClientId: required — Google uses the web client to issue tokens Supabase can verify.
   // iosClientId: iOS OAuth client for the native account picker on iOS.
   // Android uses the Android OAuth client registered in Google Cloud Console
@@ -100,6 +101,19 @@ export const AuthSignInGmailOauthControllers =
         }
 
         // Native: Google Sign-In SDK — no custom URI scheme redirect needed.
+        // Generate a nonce per sign-in: pass hashed nonce to configure() so Google
+        // embeds it in the id_token, then pass the raw nonce to signInWithIdToken
+        // so Supabase can verify the match.
+        const rawNonce = Crypto.randomUUID();
+        const hashedNonce = await Crypto.digestStringAsync(
+          Crypto.CryptoDigestAlgorithm.SHA256,
+          rawNonce,
+        );
+        GoogleSignin.configure({
+          webClientId: GOOGLE_WEB_CLIENT_ID,
+          iosClientId: GOOGLE_IOS_CLIENT_ID,
+          nonce: hashedNonce,
+        });
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
         if (isSuccessResponse(userInfo)) {
@@ -108,6 +122,7 @@ export const AuthSignInGmailOauthControllers =
             const { error } = await supabase.auth.signInWithIdToken({
               provider: "google",
               token: idToken,
+              nonce: rawNonce,
             });
             if (error) throw error;
           }

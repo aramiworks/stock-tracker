@@ -71,7 +71,7 @@ jobs:
         run: doppler run -- npx expo export --platform web
         working-directory: apps/mobile
         env:
-          DOPPLER_TOKEN: ${{ steps.env.outputs.name == 'develop' && secrets.DOPPLER_TOKEN_DEVELOP || steps.env.outputs.name == 'stage' && secrets.DOPPLER_TOKEN_STAGE || secrets.DOPPLER_TOKEN }}
+          DOPPLER_TOKEN: ${{ steps.env.outputs.name == 'develop' && secrets.DOPPLER_TOKEN_DEVELOP || steps.env.outputs.name == 'stage' && secrets.DOPPLER_TOKEN_STAGE || secrets.DOPPLER_TOKEN_MASTER }}
           APP_ENV: ${{ steps.env.outputs.name }}
 
       - name: Write Vercel config

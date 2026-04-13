@@ -9,6 +9,9 @@ model tracker_accounts {
 
   auth_user         auth_users          @relation(fields: [auth_user_id], references: [id])
   tracker_purchases tracker_purchases[]
+
+  @@index([auth_user_id, store_name])
+  @@index([auth_user_id, created_at])
 }
 
 model tracker_purchases {
@@ -25,4 +28,7 @@ model tracker_purchases {
   updated_at         DateTime @updatedAt
 
   tracker_account tracker_accounts @relation(fields: [tracker_account_id], references: [id], onDelete: Cascade)
+
+  @@index([tracker_account_id, purchase_date])
+  @@index([tracker_account_id, item_category])
 }

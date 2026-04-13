@@ -15,5 +15,5 @@ npm run db:push
 echo "[supabase] Seeding dev data..."
 npm run seed:dev
 
-echo "[supabase] Ready. Tailing logs (Ctrl+C to stop)..."
-supabase logs --follow
+echo "[supabase] Ready. Tailing auth logs (Ctrl+C to stop)..."
+docker logs supabase_auth_stock-tracker --follow

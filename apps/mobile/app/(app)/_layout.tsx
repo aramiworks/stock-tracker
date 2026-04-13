@@ -14,7 +14,8 @@ export default function AppLayout() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const isLoading = useAuthStore((s) => s.isLoading);
 
-  if (!isLoading && !isAuthenticated) {
+  if (isLoading) return null;
+  if (!isAuthenticated) {
     return <Redirect href="/auth/signIn/gmailOauth" />;
   }
 

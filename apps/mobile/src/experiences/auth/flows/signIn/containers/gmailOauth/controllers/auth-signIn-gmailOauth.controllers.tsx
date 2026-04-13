@@ -100,7 +100,7 @@ export const AuthSignInGmailOauthControllers =
 
         // Native: Google Sign-In SDK — no custom URI scheme redirect needed.
         // @react-native-google-signin/google-signin v16 ConfigureParams does not
-        // support nonce; nonce verification is handled server-side via skip_nonce_check.
+        // support nonce; nonce verification is bypassed server-side via skip_nonce_check = true in config.toml.
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
         if (isSuccessResponse(userInfo)) {

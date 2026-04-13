@@ -1,6 +1,7 @@
 import { Text } from "react-native";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useAuthStore } from "../../src/experiences/auth/models/auth.store";
 
 function TabIcon({ label, focused }: { label: string; focused: boolean }) {
   return (
@@ -10,6 +11,13 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
 
 export default function AppLayout() {
   const { t } = useTranslation("tracker");
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isLoading = useAuthStore((s) => s.isLoading);
+
+  if (!isLoading && !isAuthenticated) {
+    return <Redirect href="/auth/signIn/gmailOauth" />;
+  }
+
   return (
     <Tabs
       screenOptions={{

@@ -1,8 +1,6 @@
 import { Global, Module } from "@nestjs/common";
 import { PinoLoggerService } from "./pino-logger.service.js";
 
-export const LOGGER_SERVICE = "LOGGER_SERVICE";
-
 /**
  * Provides a NestJS LoggerService backed by pino.
  * Usage: LoggerModule.forService("auth-service")

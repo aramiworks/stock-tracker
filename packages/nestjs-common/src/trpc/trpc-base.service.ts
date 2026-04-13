@@ -44,6 +44,11 @@ export class TrpcBaseService {
   createContext = async ({
     req,
   }: CreateExpressContextOptions): Promise<TrpcContext> => {
+    // SECURITY: x-user-id and x-user-role are trusted because this service
+    // is ONLY reachable through Apollo Router (which validates the JWT and
+    // sets these headers). Direct access from outside the internal network
+    // must be blocked at the infrastructure level (firewall / Railway private
+    // networking). Never expose this port publicly.
     const userId = req.headers["x-user-id"] as string | undefined;
     const userRole = req.headers["x-user-role"] as string | undefined;
     const requestId =

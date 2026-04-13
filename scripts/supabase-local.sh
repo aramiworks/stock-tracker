@@ -16,4 +16,4 @@ echo "[supabase] Seeding dev data..."
 npm run seed:dev
 
 echo "[supabase] Ready. Tailing auth logs (Ctrl+C to stop)..."
-docker logs supabase_auth_stock-tracker --follow
+docker logs "supabase_auth_$(grep '^project_id' "$PRISMA_DIR/supabase/config.toml" | sed 's/.*= *"\(.*\)"/\1/')" --follow

@@ -4,6 +4,7 @@ import {
   useContext,
   useCallback,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -48,6 +49,12 @@ interface AuthSignInGmailOauthControllersProps {
 export const AuthSignInGmailOauthControllers =
   memo<AuthSignInGmailOauthControllersProps>(({ children }) => {
     const [isSigningIn, setIsSigningIn] = useState(false);
+    const isMountedRef = useRef(true);
+    useEffect(() => {
+      return () => {
+        isMountedRef.current = false;
+      };
+    }, []);
 
     // Web only: expo-auth-session with web client ID.
     // Native (iOS/Android): GoogleSignin SDK below — hooks must not be called conditionally,
@@ -78,7 +85,7 @@ export const AuthSignInGmailOauthControllers =
         } catch {
           // sign-in failed; auth state unchanged, user stays on sign-in screen
         } finally {
-          setIsSigningIn(false);
+          if (isMountedRef.current) setIsSigningIn(false);
         }
       })();
     }, [webResponse, webRequest]);
@@ -106,7 +113,7 @@ export const AuthSignInGmailOauthControllers =
           }
         }
       } finally {
-        setIsSigningIn(false);
+        if (isMountedRef.current) setIsSigningIn(false);
       }
     }, [webPromptAsync]);
 

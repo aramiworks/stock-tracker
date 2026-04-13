@@ -21,7 +21,11 @@ const WebStorageAdapter = {
   },
 };
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+// Android emulator routes localhost to the host machine via 10.0.2.2
+const supabaseUrl =
+  Platform.OS === "android" && __DEV__
+    ? process.env.EXPO_PUBLIC_SUPABASE_URL!.replace("localhost", "10.0.2.2")
+    : process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {

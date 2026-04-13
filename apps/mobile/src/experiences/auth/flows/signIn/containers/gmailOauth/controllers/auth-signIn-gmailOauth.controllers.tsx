@@ -23,7 +23,6 @@ const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
 
 if (Platform.OS !== "web") {
-  // Configure once at module load — not inside a component.
   // webClientId: required — Google uses the web client to issue tokens Supabase can verify.
   // iosClientId: iOS OAuth client for the native account picker on iOS.
   // Android uses the Android OAuth client registered in Google Cloud Console
@@ -100,6 +99,8 @@ export const AuthSignInGmailOauthControllers =
         }
 
         // Native: Google Sign-In SDK — no custom URI scheme redirect needed.
+        // @react-native-google-signin/google-signin v16 ConfigureParams does not
+        // support nonce; nonce verification is handled server-side via skip_nonce_check.
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
         if (isSuccessResponse(userInfo)) {

@@ -38,6 +38,10 @@ npm-debug.log*
 # Dev dashboard logs
 logs/
 
+# Supabase local
+packages/prisma/supabase/.temp/
+packages/prisma/supabase/.branches/
+
 # Misc
 .DS_Store
 *.pem

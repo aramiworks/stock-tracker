@@ -135,7 +135,7 @@ export const useAuthSignInGmailOauthControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
     throw new Error(
-      "useAuthSignInGmailOauthControllers must be used within AuthSignInGmailOauthControllers"
+      "useAuthSignInGmailOauthControllers must be used within AuthSignInGmailOauthControllers",
     );
   }
   return context;

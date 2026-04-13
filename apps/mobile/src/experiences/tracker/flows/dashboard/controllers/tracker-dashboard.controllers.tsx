@@ -30,7 +30,7 @@ export const useTrackerDashboardControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
     throw new Error(
-      "useTrackerDashboardControllers must be used within TrackerDashboardControllers"
+      "useTrackerDashboardControllers must be used within TrackerDashboardControllers",
     );
   }
   return context;

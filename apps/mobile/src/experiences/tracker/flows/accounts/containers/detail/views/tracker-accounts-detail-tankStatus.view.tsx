@@ -12,7 +12,7 @@ export const TrackerAccountsDetailTankStatusView = memo(
     testID,
   }: TrackerAccountsDetailTankStatusViewProps) => {
     return <TrackerEligibilityBadgeView status={state} testID={testID} />;
-  }
+  },
 );
 
 TrackerAccountsDetailTankStatusView.displayName =

@@ -7,7 +7,7 @@ interface TrackerHistoryBrowseModelsProps {
 export const TrackerHistoryBrowseModels = memo<TrackerHistoryBrowseModelsProps>(
   ({ children }) => {
     return <>{children}</>;
-  }
+  },
 );
 
 TrackerHistoryBrowseModels.displayName = "TrackerHistoryBrowseModels";

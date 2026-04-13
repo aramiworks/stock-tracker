@@ -43,7 +43,7 @@ export const TrackerHistoryBrowseDateFilterChipsView = memo(
         })}
       </View>
     );
-  }
+  },
 );
 
 TrackerHistoryBrowseDateFilterChipsView.displayName =

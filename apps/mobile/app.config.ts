@@ -26,7 +26,7 @@ function reverseClientId(clientId?: string): string | undefined {
 }
 
 const iosOAuthScheme = reverseClientId(
-  process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
+  process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
 );
 
 export default ({ config }: ConfigContext): ExpoConfig => ({

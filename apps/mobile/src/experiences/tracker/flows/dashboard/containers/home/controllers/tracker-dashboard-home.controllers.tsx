@@ -49,7 +49,7 @@ export const TrackerDashboardHomeControllers =
       async (input: { storeName: string; saName?: string; notes?: string }) => {
         await createAccountMutation({ variables: { input } });
       },
-      [createAccountMutation]
+      [createAccountMutation],
     );
 
     const screenState: TrackerDashboardHomeScreenState = !data?.accounts?.length
@@ -72,8 +72,8 @@ export const TrackerDashboardHomeControllers =
             spend === 0
               ? ("noPurchases" as const)
               : spend >= GOAL_AMOUNT
-              ? ("eligible" as const)
-              : ("notEligible" as const),
+                ? ("eligible" as const)
+                : ("notEligible" as const),
         };
       });
     }, [data?.accounts]);
@@ -85,7 +85,7 @@ export const TrackerDashboardHomeControllers =
       (id: string) => {
         router.push(`/tracker/accounts/detail/${id}`);
       },
-      [router]
+      [router],
     );
 
     const value: TrackerDashboardHomeControllersOutput = {
@@ -113,7 +113,7 @@ export const useTrackerDashboardHomeControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
     throw new Error(
-      "useTrackerDashboardHomeControllers must be used within TrackerDashboardHomeControllers"
+      "useTrackerDashboardHomeControllers must be used within TrackerDashboardHomeControllers",
     );
   }
   return context;

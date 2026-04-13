@@ -22,7 +22,7 @@ const config: StorybookConfig = {
           ([find, replacement]) => ({
             find,
             replacement: replacement as string,
-          })
+          }),
         );
     config.resolve.alias = [
       // Specific sub-path aliases must come before prefix aliases
@@ -40,7 +40,7 @@ const config: StorybookConfig = {
         find: "@stock-tracker/validation",
         replacement: path.resolve(
           __dirname,
-          "../../../packages/validation/src/index.ts"
+          "../../../packages/validation/src/index.ts",
         ),
       },
       ...existingAliases.filter(
@@ -49,7 +49,7 @@ const config: StorybookConfig = {
           (a as { find: string }).find !== "@" &&
           (a as { find: string }).find !== "@expo/vector-icons" &&
           (a as { find: string }).find !== "@expo/vector-icons/MaterialIcons" &&
-          (a as { find: string }).find !== "@stock-tracker/validation"
+          (a as { find: string }).find !== "@stock-tracker/validation",
       ),
     ];
     // @aramiworks/ui ships TypeScript source (.tsx files). Exclude from

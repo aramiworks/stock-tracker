@@ -28,7 +28,7 @@ export const TrackerAccountsDetailSaHeaderView = memo(
         </Text>
       </View>
     );
-  }
+  },
 );
 
 TrackerAccountsDetailSaHeaderView.displayName =

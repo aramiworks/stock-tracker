@@ -51,7 +51,7 @@ export const TrackerAccountsDetailPurchaseRowView = memo(
         )}
       </View>
     );
-  }
+  },
 );
 
 TrackerAccountsDetailPurchaseRowView.displayName =

@@ -25,7 +25,7 @@ if (!token) {
 const envArg = process.argv[2];
 if (!envArg || !ENVIRONMENTS[envArg]) {
   console.error(
-    `Usage: tsx src/redeploy.ts <${Object.keys(ENVIRONMENTS).join("|")}>`
+    `Usage: tsx src/redeploy.ts <${Object.keys(ENVIRONMENTS).join("|")}>`,
   );
   process.exit(1);
 }
@@ -66,7 +66,7 @@ async function main(): Promise<void> {
           )
         }
       `,
-      { serviceId: svc.id, environmentId: env.id }
+      { serviceId: svc.id, environmentId: env.id },
     );
     console.log(`  ${svc.name}: deployed`);
   }

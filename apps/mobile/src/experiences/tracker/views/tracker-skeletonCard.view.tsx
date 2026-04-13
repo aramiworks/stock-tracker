@@ -29,7 +29,7 @@ export const TrackerSkeletonCardView = memo(
         </View>
       </View>
     );
-  }
+  },
 );
 
 TrackerSkeletonCardView.displayName = "TrackerSkeletonCardView";

@@ -34,17 +34,17 @@ export const TrackerAccountsListSaListItemView = memo(
             amount: totalSpend.toLocaleString(),
           })
         : state === "notEligible"
-        ? t("accounts.list.saListItem.statusNotEligible", {
-            amount: totalSpend.toLocaleString(),
-          })
-        : t("accounts.list.saListItem.statusNoPurchases");
+          ? t("accounts.list.saListItem.statusNotEligible", {
+              amount: totalSpend.toLocaleString(),
+            })
+          : t("accounts.list.saListItem.statusNoPurchases");
 
     const statusColor =
       state === "eligible"
         ? "#219654"
         : state === "notEligible"
-        ? "#FF2D55"
-        : "#999";
+          ? "#FF2D55"
+          : "#999";
 
     return (
       <Pressable
@@ -64,7 +64,7 @@ export const TrackerAccountsListSaListItemView = memo(
         <Text style={styles.chevron}>›</Text>
       </Pressable>
     );
-  }
+  },
 );
 
 TrackerAccountsListSaListItemView.displayName =

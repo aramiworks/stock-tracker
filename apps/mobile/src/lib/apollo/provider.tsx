@@ -19,7 +19,7 @@ export const AppApolloProvider = memo(
     }
 
     return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
-  }
+  },
 );
 
 AppApolloProvider.displayName = "AppApolloProvider";

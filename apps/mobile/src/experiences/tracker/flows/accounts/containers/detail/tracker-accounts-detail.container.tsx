@@ -56,7 +56,7 @@ export const TrackerAccountsDetailContainer = memo(
         </Suspense>
       </QueryErrorBoundary>
     );
-  }
+  },
 );
 
 TrackerAccountsDetailContainer.displayName = "TrackerAccountsDetailContainer";

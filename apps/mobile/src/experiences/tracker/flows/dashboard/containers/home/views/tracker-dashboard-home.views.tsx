@@ -130,7 +130,7 @@ export const TrackerDashboardHomeViews = memo(
         )}
       </View>
     );
-  }
+  },
 );
 
 TrackerDashboardHomeViews.displayName = "TrackerDashboardHomeViews";

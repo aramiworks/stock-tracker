@@ -59,7 +59,7 @@ export const trackerAccountsDetailControllers = (prisma: PrismaClient) => {
         saName?: string | null;
         notes?: string | null;
       },
-      userId: string
+      userId: string,
     ) => {
       const existing = await models.findById(input.id);
       if (!existing) {

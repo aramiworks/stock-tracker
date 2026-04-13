@@ -99,7 +99,7 @@ export const TrackerHistoryBrowseViews = memo(
                         showConfirmDialog({
                           title: t(
                             "history.browse.confirmDelete.title",
-                            "구매 삭제"
+                            "구매 삭제",
                           ),
                           message: t("history.browse.confirmDelete.message", {
                             name: p.productName,
@@ -142,7 +142,7 @@ export const TrackerHistoryBrowseViews = memo(
                 onChangeText={onSearchChange}
                 placeholder={t(
                   "history.browse.searchPlaceholder",
-                  "부티크 검색..."
+                  "부티크 검색...",
                 )}
                 testID="history-browse-search"
               />
@@ -172,7 +172,7 @@ export const TrackerHistoryBrowseViews = memo(
         </ScrollView>
       </View>
     );
-  }
+  },
 );
 
 TrackerHistoryBrowseViews.displayName = "TrackerHistoryBrowseViews";

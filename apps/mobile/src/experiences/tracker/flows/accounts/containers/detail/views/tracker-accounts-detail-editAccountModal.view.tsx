@@ -74,7 +74,7 @@ export const TrackerAccountsDetailEditAccountModalView = memo(
         reset();
         onClose();
       },
-      [onSubmit, reset, onClose]
+      [onSubmit, reset, onClose],
     );
 
     return (
@@ -113,7 +113,7 @@ export const TrackerAccountsDetailEditAccountModalView = memo(
         />
       </FormModal>
     );
-  }
+  },
 );
 
 TrackerAccountsDetailEditAccountModalView.displayName =

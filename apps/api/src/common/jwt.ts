@@ -22,7 +22,7 @@ interface JWTPayload {
  */
 export async function verifySupabaseJwt(
   token: string,
-  supabaseUrl: string
+  supabaseUrl: string,
 ): Promise<JWTPayload | null> {
   try {
     const { payload } = await jwtVerify(token, getJWKS(supabaseUrl), {

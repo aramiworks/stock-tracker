@@ -121,7 +121,7 @@ export const TrackerAccountsListViews = memo(
                           title: t("accounts.list.confirm.deleteAccount.title"),
                           message: t(
                             "accounts.list.confirm.deleteAccount.message",
-                            { name: sa.name, boutique: sa.boutique }
+                            { name: sa.name, boutique: sa.boutique },
                           ),
                           onConfirm: () => onDeleteAccount(sa.id),
                         })
@@ -161,7 +161,7 @@ export const TrackerAccountsListViews = memo(
                 onChangeText={onSearchChange}
                 placeholder={t(
                   "accounts.list.searchPlaceholder",
-                  "부티크 검색..."
+                  "부티크 검색...",
                 )}
                 testID="accounts-list-search"
               />
@@ -206,7 +206,7 @@ export const TrackerAccountsListViews = memo(
         )}
       </View>
     );
-  }
+  },
 );
 
 TrackerAccountsListViews.displayName = "TrackerAccountsListViews";

@@ -42,7 +42,7 @@ export const TrackerErrorStateView = memo(
         </Pressable>
       </View>
     );
-  }
+  },
 );
 
 TrackerErrorStateView.displayName = "TrackerErrorStateView";

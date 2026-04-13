@@ -42,11 +42,11 @@ const makePrisma = () =>
           ...mockDbAccount,
           ...data,
           tracker_purchases: undefined,
-        })
+        }),
       ),
       delete: (jest.fn() as any).mockResolvedValue(mockDbAccount),
     },
-  } as any);
+  }) as any;
 
 describe("trackerAccountsDetailControllers", () => {
   describe("byId()", () => {
@@ -71,7 +71,7 @@ describe("trackerAccountsDetailControllers", () => {
       const ctrl = trackerAccountsDetailControllers(prisma);
 
       await expect(ctrl.byId({ id: "missing" }, TEST_USER_ID)).rejects.toThrow(
-        TRPCError
+        TRPCError,
       );
     });
 
@@ -80,7 +80,7 @@ describe("trackerAccountsDetailControllers", () => {
       const ctrl = trackerAccountsDetailControllers(prisma);
 
       await expect(
-        ctrl.byId({ id: ACCOUNT_ID }, OTHER_USER_ID)
+        ctrl.byId({ id: ACCOUNT_ID }, OTHER_USER_ID),
       ).rejects.toThrow(TRPCError);
     });
   });
@@ -92,7 +92,7 @@ describe("trackerAccountsDetailControllers", () => {
 
       const result = await ctrl.update(
         { id: ACCOUNT_ID, storeName: "Updated Store" },
-        TEST_USER_ID
+        TEST_USER_ID,
       );
 
       expect(prisma.tracker_accounts.update).toHaveBeenCalled();
@@ -105,7 +105,7 @@ describe("trackerAccountsDetailControllers", () => {
       const ctrl = trackerAccountsDetailControllers(prisma);
 
       await expect(
-        ctrl.update({ id: "missing", storeName: "X" }, TEST_USER_ID)
+        ctrl.update({ id: "missing", storeName: "X" }, TEST_USER_ID),
       ).rejects.toThrow(TRPCError);
     });
 
@@ -114,7 +114,7 @@ describe("trackerAccountsDetailControllers", () => {
       const ctrl = trackerAccountsDetailControllers(prisma);
 
       await expect(
-        ctrl.update({ id: ACCOUNT_ID, storeName: "X" }, OTHER_USER_ID)
+        ctrl.update({ id: ACCOUNT_ID, storeName: "X" }, OTHER_USER_ID),
       ).rejects.toThrow(TRPCError);
     });
   });
@@ -138,7 +138,7 @@ describe("trackerAccountsDetailControllers", () => {
       const ctrl = trackerAccountsDetailControllers(prisma);
 
       await expect(
-        ctrl.delete({ id: "missing" }, TEST_USER_ID)
+        ctrl.delete({ id: "missing" }, TEST_USER_ID),
       ).rejects.toThrow(TRPCError);
     });
 
@@ -147,7 +147,7 @@ describe("trackerAccountsDetailControllers", () => {
       const ctrl = trackerAccountsDetailControllers(prisma);
 
       await expect(
-        ctrl.delete({ id: ACCOUNT_ID }, OTHER_USER_ID)
+        ctrl.delete({ id: ACCOUNT_ID }, OTHER_USER_ID),
       ).rejects.toThrow(TRPCError);
     });
   });

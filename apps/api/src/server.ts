@@ -41,7 +41,7 @@ const server = createHTTPServer({
           status: res.statusCode,
           duration,
         },
-        "http request"
+        "http request",
       );
     });
 

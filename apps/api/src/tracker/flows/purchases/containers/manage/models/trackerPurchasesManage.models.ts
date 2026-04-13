@@ -42,7 +42,7 @@ export const trackerPurchasesManageModels = (prisma: PrismaClient) => ({
       purchase_date?: Date;
       store_location?: string | null;
       notes?: string | null;
-    }
+    },
   ) => {
     return prisma.tracker_purchases.update({ where: { id }, data });
   },

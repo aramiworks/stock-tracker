@@ -5,6 +5,6 @@ export function useRefetchOnFocus(refetch: () => void) {
   useFocusEffect(
     useCallback(() => {
       refetch();
-    }, [refetch])
+    }, [refetch]),
   );
 }

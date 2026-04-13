@@ -21,7 +21,7 @@ export const TrackerControllers = memo<TrackerControllersProps>(
         {children}
       </ControllersContext.Provider>
     );
-  }
+  },
 );
 
 TrackerControllers.displayName = "TrackerControllers";
@@ -30,7 +30,7 @@ export const useTrackerControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
     throw new Error(
-      "useTrackerControllers must be used within TrackerControllers"
+      "useTrackerControllers must be used within TrackerControllers",
     );
   }
   return context;

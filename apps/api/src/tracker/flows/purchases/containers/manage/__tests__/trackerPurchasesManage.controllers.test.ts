@@ -51,21 +51,21 @@ const makePrisma = () =>
           notes: data.notes ?? null,
           created_at: now,
           updated_at: now,
-        })
+        }),
       ),
       update: (jest.fn() as any).mockImplementation(({ data }: { data: any }) =>
         Promise.resolve({
           ...mockDbPurchase,
           ...data,
           tracker_account: undefined,
-        })
+        }),
       ),
       delete: (jest.fn() as any).mockResolvedValue(mockDbPurchase),
     },
     tracker_accounts: {
       findUnique: (jest.fn() as any).mockResolvedValue(mockDbAccount),
     },
-  } as any);
+  }) as any;
 
 describe("trackerPurchasesManageControllers", () => {
   describe("byId()", () => {
@@ -86,7 +86,7 @@ describe("trackerPurchasesManageControllers", () => {
       const ctrl = trackerPurchasesManageControllers(prisma);
 
       await expect(ctrl.byId({ id: "missing" }, TEST_USER_ID)).rejects.toThrow(
-        TRPCError
+        TRPCError,
       );
     });
 
@@ -95,7 +95,7 @@ describe("trackerPurchasesManageControllers", () => {
       const ctrl = trackerPurchasesManageControllers(prisma);
 
       await expect(
-        ctrl.byId({ id: PURCHASE_ID }, OTHER_USER_ID)
+        ctrl.byId({ id: PURCHASE_ID }, OTHER_USER_ID),
       ).rejects.toThrow(TRPCError);
     });
   });
@@ -112,7 +112,7 @@ describe("trackerPurchasesManageControllers", () => {
           amount: 3000000,
           purchaseDate: "2025-02-01",
         },
-        TEST_USER_ID
+        TEST_USER_ID,
       );
 
       expect(result.id).toBe("new-pur-id");
@@ -133,8 +133,8 @@ describe("trackerPurchasesManageControllers", () => {
             amount: 1000,
             purchaseDate: "2025-01-01",
           },
-          TEST_USER_ID
-        )
+          TEST_USER_ID,
+        ),
       ).rejects.toThrow(TRPCError);
     });
 
@@ -150,8 +150,8 @@ describe("trackerPurchasesManageControllers", () => {
             amount: 1000,
             purchaseDate: "2025-01-01",
           },
-          OTHER_USER_ID
-        )
+          OTHER_USER_ID,
+        ),
       ).rejects.toThrow(TRPCError);
     });
   });
@@ -163,7 +163,7 @@ describe("trackerPurchasesManageControllers", () => {
 
       const result = await ctrl.update(
         { id: PURCHASE_ID, itemName: "Updated Ring" },
-        TEST_USER_ID
+        TEST_USER_ID,
       );
 
       expect(prisma.tracker_purchases.update).toHaveBeenCalled();
@@ -176,7 +176,7 @@ describe("trackerPurchasesManageControllers", () => {
       const ctrl = trackerPurchasesManageControllers(prisma);
 
       await expect(
-        ctrl.update({ id: "missing", itemName: "X" }, TEST_USER_ID)
+        ctrl.update({ id: "missing", itemName: "X" }, TEST_USER_ID),
       ).rejects.toThrow(TRPCError);
     });
 
@@ -185,7 +185,7 @@ describe("trackerPurchasesManageControllers", () => {
       const ctrl = trackerPurchasesManageControllers(prisma);
 
       await expect(
-        ctrl.update({ id: PURCHASE_ID, itemName: "X" }, OTHER_USER_ID)
+        ctrl.update({ id: PURCHASE_ID, itemName: "X" }, OTHER_USER_ID),
       ).rejects.toThrow(TRPCError);
     });
   });
@@ -209,7 +209,7 @@ describe("trackerPurchasesManageControllers", () => {
       const ctrl = trackerPurchasesManageControllers(prisma);
 
       await expect(
-        ctrl.delete({ id: "missing" }, TEST_USER_ID)
+        ctrl.delete({ id: "missing" }, TEST_USER_ID),
       ).rejects.toThrow(TRPCError);
     });
 
@@ -218,7 +218,7 @@ describe("trackerPurchasesManageControllers", () => {
       const ctrl = trackerPurchasesManageControllers(prisma);
 
       await expect(
-        ctrl.delete({ id: PURCHASE_ID }, OTHER_USER_ID)
+        ctrl.delete({ id: PURCHASE_ID }, OTHER_USER_ID),
       ).rejects.toThrow(TRPCError);
     });
   });

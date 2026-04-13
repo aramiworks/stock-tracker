@@ -34,7 +34,7 @@ export const TrackerEligibilityBadgeView = memo(
         </Text>
       </View>
     );
-  }
+  },
 );
 
 TrackerEligibilityBadgeView.displayName = "TrackerEligibilityBadgeView";

@@ -7,7 +7,7 @@ interface AuthSignInGmailOauthModelsProps {
 export const AuthSignInGmailOauthModels = memo<AuthSignInGmailOauthModelsProps>(
   ({ children }) => {
     return <>{children}</>;
-  }
+  },
 );
 
 AuthSignInGmailOauthModels.displayName = "AuthSignInGmailOauthModels";

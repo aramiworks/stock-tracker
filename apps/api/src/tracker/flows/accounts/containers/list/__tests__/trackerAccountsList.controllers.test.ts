@@ -30,10 +30,10 @@ const makePrisma = () =>
             created_at: now,
             updated_at: now,
           });
-        }
+        },
       ),
     },
-  } as any);
+  }) as any;
 
 describe("trackerAccountsListControllers", () => {
   describe("all()", () => {
@@ -43,7 +43,7 @@ describe("trackerAccountsListControllers", () => {
 
       const result = await ctrl.all(
         { sortBy: "created_at", sortOrder: "desc" },
-        TEST_USER_ID
+        TEST_USER_ID,
       );
 
       expect(prisma.tracker_accounts.findMany).toHaveBeenCalledWith({
@@ -70,7 +70,7 @@ describe("trackerAccountsListControllers", () => {
 
       const result = await ctrl.all(
         { sortBy: "created_at", sortOrder: "desc" },
-        TEST_USER_ID
+        TEST_USER_ID,
       );
 
       expect(result).toEqual([]);
@@ -82,7 +82,7 @@ describe("trackerAccountsListControllers", () => {
 
       await ctrl.all(
         { sortBy: "created_at", sortOrder: "desc" },
-        OTHER_USER_ID
+        OTHER_USER_ID,
       );
 
       expect(prisma.tracker_accounts.findMany).toHaveBeenCalledWith({
@@ -99,7 +99,7 @@ describe("trackerAccountsListControllers", () => {
 
       const result = await ctrl.create(
         { storeName: "New Store" },
-        TEST_USER_ID
+        TEST_USER_ID,
       );
 
       expect(prisma.tracker_accounts.create).toHaveBeenCalledWith({
@@ -126,7 +126,7 @@ describe("trackerAccountsListControllers", () => {
           saName: "SA Name",
           notes: "detailed notes",
         },
-        TEST_USER_ID
+        TEST_USER_ID,
       );
 
       expect(prisma.tracker_accounts.create).toHaveBeenCalledWith({

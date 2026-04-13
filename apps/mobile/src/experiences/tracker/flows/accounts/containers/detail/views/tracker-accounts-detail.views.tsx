@@ -95,7 +95,7 @@ export const TrackerAccountsDetailViews = memo(
     const [editAccountVisible, setEditAccountVisible] = useState(false);
     const [purchaseModalVisible, setPurchaseModalVisible] = useState(false);
     const [editingPurchase, setEditingPurchase] = useState<PurchaseItem | null>(
-      null
+      null,
     );
 
     const handleDeleteAccount = useCallback(() => {
@@ -120,7 +120,7 @@ export const TrackerAccountsDetailViews = memo(
           },
         });
       },
-      [onDeletePurchase]
+      [onDeletePurchase],
     );
 
     const handleEditPurchase = useCallback((purchase: PurchaseItem) => {
@@ -136,7 +136,7 @@ export const TrackerAccountsDetailViews = memo(
           await onCreatePurchase(data);
         }
       },
-      [editingPurchase, onUpdatePurchase, onCreatePurchase]
+      [editingPurchase, onUpdatePurchase, onCreatePurchase],
     );
 
     const handlePurchaseModalClose = useCallback(() => {
@@ -284,7 +284,7 @@ export const TrackerAccountsDetailViews = memo(
         )}
       </View>
     );
-  }
+  },
 );
 
 TrackerAccountsDetailViews.displayName = "TrackerAccountsDetailViews";

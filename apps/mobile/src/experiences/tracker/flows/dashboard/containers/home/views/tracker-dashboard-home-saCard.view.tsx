@@ -30,15 +30,15 @@ export const TrackerDashboardHomeSaCardView = memo(
       state === "eligible"
         ? t("dashboard.saCard.statusEligible", { boutique })
         : state === "notEligible"
-        ? t("dashboard.saCard.statusNotEligible", { boutique })
-        : t("dashboard.saCard.statusNoPurchases", { boutique });
+          ? t("dashboard.saCard.statusNotEligible", { boutique })
+          : t("dashboard.saCard.statusNoPurchases", { boutique });
 
     const statusColor =
       state === "eligible"
         ? "#219654"
         : state === "notEligible"
-        ? "#FF2D55"
-        : "#999";
+          ? "#FF2D55"
+          : "#999";
 
     const spendText =
       state === "noPurchases"
@@ -61,7 +61,7 @@ export const TrackerDashboardHomeSaCardView = memo(
         <Text style={styles.spend}>{spendText}</Text>
       </Pressable>
     );
-  }
+  },
 );
 
 TrackerDashboardHomeSaCardView.displayName = "TrackerDashboardHomeSaCardView";

@@ -8,7 +8,7 @@ type TrackerDashboardHomeEligibilityBadgeViewProps = {
 export const TrackerDashboardHomeEligibilityBadgeView = memo(
   ({ state = "eligible" }: TrackerDashboardHomeEligibilityBadgeViewProps) => {
     return <TrackerEligibilityBadgeView status={state} />;
-  }
+  },
 );
 
 TrackerDashboardHomeEligibilityBadgeView.displayName =

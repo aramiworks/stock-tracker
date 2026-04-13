@@ -5,7 +5,7 @@ interface AuthSignInControllersOutput {
 }
 
 const ControllersContext = createContext<AuthSignInControllersOutput | null>(
-  null
+  null,
 );
 
 interface AuthSignInControllersProps {
@@ -23,7 +23,7 @@ export const AuthSignInControllers = memo<AuthSignInControllersProps>(
         {children}
       </ControllersContext.Provider>
     );
-  }
+  },
 );
 
 AuthSignInControllers.displayName = "AuthSignInControllers";
@@ -32,7 +32,7 @@ export const useAuthSignInControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
     throw new Error(
-      "useAuthSignInControllers must be used within AuthSignInControllers"
+      "useAuthSignInControllers must be used within AuthSignInControllers",
     );
   }
   return context;

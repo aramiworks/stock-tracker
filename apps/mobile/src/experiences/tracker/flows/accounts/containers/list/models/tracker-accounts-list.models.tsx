@@ -7,7 +7,7 @@ interface TrackerAccountsListModelsProps {
 export const TrackerAccountsListModels = memo<TrackerAccountsListModelsProps>(
   ({ children }) => {
     return <>{children}</>;
-  }
+  },
 );
 
 TrackerAccountsListModels.displayName = "TrackerAccountsListModels";

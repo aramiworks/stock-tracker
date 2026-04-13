@@ -5,6 +5,7 @@ import {
   useMemo,
   useState,
   useCallback,
+  startTransition,
   type ReactNode,
 } from "react";
 import { useSuspenseQuery, useMutation } from "@apollo/client/react";
@@ -51,6 +52,7 @@ function dateFilterToDateRange(
 
 export const TrackerHistoryBrowseControllers =
   memo<TrackerHistoryBrowseControllersProps>(({ children }) => {
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<DateFilter>("all");
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] =
@@ -65,6 +67,13 @@ export const TrackerHistoryBrowseControllers =
       },
     });
     useTrackerHistoryBrowseLifecycle(refetch);
+
+    const onRefresh = useCallback(() => {
+      setIsRefreshing(true);
+      startTransition(() => {
+        void refetch().finally(() => setIsRefreshing(false));
+      });
+    }, [refetch]);
 
     const [deletePurchaseMutation] = useMutation(DeletePurchaseDocument, {
       refetchQueries: ["Purchases", "Dashboard", "Accounts"],
@@ -118,6 +127,8 @@ export const TrackerHistoryBrowseControllers =
       onSearchChange,
       selectedCategory,
       onCategorySelect,
+      isRefreshing,
+      onRefresh,
     };
 
     return (

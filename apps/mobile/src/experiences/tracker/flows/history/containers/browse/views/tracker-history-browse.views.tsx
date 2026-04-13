@@ -1,5 +1,11 @@
 import { memo, type ReactNode } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  RefreshControl,
+  StyleSheet,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerHistoryBrowseScreenState,
@@ -58,6 +64,8 @@ type TrackerHistoryBrowseViewsProps = {
   onSearchChange?: (query: string) => void;
   selectedCategory?: ItemCategory | null;
   onCategorySelect?: (category: ItemCategory | null) => void;
+  isRefreshing?: boolean;
+  onRefresh?: () => void;
 };
 
 export const TrackerHistoryBrowseViews = memo(
@@ -70,6 +78,8 @@ export const TrackerHistoryBrowseViews = memo(
     onSearchChange,
     selectedCategory = null,
     onCategorySelect,
+    isRefreshing = false,
+    onRefresh,
   }: TrackerHistoryBrowseViewsProps) => {
     const { t } = useTranslation("tracker");
     const scrollContent: Record<TrackerHistoryBrowseScreenState, ReactNode> = {
@@ -154,6 +164,9 @@ export const TrackerHistoryBrowseViews = memo(
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
         >
           {scrollContent[screenState]}
         </ScrollView>

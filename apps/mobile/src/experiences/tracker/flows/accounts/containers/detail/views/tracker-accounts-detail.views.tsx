@@ -1,5 +1,12 @@
 import { memo, useState, useCallback, type ReactNode } from "react";
-import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  RefreshControl,
+  StyleSheet,
+  Pressable,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsDetailScreenState,
@@ -59,6 +66,8 @@ type TrackerAccountsDetailViewsProps = {
   onCreatePurchase?: (input: CreatePurchaseInput) => Promise<void>;
   onUpdatePurchase?: (id: string, input: UpdatePurchaseInput) => Promise<void>;
   onDeletePurchase?: (id: string) => Promise<void>;
+  isRefreshing?: boolean;
+  onRefresh?: () => void;
 };
 
 export const TrackerAccountsDetailViews = memo(
@@ -79,6 +88,8 @@ export const TrackerAccountsDetailViews = memo(
     onCreatePurchase,
     onUpdatePurchase,
     onDeletePurchase,
+    isRefreshing = false,
+    onRefresh,
   }: TrackerAccountsDetailViewsProps) => {
     const { t } = useTranslation("tracker");
     const [editAccountVisible, setEditAccountVisible] = useState(false);
@@ -234,6 +245,9 @@ export const TrackerAccountsDetailViews = memo(
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
         >
           {content[screenState]}
         </ScrollView>

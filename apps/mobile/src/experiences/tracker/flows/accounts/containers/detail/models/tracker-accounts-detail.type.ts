@@ -51,4 +51,6 @@ export type TrackerAccountsDetailControllersOutput = {
   onCreatePurchase: (input: CreatePurchaseInput) => Promise<void>;
   onUpdatePurchase: (id: string, input: UpdatePurchaseInput) => Promise<void>;
   onDeletePurchase: (id: string) => Promise<void>;
+  isRefreshing: boolean;
+  onRefresh: () => void;
 };

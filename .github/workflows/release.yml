@@ -30,12 +30,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
           registry-url: https://npm.pkg.github.com
           scope: "@aramiworks"
 
       - run: npm ci
         env:
-          NODE_AUTH_TOKEN: ${{ steps.app-token.outputs.token }}
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: changesets/action@v1
         id: changesets

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { accountUpdateInputSchema } from "@stock-tracker/validation";
-import { FormModal } from "@/shared/components/form-modal";
+import { FullScreenDialog } from "@aramiworks/ui";
 import { TextInputField } from "@/shared/components/text-input-field";
 import type { z } from "zod";
 
@@ -78,13 +78,14 @@ export const TrackerAccountsDetailEditAccountModalView = memo(
     );
 
     return (
-      <FormModal
+      <FullScreenDialog
         visible={visible}
         title={t("accounts.form.edit.title")}
-        submitLabel={t("accounts.form.edit.submit")}
-        onSubmit={handleSubmit(handleFormSubmit)}
+        actionLabel={t("accounts.form.edit.submit")}
+        onAction={handleSubmit(handleFormSubmit)}
         onClose={handleClose}
-        testIDPrefix="edit-account-form"
+        keyboardAvoiding
+        testID="edit-account-form"
       >
         <TextInputField
           control={control}
@@ -111,7 +112,7 @@ export const TrackerAccountsDetailEditAccountModalView = memo(
           error={errors.notes?.message}
           testID="edit-account-form-notes"
         />
-      </FormModal>
+      </FullScreenDialog>
     );
   },
 );

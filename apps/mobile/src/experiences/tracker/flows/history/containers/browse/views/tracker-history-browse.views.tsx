@@ -19,8 +19,7 @@ import { TrackerHistoryBrowsePurchaseRowView } from "./tracker-history-browse-pu
 import { TrackerHistoryBrowseEmptyStateView } from "./tracker-history-browse-emptyState.view";
 import { TrackerHistoryBrowseErrorStateView } from "./tracker-history-browse-errorState.view";
 import { TrackerHistoryBrowseSkeletonCardView } from "./tracker-history-browse-skeletonCard.view";
-import { SearchBar } from "@aramiworks/ui";
-import { showConfirmDialog } from "@/shared/components/confirm-dialog";
+import { SearchBar, useConfirmDialog } from "@aramiworks/ui";
 
 const STORYBOOK_PURCHASES: PurchaseHistoryItem[] = [
   {
@@ -82,6 +81,7 @@ export const TrackerHistoryBrowseViews = memo(
     onRefresh,
   }: TrackerHistoryBrowseViewsProps) => {
     const { t } = useTranslation("tracker");
+    const { showConfirmDialog, ConfirmDialogPortal } = useConfirmDialog();
     const scrollContent: Record<TrackerHistoryBrowseScreenState, ReactNode> = {
       default: (
         <>
@@ -170,6 +170,7 @@ export const TrackerHistoryBrowseViews = memo(
         >
           {scrollContent[screenState]}
         </ScrollView>
+        <ConfirmDialogPortal />
       </View>
     );
   },

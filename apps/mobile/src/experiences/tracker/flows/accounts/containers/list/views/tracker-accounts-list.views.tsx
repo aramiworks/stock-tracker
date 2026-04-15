@@ -19,8 +19,7 @@ import { TrackerAccountsListErrorStateView } from "./tracker-accounts-list-error
 import { TrackerAccountsListSkeletonCardView } from "./tracker-accounts-list-skeletonCard.view";
 import { TrackerAccountsListSortToggleView } from "./tracker-accounts-list-sortToggle.view";
 import { TrackerAccountFormModalView } from "@/experiences/tracker/views/tracker-accountFormModal.view";
-import { SearchBar } from "@aramiworks/ui";
-import { showConfirmDialog } from "@/shared/components/confirm-dialog";
+import { SearchBar, useConfirmDialog } from "@aramiworks/ui";
 
 const STORYBOOK_ACCOUNTS: SaAccountListItem[] = [
   {
@@ -99,6 +98,7 @@ export const TrackerAccountsListViews = memo(
     onRefresh,
   }: TrackerAccountsListViewsProps) => {
     const { t } = useTranslation("tracker");
+    const { showConfirmDialog, ConfirmDialogPortal } = useConfirmDialog();
     const [showAccountModal, setShowAccountModal] = useState(false);
     const content: Record<TrackerAccountsListScreenState, ReactNode> = {
       default: (
@@ -204,6 +204,7 @@ export const TrackerAccountsListViews = memo(
             onSubmit={onCreateAccount}
           />
         )}
+        <ConfirmDialogPortal />
       </View>
     );
   },

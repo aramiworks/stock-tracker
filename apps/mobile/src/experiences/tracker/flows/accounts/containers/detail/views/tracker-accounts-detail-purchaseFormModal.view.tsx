@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { purchaseCreateInputSchema } from "@stock-tracker/validation";
-import { FormModal } from "@/shared/components/form-modal";
+import { FullScreenDialog } from "@aramiworks/ui";
 import { TextInputField } from "@/shared/components/text-input-field";
 import type { z } from "zod";
 
@@ -89,21 +89,22 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
     );
 
     return (
-      <FormModal
+      <FullScreenDialog
         visible={visible}
         title={
           isEdit
             ? t("purchases.form.edit.title")
             : t("purchases.form.add.title")
         }
-        submitLabel={
+        actionLabel={
           isEdit
             ? t("purchases.form.edit.submit")
             : t("purchases.form.add.submit")
         }
-        onSubmit={handleSubmit(handleFormSubmit)}
+        onAction={handleSubmit(handleFormSubmit)}
         onClose={handleClose}
-        testIDPrefix="purchase-form"
+        keyboardAvoiding
+        testID="purchase-form"
       >
         <TextInputField
           control={control}
@@ -155,7 +156,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
           error={errors.notes?.message}
           testID="purchase-form-notes"
         />
-      </FormModal>
+      </FullScreenDialog>
     );
   },
 );

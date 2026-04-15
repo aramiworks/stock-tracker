@@ -2,7 +2,7 @@ import { memo, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { accountCreateInputSchema } from "@stock-tracker/validation";
-import { FormModal } from "@/shared/components/form-modal";
+import { FullScreenDialog } from "@aramiworks/ui";
 import { TextInputField } from "@/shared/components/text-input-field";
 import type { z } from "zod";
 
@@ -53,13 +53,14 @@ export const TrackerAccountFormModalView = memo(
     );
 
     return (
-      <FormModal
+      <FullScreenDialog
         visible={visible}
         title="SA 계좌 추가"
-        submitLabel="추가"
-        onSubmit={handleSubmit(handleFormSubmit)}
+        actionLabel="추가"
+        onAction={handleSubmit(handleFormSubmit)}
         onClose={handleClose}
-        testIDPrefix="account-form"
+        keyboardAvoiding
+        testID="account-form"
       >
         <TextInputField
           control={control}
@@ -86,7 +87,7 @@ export const TrackerAccountFormModalView = memo(
           error={errors.notes?.message}
           testID="account-form-notes"
         />
-      </FormModal>
+      </FullScreenDialog>
     );
   },
 );

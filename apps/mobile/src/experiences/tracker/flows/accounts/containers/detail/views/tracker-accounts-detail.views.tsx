@@ -22,7 +22,7 @@ import { TrackerAccountsDetailErrorStateView } from "./tracker-accounts-detail-e
 import { TrackerAccountsDetailSkeletonCardView } from "./tracker-accounts-detail-skeletonCard.view";
 import { TrackerAccountsDetailEditAccountModalView } from "./tracker-accounts-detail-editAccountModal.view";
 import { TrackerAccountsDetailPurchaseFormModalView } from "./tracker-accounts-detail-purchaseFormModal.view";
-import { showConfirmDialog } from "@/shared/components/confirm-dialog";
+import { useConfirmDialog } from "@aramiworks/ui";
 
 const STORYBOOK_PURCHASES: PurchaseItem[] = [
   {
@@ -92,6 +92,7 @@ export const TrackerAccountsDetailViews = memo(
     onRefresh,
   }: TrackerAccountsDetailViewsProps) => {
     const { t } = useTranslation("tracker");
+    const { showConfirmDialog, ConfirmDialogPortal } = useConfirmDialog();
     const [editAccountVisible, setEditAccountVisible] = useState(false);
     const [purchaseModalVisible, setPurchaseModalVisible] = useState(false);
     const [editingPurchase, setEditingPurchase] = useState<PurchaseItem | null>(
@@ -282,6 +283,7 @@ export const TrackerAccountsDetailViews = memo(
             }
           />
         )}
+        <ConfirmDialogPortal />
       </View>
     );
   },

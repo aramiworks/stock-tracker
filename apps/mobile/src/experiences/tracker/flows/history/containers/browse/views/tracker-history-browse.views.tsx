@@ -5,6 +5,7 @@ import {
   ScrollView,
   RefreshControl,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import type {
@@ -19,7 +20,7 @@ import { TrackerHistoryBrowsePurchaseRowView } from "./tracker-history-browse-pu
 import { TrackerHistoryBrowseEmptyStateView } from "./tracker-history-browse-emptyState.view";
 import { TrackerHistoryBrowseErrorStateView } from "./tracker-history-browse-errorState.view";
 import { TrackerHistoryBrowseSkeletonCardView } from "./tracker-history-browse-skeletonCard.view";
-import { SearchBar, useConfirmDialog } from "@aramiworks/ui";
+import { SearchBar } from "@aramiworks/ui";
 
 const STORYBOOK_PURCHASES: PurchaseHistoryItem[] = [
   {
@@ -81,7 +82,6 @@ export const TrackerHistoryBrowseViews = memo(
     onRefresh,
   }: TrackerHistoryBrowseViewsProps) => {
     const { t } = useTranslation("tracker");
-    const { showConfirmDialog, ConfirmDialogPortal } = useConfirmDialog();
     const scrollContent: Record<TrackerHistoryBrowseScreenState, ReactNode> = {
       default: (
         <>
@@ -96,16 +96,20 @@ export const TrackerHistoryBrowseViews = memo(
                 onLongPress={
                   onDeletePurchase
                     ? () =>
-                        showConfirmDialog({
-                          title: t(
-                            "history.browse.confirmDelete.title",
-                            "구매 삭제",
-                          ),
-                          message: t("history.browse.confirmDelete.message", {
+                        Alert.alert(
+                          t("history.browse.confirmDelete.title", "구매 삭제"),
+                          t("history.browse.confirmDelete.message", {
                             name: p.productName,
                           }),
-                          onConfirm: () => onDeletePurchase(p.id),
-                        })
+                          [
+                            { text: "취소", style: "cancel" },
+                            {
+                              text: "삭제",
+                              style: "destructive",
+                              onPress: () => onDeletePurchase(p.id),
+                            },
+                          ],
+                        )
                     : undefined
                 }
               />
@@ -170,7 +174,6 @@ export const TrackerHistoryBrowseViews = memo(
         >
           {scrollContent[screenState]}
         </ScrollView>
-        <ConfirmDialogPortal />
       </View>
     );
   },

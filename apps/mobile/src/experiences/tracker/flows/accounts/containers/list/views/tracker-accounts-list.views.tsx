@@ -6,6 +6,7 @@ import {
   RefreshControl,
   StyleSheet,
   Pressable,
+  Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import type {
@@ -19,7 +20,7 @@ import { TrackerAccountsListErrorStateView } from "./tracker-accounts-list-error
 import { TrackerAccountsListSkeletonCardView } from "./tracker-accounts-list-skeletonCard.view";
 import { TrackerAccountsListSortToggleView } from "./tracker-accounts-list-sortToggle.view";
 import { TrackerAccountFormModalView } from "@/experiences/tracker/views/tracker-accountFormModal.view";
-import { SearchBar, useConfirmDialog } from "@aramiworks/ui";
+import { SearchBar } from "@aramiworks/ui";
 
 const STORYBOOK_ACCOUNTS: SaAccountListItem[] = [
   {
@@ -98,7 +99,6 @@ export const TrackerAccountsListViews = memo(
     onRefresh,
   }: TrackerAccountsListViewsProps) => {
     const { t } = useTranslation("tracker");
-    const { showConfirmDialog, ConfirmDialogPortal } = useConfirmDialog();
     const [showAccountModal, setShowAccountModal] = useState(false);
     const content: Record<TrackerAccountsListScreenState, ReactNode> = {
       default: (
@@ -117,14 +117,21 @@ export const TrackerAccountsListViews = memo(
                 onLongPress={
                   onDeleteAccount
                     ? () =>
-                        showConfirmDialog({
-                          title: t("accounts.list.confirm.deleteAccount.title"),
-                          message: t(
-                            "accounts.list.confirm.deleteAccount.message",
-                            { name: sa.name, boutique: sa.boutique },
-                          ),
-                          onConfirm: () => onDeleteAccount(sa.id),
-                        })
+                        Alert.alert(
+                          t("accounts.list.confirm.deleteAccount.title"),
+                          t("accounts.list.confirm.deleteAccount.message", {
+                            name: sa.name,
+                            boutique: sa.boutique,
+                          }),
+                          [
+                            { text: "취소", style: "cancel" },
+                            {
+                              text: "삭제",
+                              style: "destructive",
+                              onPress: () => onDeleteAccount(sa.id),
+                            },
+                          ],
+                        )
                     : undefined
                 }
               />
@@ -204,7 +211,6 @@ export const TrackerAccountsListViews = memo(
             onSubmit={onCreateAccount}
           />
         )}
-        <ConfirmDialogPortal />
       </View>
     );
   },

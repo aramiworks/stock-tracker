@@ -35,7 +35,7 @@ jobs:
 
       - run: npm ci
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - uses: changesets/action@v1
         id: changesets

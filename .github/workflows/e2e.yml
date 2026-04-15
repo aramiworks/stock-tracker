@@ -35,6 +35,8 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate Prisma client
+        run: npx prisma generate --schema packages/prisma/prisma/schema
       - name: Apply migrations
         run: npx prisma migrate deploy --schema packages/prisma/prisma/schema
         env:

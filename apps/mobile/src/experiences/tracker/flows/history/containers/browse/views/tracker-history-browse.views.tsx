@@ -19,7 +19,7 @@ import { TrackerHistoryBrowsePurchaseRowView } from "./tracker-history-browse-pu
 import { TrackerHistoryBrowseEmptyStateView } from "./tracker-history-browse-emptyState.view";
 import { TrackerHistoryBrowseErrorStateView } from "./tracker-history-browse-errorState.view";
 import { TrackerHistoryBrowseSkeletonCardView } from "./tracker-history-browse-skeletonCard.view";
-import { SearchBar } from "@/shared/components/search-bar";
+import { SearchBar } from "@aramiworks/ui";
 import { showConfirmDialog } from "@/shared/components/confirm-dialog";
 
 const STORYBOOK_PURCHASES: PurchaseHistoryItem[] = [

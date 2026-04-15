@@ -19,7 +19,7 @@ import { TrackerAccountsListErrorStateView } from "./tracker-accounts-list-error
 import { TrackerAccountsListSkeletonCardView } from "./tracker-accounts-list-skeletonCard.view";
 import { TrackerAccountsListSortToggleView } from "./tracker-accounts-list-sortToggle.view";
 import { TrackerAccountFormModalView } from "@/experiences/tracker/views/tracker-accountFormModal.view";
-import { SearchBar } from "@/shared/components/search-bar";
+import { SearchBar } from "@aramiworks/ui";
 import { showConfirmDialog } from "@/shared/components/confirm-dialog";
 
 const STORYBOOK_ACCOUNTS: SaAccountListItem[] = [

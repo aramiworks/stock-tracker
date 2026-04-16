@@ -20,11 +20,11 @@ procs:
       [
         "sh",
         "-c",
-        "lsof -ti :4010 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
+        "lsof -ti :${API_PORT:-4010} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
       ]
     cwd: apps/api
     env:
-      PORT: "4010"
+      PORT: "${API_PORT:-4010}"
     stop: "SIGTERM"
     autostart: true
 
@@ -33,11 +33,11 @@ procs:
       [
         "sh",
         "-c",
-        "lsof -ti :4011 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
+        "lsof -ti :${SUBGRAPH_PORT:-4011} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
       ]
     cwd: apps/subgraphs/tracker
     env:
-      PORT: "4011"
+      PORT: "${SUBGRAPH_PORT:-4011}"
     stop: "SIGTERM"
     autostart: true
 
@@ -46,7 +46,7 @@ procs:
       [
         "sh",
         "-c",
-        "lsof -ti :4012 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012",
+        "lsof -ti :${ROUTER_PORT:-4012} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- rover dev --name tracker --url http://localhost:${SUBGRAPH_PORT:-4011} --router-config router.yaml --supergraph-port ${ROUTER_PORT:-4012}",
       ]
     cwd: apps/router
     stop: "SIGTERM"
@@ -64,7 +64,7 @@ procs:
         "--",
         "sh",
         "-c",
-        "lsof -ti :8092 | xargs kill 2>/dev/null; npx expo prebuild --clean --platform ios && npx expo run:ios --port 8092",
+        "lsof -ti :${IOS_PORT:-8092} | xargs kill 2>/dev/null; npx expo prebuild --clean --platform ios && npx expo run:ios --port ${IOS_PORT:-8092}",
       ]
     cwd: apps/mobile
     env:
@@ -84,7 +84,7 @@ procs:
         "--",
         "sh",
         "-c",
-        "lsof -ti :8093 | xargs kill 2>/dev/null; npx expo prebuild --clean --platform android && npx expo run:android --port 8093",
+        "lsof -ti :${ANDROID_PORT:-8093} | xargs kill 2>/dev/null; npx expo prebuild --clean --platform android && npx expo run:android --port ${ANDROID_PORT:-8093}",
       ]
     cwd: apps/mobile
     env:
@@ -97,7 +97,7 @@ procs:
       [
         "sh",
         "-c",
-        "lsof -ti :8094 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx expo start --port 8094 --web --clear",
+        "lsof -ti :${WEB_PORT:-8094} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx expo start --port ${WEB_PORT:-8094} --web --clear",
       ]
     cwd: apps/mobile
     env:
@@ -110,7 +110,7 @@ procs:
       [
         "sh",
         "-c",
-        "lsof -ti :6006 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx storybook dev -p 6006",
+        "lsof -ti :${STORYBOOK_PORT:-6006} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx storybook dev -p ${STORYBOOK_PORT:-6006}",
       ]
     cwd: apps/storybook
     env:

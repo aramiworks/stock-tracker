@@ -3,7 +3,10 @@
 # stock-tracker — Kill dev processes and free ports
 # Runs automatically after mprocs exits.
 
-PORTS=(4010 4011 4012 8092 8093 8094 6006)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+set -a; . "$SCRIPT_DIR/ports.env"; set +a
+
+PORTS=("$API_PORT" "$SUBGRAPH_PORT" "$ROUTER_PORT" "$IOS_PORT" "$ANDROID_PORT" "$WEB_PORT" "$STORYBOOK_PORT")
 
 pkill -f "rover dev" 2>/dev/null && printf "\033[0;36m[cleanup]\033[0m Killed rover processes\n"
 if ls /tmp/supergraph-*.sock 2>/dev/null | grep -q .; then

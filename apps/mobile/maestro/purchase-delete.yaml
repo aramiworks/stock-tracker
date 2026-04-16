@@ -31,7 +31,7 @@ tags:
     id: "purchase-form-purchaseDate"
 - inputText: "2025-04-01"
 - tapOn:
-    id: "purchase-form-submit"
+    id: "purchase-form-action"
 
 # Verify purchase was created
 - assertVisible: "삭제 테스트 링"

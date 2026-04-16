@@ -26,7 +26,7 @@ tags:
     id: "edit-account-form-notes"
 - inputText: "E2E 수정 테스트"
 - tapOn:
-    id: "edit-account-form-submit"
+    id: "edit-account-form-action"
 
 # Verify back on detail screen
 - assertVisible:

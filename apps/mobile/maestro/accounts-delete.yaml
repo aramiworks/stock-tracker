@@ -20,7 +20,7 @@ tags:
     id: "account-form-storeName"
 - inputText: "삭제 테스트 부티크"
 - tapOn:
-    id: "account-form-submit"
+    id: "account-form-action"
 - assertVisible: "삭제 테스트 부티크"
 
 # Navigate into the account

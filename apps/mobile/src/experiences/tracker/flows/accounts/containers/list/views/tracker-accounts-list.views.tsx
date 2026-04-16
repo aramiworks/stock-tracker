@@ -6,6 +6,7 @@ import {
   RefreshControl,
   StyleSheet,
   Pressable,
+  Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import type {
@@ -20,7 +21,6 @@ import { TrackerAccountsListSkeletonCardView } from "./tracker-accounts-list-ske
 import { TrackerAccountsListSortToggleView } from "./tracker-accounts-list-sortToggle.view";
 import { TrackerAccountFormModalView } from "@/experiences/tracker/views/tracker-accountFormModal.view";
 import { SearchBar } from "@aramiworks/ui";
-import { showConfirmDialog } from "@/shared/components/confirm-dialog";
 
 const STORYBOOK_ACCOUNTS: SaAccountListItem[] = [
   {
@@ -117,14 +117,21 @@ export const TrackerAccountsListViews = memo(
                 onLongPress={
                   onDeleteAccount
                     ? () =>
-                        showConfirmDialog({
-                          title: t("accounts.list.confirm.deleteAccount.title"),
-                          message: t(
-                            "accounts.list.confirm.deleteAccount.message",
-                            { name: sa.name, boutique: sa.boutique },
-                          ),
-                          onConfirm: () => onDeleteAccount(sa.id),
-                        })
+                        Alert.alert(
+                          t("accounts.list.confirm.deleteAccount.title"),
+                          t("accounts.list.confirm.deleteAccount.message", {
+                            name: sa.name,
+                            boutique: sa.boutique,
+                          }),
+                          [
+                            { text: "취소", style: "cancel" },
+                            {
+                              text: "삭제",
+                              style: "destructive",
+                              onPress: () => onDeleteAccount(sa.id),
+                            },
+                          ],
+                        )
                     : undefined
                 }
               />

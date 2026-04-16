@@ -5,6 +5,7 @@ import {
   ScrollView,
   RefreshControl,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import type {
@@ -20,7 +21,6 @@ import { TrackerHistoryBrowseEmptyStateView } from "./tracker-history-browse-emp
 import { TrackerHistoryBrowseErrorStateView } from "./tracker-history-browse-errorState.view";
 import { TrackerHistoryBrowseSkeletonCardView } from "./tracker-history-browse-skeletonCard.view";
 import { SearchBar } from "@aramiworks/ui";
-import { showConfirmDialog } from "@/shared/components/confirm-dialog";
 
 const STORYBOOK_PURCHASES: PurchaseHistoryItem[] = [
   {
@@ -96,16 +96,20 @@ export const TrackerHistoryBrowseViews = memo(
                 onLongPress={
                   onDeletePurchase
                     ? () =>
-                        showConfirmDialog({
-                          title: t(
-                            "history.browse.confirmDelete.title",
-                            "구매 삭제",
-                          ),
-                          message: t("history.browse.confirmDelete.message", {
+                        Alert.alert(
+                          t("history.browse.confirmDelete.title", "구매 삭제"),
+                          t("history.browse.confirmDelete.message", {
                             name: p.productName,
                           }),
-                          onConfirm: () => onDeletePurchase(p.id),
-                        })
+                          [
+                            { text: "취소", style: "cancel" },
+                            {
+                              text: "삭제",
+                              style: "destructive",
+                              onPress: () => onDeletePurchase(p.id),
+                            },
+                          ],
+                        )
                     : undefined
                 }
               />

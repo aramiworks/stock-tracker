@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import type { Prisma } from "@stock-tracker/prisma";
 import { PrismaService } from "@stock-tracker/nestjs-common";
 
 @Injectable()
@@ -11,7 +12,7 @@ export class TrackerAccountsListModels {
     sortOrder: "asc" | "desc";
     search?: string;
   }) {
-    const where: Record<string, unknown> = {
+    const where: Prisma.tracker_accountsWhereInput = {
       auth_user_id: params.userId,
     };
     if (params.search) {

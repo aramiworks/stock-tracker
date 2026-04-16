@@ -113,6 +113,7 @@ const enforceRole = (role: string) =>
 const baseProcedure = t.procedure.use(logRequest);
 
 export const router = t.router;
+export const createCallerFactory = t.createCallerFactory;
 export const publicProcedure = baseProcedure;
 export const protectedProcedure = baseProcedure.use(enforceAuth);
 export const adminProcedure = protectedProcedure.use(

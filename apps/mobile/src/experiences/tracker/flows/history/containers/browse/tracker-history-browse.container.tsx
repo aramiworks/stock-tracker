@@ -20,6 +20,8 @@ const ConnectedViews = memo(() => {
       onSearchChange={controllers.onSearchChange}
       selectedCategory={controllers.selectedCategory}
       onCategorySelect={controllers.onCategorySelect}
+      isRefreshing={controllers.isRefreshing}
+      onRefresh={controllers.onRefresh}
     />
   );
 });

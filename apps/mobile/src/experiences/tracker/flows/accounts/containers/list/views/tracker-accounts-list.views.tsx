@@ -153,7 +153,7 @@ export const TrackerAccountsListViews = memo(
           <TrackerAccountsListSkeletonCardView />
         </>
       ),
-      error: <TrackerAccountsListErrorStateView />,
+      error: <TrackerAccountsListErrorStateView onRetry={onRetry} />,
     };
 
     return (

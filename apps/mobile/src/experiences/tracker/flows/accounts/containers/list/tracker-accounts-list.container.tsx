@@ -20,6 +20,8 @@ const ConnectedViews = memo(() => {
       onSearchChange={controllers.onSearchChange}
       sortBy={controllers.sortBy}
       onSortByToggle={controllers.onSortByToggle}
+      isRefreshing={controllers.isRefreshing}
+      onRefresh={controllers.onRefresh}
     />
   );
 });

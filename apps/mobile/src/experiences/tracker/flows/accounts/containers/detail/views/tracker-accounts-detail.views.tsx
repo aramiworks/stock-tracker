@@ -83,6 +83,7 @@ export const TrackerAccountsDetailViews = memo(
     saName = "",
     notes = "",
     onBack,
+    onRetry,
     onUpdateAccount,
     onDeleteAccount,
     onCreatePurchase,
@@ -212,7 +213,7 @@ export const TrackerAccountsDetailViews = memo(
           <TrackerAccountsDetailSkeletonCardView />
         </>
       ),
-      error: <TrackerAccountsDetailErrorStateView />,
+      error: <TrackerAccountsDetailErrorStateView onRetry={onRetry} />,
     };
 
     return (

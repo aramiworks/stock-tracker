@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { afterEach, describe, expect, it } from "@jest/globals";
 import { createLogger } from "./logger.js";
 
 describe("createLogger", () => {

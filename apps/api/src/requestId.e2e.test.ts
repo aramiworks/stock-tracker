@@ -1,8 +1,8 @@
 import http from "node:http";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { randomUUID } from "node:crypto";
-import { appRouter } from "../trpc/router.js";
-import { createContext } from "../trpc/trpc.js";
+import { appRouter } from "./trpc/router.js";
+import { createContext } from "./trpc/trpc.js";
 
 let server: ReturnType<typeof createHTTPServer>;
 const TEST_PORT = 4099;

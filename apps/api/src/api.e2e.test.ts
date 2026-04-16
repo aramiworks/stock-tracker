@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { appRouter } from "../trpc/router.js";
+import { appRouter } from "./trpc/router.js";
 
 const prisma = new PrismaClient();
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";

@@ -14,13 +14,17 @@
   "scripts": {
     "build": "tsc",
     "check-types": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "dependencies": {
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.0.0",
     "@stock-tracker/typescript-config": "*",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.3.0",
     "typescript": "5.9.2"
   }
 }

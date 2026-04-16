@@ -1,5 +1,5 @@
 import { jest, describe, it, expect } from "@jest/globals";
-import { authControllers } from "../controllers/auth.controllers.js";
+import { authControllers } from "./auth.controllers.js";
 
 const mockUser = {
   id: "550e8400-e29b-41d4-a716-446655440000",

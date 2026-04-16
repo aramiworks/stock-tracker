@@ -9,7 +9,7 @@
     "build": "expo export",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
-    "test": "jest --passWithNoTests",
+    "test": "jest",
     "storybook:ondevice": "STORYBOOK_ENABLED=true expo start",
     "codegen": "graphql-codegen --config codegen.ts",
     "ditto:pull": "ditto-cli pull && node scripts/ditto-split.js"

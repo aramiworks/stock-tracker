@@ -17,14 +17,12 @@ const config: Config = {
     ],
   },
   testMatch: ["**/*.test.ts"],
-  passWithNoTests: true,
   collectCoverage: true,
   coverageReporters: ["lcov", "text"],
   collectCoverageFrom: ["src/**/*.ts", "!src/**/index.ts", "!src/**/*.test.ts"],
-  // TODO: enforce 100% once all coverage gaps are filled
-  // coverageThreshold: {
-  //   global: { branches: 100, functions: 100, lines: 100, statements: 100 },
-  // },
+  coverageThreshold: {
+    global: { branches: 100, functions: 100, lines: 100, statements: 100 },
+  },
 };
 
 export default config;

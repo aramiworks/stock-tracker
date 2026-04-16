@@ -36,7 +36,7 @@ jobs:
 
       - run: npm ci
         env:
-          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.PKG_READ_TOKEN }}
 
       - uses: changesets/action@v1
         id: changesets

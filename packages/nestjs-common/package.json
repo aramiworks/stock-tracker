@@ -1,0 +1,37 @@
+{
+  "name": "@stock-tracker/nestjs-common",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/terminus": "^11.0.0",
+    "@stock-tracker/config": "*",
+    "@stock-tracker/prisma": "*",
+    "@trpc/server": "^11.1.2",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "superjson": "^2.2.2",
+    "zod": "^3.25.17"
+  },
+  "devDependencies": {
+    "@nestjs/common": "^11.1.3",
+    "@nestjs/core": "^11.1.3",
+    "@stock-tracker/eslint-config": "*",
+    "@stock-tracker/typescript-config": "*",
+    "typescript": "5.9.2"
+  }
+}

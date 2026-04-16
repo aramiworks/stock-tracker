@@ -27,6 +27,8 @@ const ConnectedViews = memo(() => {
       onCreatePurchase={controllers.onCreatePurchase}
       onUpdatePurchase={controllers.onUpdatePurchase}
       onDeletePurchase={controllers.onDeletePurchase}
+      isRefreshing={controllers.isRefreshing}
+      onRefresh={controllers.onRefresh}
     />
   );
 });

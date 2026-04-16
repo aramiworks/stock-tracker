@@ -31,6 +31,7 @@ export const TrackerDashboardHomeViews = memo(
     saAccounts = [],
     onSaPress,
     onRefresh,
+    onRetry,
     onCreateAccount,
     isRefreshing = false,
   }: TrackerDashboardHomeViewsProps) => {
@@ -69,7 +70,9 @@ export const TrackerDashboardHomeViews = memo(
         <>
           <TrackerDashboardHomeEligibilityBadgeView state="notEligible" />
           <View style={styles.spacer16} />
-          <TrackerDashboardHomeEmptyStateView />
+          <TrackerDashboardHomeEmptyStateView
+            onCtaPress={() => setShowAccountModal(true)}
+          />
         </>
       ),
       loading: (
@@ -83,7 +86,7 @@ export const TrackerDashboardHomeViews = memo(
           <TrackerSkeletonCardView width={350} height={68} />
         </>
       ),
-      error: <TrackerDashboardHomeErrorStateView />,
+      error: <TrackerDashboardHomeErrorStateView onRetry={onRetry} />,
     };
 
     return (

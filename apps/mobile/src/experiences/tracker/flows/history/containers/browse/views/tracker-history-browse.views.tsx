@@ -72,7 +72,9 @@ export const TrackerHistoryBrowseViews = memo(
   ({
     screenState = "default",
     purchases = STORYBOOK_PURCHASES,
+    selectedFilter = "all",
     onFilterSelect,
+    onRetry,
     onDeletePurchase,
     searchQuery = "",
     onSearchChange,
@@ -127,7 +129,7 @@ export const TrackerHistoryBrowseViews = memo(
           <TrackerHistoryBrowseSkeletonCardView />
         </>
       ),
-      error: <TrackerHistoryBrowseErrorStateView />,
+      error: <TrackerHistoryBrowseErrorStateView onRetry={onRetry} />,
     };
 
     return (
@@ -153,6 +155,7 @@ export const TrackerHistoryBrowseViews = memo(
             )}
             <View style={styles.filterBar} testID="date-filter-bar">
               <TrackerHistoryBrowseDateFilterChipsView
+                selected={selectedFilter}
                 onSelect={onFilterSelect}
               />
             </View>

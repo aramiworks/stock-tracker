@@ -89,6 +89,7 @@ export const TrackerAccountsListViews = memo(
     screenState = "default",
     accounts = STORYBOOK_ACCOUNTS,
     onSaPress,
+    onRetry,
     onCreateAccount,
     onDeleteAccount,
     searchQuery = "",
@@ -153,7 +154,7 @@ export const TrackerAccountsListViews = memo(
           <TrackerAccountsListSkeletonCardView />
         </>
       ),
-      error: <TrackerAccountsListErrorStateView />,
+      error: <TrackerAccountsListErrorStateView onRetry={onRetry} />,
     };
 
     return (

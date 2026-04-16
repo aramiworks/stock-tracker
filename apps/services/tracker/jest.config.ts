@@ -12,8 +12,7 @@ const config: Config = {
       "<rootDir>/../../../packages/prisma/src/index.ts",
     "^@stock-tracker/validation$":
       "<rootDir>/../../../packages/validation/src/index.ts",
-    "^@stock-tracker/types$":
-      "<rootDir>/../../../packages/types/src/index.ts",
+    "^@stock-tracker/types$": "<rootDir>/../../../packages/types/src/index.ts",
     "^@stock-tracker/config$":
       "<rootDir>/../../../packages/config/src/index.ts",
     "^@stock-tracker/nestjs-common$":
@@ -28,9 +27,7 @@ const config: Config = {
       },
     ],
   },
-  transformIgnorePatterns: [
-    "node_modules/(?!(@stock-tracker|@nestjs|rxjs)/)",
-  ],
+  transformIgnorePatterns: ["node_modules/(?!(@stock-tracker|@nestjs|rxjs)/)"],
   testMatch: ["**/*.test.ts"],
   testTimeout: 30000,
   collectCoverage: true,

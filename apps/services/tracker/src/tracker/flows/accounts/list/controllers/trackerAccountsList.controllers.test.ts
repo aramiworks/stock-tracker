@@ -21,19 +21,17 @@ const mockDbAccount = {
 const mockPrisma = {
   tracker_accounts: {
     findMany: (jest.fn() as any).mockResolvedValue([mockDbAccount]),
-    create: (jest.fn() as any).mockImplementation(
-      ({ data }: { data: any }) => {
-        return Promise.resolve({
-          id: "new-acc-id",
-          auth_user_id: data.auth_user_id,
-          store_name: data.store_name,
-          sa_name: data.sa_name ?? null,
-          notes: data.notes ?? null,
-          created_at: now,
-          updated_at: now,
-        });
-      },
-    ),
+    create: (jest.fn() as any).mockImplementation(({ data }: { data: any }) => {
+      return Promise.resolve({
+        id: "new-acc-id",
+        auth_user_id: data.auth_user_id,
+        store_name: data.store_name,
+        sa_name: data.sa_name ?? null,
+        notes: data.notes ?? null,
+        created_at: now,
+        updated_at: now,
+      });
+    }),
   },
 };
 

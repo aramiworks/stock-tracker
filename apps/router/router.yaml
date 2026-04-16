@@ -12,12 +12,14 @@ headers:
     request:
       - insert:
           name: x-user-id
-          from_context: claims.sub
+          from_context: "apollo_authentication::JWT::claims.sub"
       - insert:
           name: x-user-role
-          from_context: claims.role
+          from_context: "apollo_authentication::JWT::claims.role"
       - propagate:
           named: x-request-id
+      - propagate:
+          named: authorization
 
 cors:
   origins:

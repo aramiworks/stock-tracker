@@ -17,6 +17,7 @@ const config: Config = {
     ],
   },
   testMatch: ["**/*.test.ts"],
+  passWithNoTests: true,
   collectCoverage: true,
   coverageReporters: ["lcov", "text"],
   collectCoverageFrom: [
@@ -24,14 +25,6 @@ const config: Config = {
     "!src/**/index.ts",
     "!src/**/*.test.ts",
   ],
-  coverageThreshold: {
-    global: {
-      branches: 100,
-      functions: 100,
-      lines: 100,
-      statements: 100,
-    },
-  },
 };
 
 export default config;

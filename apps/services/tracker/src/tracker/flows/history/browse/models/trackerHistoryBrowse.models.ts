@@ -20,16 +20,14 @@ export class TrackerHistoryBrowseModels {
     const trackerAccountWhere: Prisma.tracker_accountsWhereInput = {
       auth_user_id: params.userId,
     };
-    if (params.search) {
-      trackerAccountWhere.store_name = {
-        contains: params.search,
-        mode: "insensitive",
-      };
-    }
 
     const where: Prisma.tracker_purchasesWhereInput = {
       tracker_account: trackerAccountWhere,
     };
+
+    if (params.search) {
+      where.item_name = { contains: params.search, mode: "insensitive" };
+    }
 
     if (params.accountId) {
       where.tracker_account_id = params.accountId;

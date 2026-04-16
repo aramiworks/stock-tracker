@@ -72,12 +72,12 @@ export class TrackerAccountsDetailControllers {
         message: "Not authorized to modify this account",
       });
     }
-    const data: Record<string, unknown> = {};
+    const data: Parameters<typeof this.models.update>[1] = {};
     if (input.storeName !== undefined) data.store_name = input.storeName;
     if (input.saName !== undefined) data.sa_name = input.saName;
     if (input.notes !== undefined) data.notes = input.notes;
 
-    const updated = await this.models.update(input.id, data as never);
+    const updated = await this.models.update(input.id, data);
     return {
       id: updated.id,
       authUserId: updated.auth_user_id,

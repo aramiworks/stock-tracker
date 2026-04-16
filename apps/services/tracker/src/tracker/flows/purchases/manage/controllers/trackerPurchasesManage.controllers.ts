@@ -106,7 +106,7 @@ export class TrackerPurchasesManageControllers {
     userId: string,
   ) {
     await this.ensureOwnership(input.id, userId);
-    const data: Record<string, unknown> = {};
+    const data: Parameters<typeof this.models.update>[1] = {};
     if (input.itemName !== undefined) data.item_name = input.itemName;
     if (input.itemCategory !== undefined)
       data.item_category = input.itemCategory;
@@ -118,7 +118,7 @@ export class TrackerPurchasesManageControllers {
       data.store_location = input.storeLocation;
     if (input.notes !== undefined) data.notes = input.notes;
 
-    const updated = await this.models.update(input.id, data as never);
+    const updated = await this.models.update(input.id, data);
     return mapPurchase(updated);
   }
 

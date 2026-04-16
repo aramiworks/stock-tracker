@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { XStack, YStack } from "tamagui";
+import { Text, Button } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 
 type TrackerEmptyStateViewProps = {
@@ -29,18 +30,44 @@ export const TrackerEmptyStateView = memo(
     const resolvedSubtitle = subtitle ?? t("dashboard.emptyState.subtitle");
     const resolvedCtaLabel = ctaLabel ?? t("dashboard.emptyState.cta");
     return (
-      <View style={[styles.container, { width, height }]} testID={testID}>
-        <View style={styles.iconContainer}>{icon ?? <BagIcon />}</View>
-        <Text style={styles.title}>{resolvedTitle}</Text>
-        <Text style={styles.subtitle}>{resolvedSubtitle}</Text>
-        <Pressable
-          style={styles.ctaButton}
+      <YStack
+        width={width}
+        height={height}
+        backgroundColor="#FAFAFA"
+        borderRadius={12}
+        overflow="hidden"
+        alignItems="center"
+        justifyContent="center"
+        testID={testID}
+      >
+        <XStack marginBottom={16}>{icon ?? <BagIcon />}</XStack>
+        <Text
+          role="body"
+          size="medium"
+          fontWeight="600"
+          color="#1A1A1A"
+          textAlign="center"
+        >
+          {resolvedTitle}
+        </Text>
+        <Text
+          role="label"
+          size="medium"
+          color="#999"
+          textAlign="center"
+          marginTop={8}
+        >
+          {resolvedSubtitle}
+        </Text>
+        <Button
+          variant="filled"
           onPress={onCtaPress}
           testID={testID ? `${testID}-cta` : undefined}
+          marginTop={24}
         >
-          <Text style={styles.ctaText}>{resolvedCtaLabel}</Text>
-        </Pressable>
-      </View>
+          {resolvedCtaLabel}
+        </Button>
+      </YStack>
     );
   },
 );
@@ -48,73 +75,22 @@ export const TrackerEmptyStateView = memo(
 TrackerEmptyStateView.displayName = "TrackerEmptyStateView";
 
 const BagIcon = memo(() => (
-  <View style={styles.bagContainer}>
-    <View style={styles.bagHandle} />
-    <View style={styles.bagBody} />
-  </View>
+  <YStack width={40} height={56} alignItems="center">
+    <XStack
+      width={22}
+      height={16}
+      borderRadius={11}
+      borderWidth={3}
+      borderColor="#FFE8ED"
+    />
+    <XStack
+      width={40}
+      height={44}
+      backgroundColor="#FFE8ED"
+      borderRadius={6}
+      marginTop={-4}
+    />
+  </YStack>
 ));
 
 BagIcon.displayName = "BagIcon";
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#FAFAFA",
-    borderRadius: 12,
-    overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconContainer: {
-    marginBottom: 16,
-  },
-  bagContainer: {
-    width: 40,
-    height: 56,
-    alignItems: "center",
-  },
-  bagHandle: {
-    width: 22,
-    height: 16,
-    borderRadius: 11,
-    borderWidth: 3,
-    borderColor: "#FFE8ED",
-  },
-  bagBody: {
-    width: 40,
-    height: 44,
-    backgroundColor: "#FFE8ED",
-    borderRadius: 6,
-    marginTop: -4,
-  },
-  title: {
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 16,
-    color: "#1A1A1A",
-    textAlign: "center",
-  },
-  subtitle: {
-    fontFamily: "Inter",
-    fontWeight: "400",
-    fontSize: 13,
-    color: "#999",
-    textAlign: "center",
-    marginTop: 8,
-  },
-  ctaButton: {
-    width: 140,
-    height: 42,
-    backgroundColor: "#FF2D55",
-    borderRadius: 21,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 24,
-  },
-  ctaText: {
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 14,
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
-});

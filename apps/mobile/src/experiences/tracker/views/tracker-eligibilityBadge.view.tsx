@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { XStack } from "tamagui";
+import { Text } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 
 type EligibilityBadgeStatus = "eligible" | "notEligible";
@@ -18,40 +19,30 @@ export const TrackerEligibilityBadgeView = memo(
     const isEligible = status === "eligible";
 
     return (
-      <View
-        style={[
-          styles.badge,
-          { backgroundColor: isEligible ? "#E8F7ED" : "#FFE8ED" },
-        ]}
+      <XStack
+        height={36}
+        borderRadius={18}
+        paddingHorizontal={14}
+        alignItems="center"
+        justifyContent="center"
+        alignSelf="flex-start"
+        overflow="hidden"
+        backgroundColor={isEligible ? "#E8F7ED" : "#FFE8ED"}
         testID={testID}
       >
         <Text
-          style={[styles.text, { color: isEligible ? "#219654" : "#FF2D55" }]}
+          role="label"
+          size="large"
+          fontWeight="600"
+          color={isEligible ? "#219654" : "#FF2D55"}
         >
           {isEligible
             ? t("eligibility.eligible")
             : t("eligibility.notEligible")}
         </Text>
-      </View>
+      </XStack>
     );
   },
 );
 
 TrackerEligibilityBadgeView.displayName = "TrackerEligibilityBadgeView";
-
-const styles = StyleSheet.create({
-  badge: {
-    height: 36,
-    borderRadius: 18,
-    paddingHorizontal: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "flex-start",
-    overflow: "hidden",
-  },
-  text: {
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-});

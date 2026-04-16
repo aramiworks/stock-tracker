@@ -145,6 +145,9 @@ describe("purchaseUpdateInputSchema", () => {
     expect(() =>
       purchaseUpdateInputSchema.parse({ purchaseDate: "1999-01-01" }),
     ).toThrow();
+    expect(() =>
+      purchaseUpdateInputSchema.parse({ purchaseDate: "2025-12-31" }),
+    ).toThrow();
   });
 });
 

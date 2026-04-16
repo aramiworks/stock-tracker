@@ -131,6 +131,10 @@ describe("sanitizedString", () => {
     expect(() => schema.parse("hello\x7fworld")).toThrow();
   });
 
+  it("trims all-whitespace to empty string (passes base schema)", () => {
+    expect(schema.parse("   ")).toBe("");
+  });
+
   it("allows newlines and tabs (not control chars in the regex)", () => {
     expect(schema.parse("hello\nworld")).toBe("hello\nworld");
     expect(schema.parse("hello\tworld")).toBe("hello\tworld");

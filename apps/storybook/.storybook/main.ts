@@ -34,13 +34,6 @@ const config: StorybookConfig = {
         find: "@expo/vector-icons",
         replacement: path.resolve(__dirname, "./mocks/expo-vector-icons.js"),
       },
-      {
-        find: "react-native/Libraries/Renderer/shims/ReactFabric",
-        replacement: path.resolve(
-          __dirname,
-          "./mocks/react-native-internals.js",
-        ),
-      },
       { find: "react-native", replacement: "react-native-web" },
       { find: "@", replacement: path.resolve(__dirname, "../../mobile/src") },
       {
@@ -53,8 +46,6 @@ const config: StorybookConfig = {
       ...existingAliases.filter(
         (a) =>
           (a as { find: string }).find !== "react-native" &&
-          (a as { find: string }).find !==
-            "react-native/Libraries/Renderer/shims/ReactFabric" &&
           (a as { find: string }).find !== "@" &&
           (a as { find: string }).find !== "@expo/vector-icons" &&
           (a as { find: string }).find !== "@expo/vector-icons/MaterialIcons" &&

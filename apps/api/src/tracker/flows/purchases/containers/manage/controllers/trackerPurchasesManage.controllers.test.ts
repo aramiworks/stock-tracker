@@ -1,6 +1,6 @@
 import { jest, describe, it, expect } from "@jest/globals";
 import { TRPCError } from "@trpc/server";
-import { trackerPurchasesManageControllers } from "../controllers/trackerPurchasesManage.controllers.js";
+import { trackerPurchasesManageControllers } from "./trackerPurchasesManage.controllers.js";
 import { Decimal } from "@prisma/client/runtime/library";
 
 const now = new Date("2025-01-01T00:00:00Z");

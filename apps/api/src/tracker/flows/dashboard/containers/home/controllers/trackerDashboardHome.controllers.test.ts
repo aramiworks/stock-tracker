@@ -1,5 +1,5 @@
 import { jest, describe, it, expect } from "@jest/globals";
-import { trackerDashboardHomeControllers } from "../controllers/trackerDashboardHome.controllers.js";
+import { trackerDashboardHomeControllers } from "./trackerDashboardHome.controllers.js";
 import { Decimal } from "@prisma/client/runtime/library";
 
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { appRouter } from "../trpc/router.js";
+import { appRouter } from "./trpc/router.js";
 
 const prisma = new PrismaClient();
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
@@ -346,7 +346,7 @@ describe("filtering E2E", () => {
       dateRange: { from: "2025-02-01", to: "2025-04-30" },
     });
     expect(items).toHaveLength(1);
-    expect(items[0].itemName).toBe("Expensive Ring");
+    expect(items[0]!.itemName).toBe("Expensive Ring");
   });
 
   it("filters by amount range", async () => {
@@ -355,7 +355,7 @@ describe("filtering E2E", () => {
       amountRange: { min: 1000000, max: 5000000 },
     });
     expect(items).toHaveLength(1);
-    expect(items[0].itemName).toBe("Mid Necklace");
+    expect(items[0]!.itemName).toBe("Mid Necklace");
   });
 
   it("filters by item category", async () => {
@@ -364,7 +364,7 @@ describe("filtering E2E", () => {
       itemCategory: "브레이슬릿",
     });
     expect(items).toHaveLength(1);
-    expect(items[0].itemName).toBe("Cheap Bracelet");
+    expect(items[0]!.itemName).toBe("Cheap Bracelet");
   });
 
   it("filters by search (store name)", async () => {
@@ -384,7 +384,7 @@ describe("filtering E2E", () => {
       amountRange: { max: 1000000 },
     });
     expect(items).toHaveLength(1);
-    expect(items[0].itemName).toBe("Cheap Bracelet");
+    expect(items[0]!.itemName).toBe("Cheap Bracelet");
   });
 
   it("returns empty when no match", async () => {

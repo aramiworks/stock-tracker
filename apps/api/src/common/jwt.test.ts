@@ -1,5 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
-import { verifySupabaseJwt } from "../jwt.js";
+import { verifySupabaseJwt } from "./jwt.js";
 
 const SUPABASE_URL = "https://test.supabase.co";
 

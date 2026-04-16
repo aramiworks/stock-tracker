@@ -2,27 +2,39 @@ coverage:
   status:
     project:
       default:
-        target: 50%
-        threshold: 5%
+        target: 100%
+        threshold: 2%
     patch:
       default:
-        informational: true
+        target: 100%
 
 ignore:
   - "**/*.test.ts"
   - "**/*.test.tsx"
   - "**/*.stories.tsx"
+  - "**/*.story.tsx"
   - "**/*.config.*"
   - "**/node_modules/**"
+  - "**/index.ts"
   - "infra/**"
   - "packages/eslint-config/**"
   - "packages/typescript-config/**"
+  - "packages/types/**"
+  - "packages/prisma/**"
+  - "packages/nestjs-common/**"
+  - "apps/mobile/app/**"
+  - "apps/mobile/src/lib/graphql/generated/**"
+  - "apps/subgraphs/**"
+  - "apps/router/**"
+  - "apps/storybook/**"
 
 flags:
   unit:
     paths:
-      - apps/
-      - packages/
+      - apps/api/src/
+      - apps/mobile/src/
+      - packages/validation/src/
+      - packages/config/src/
     carryforward: true
   e2e:
     paths:

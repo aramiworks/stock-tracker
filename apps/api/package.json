@@ -12,7 +12,7 @@
     "start": "node dist/server.js",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --passWithNoTests --testPathIgnorePatterns='src/__tests__'",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:e2e": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.e2e.config.ts"
   },
   "dependencies": {

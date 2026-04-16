@@ -1,5 +1,5 @@
 import { jest, describe, it, expect } from "@jest/globals";
-import { trackerHistoryBrowseControllers } from "../controllers/trackerHistoryBrowse.controllers.js";
+import { trackerHistoryBrowseControllers } from "./trackerHistoryBrowse.controllers.js";
 import { Decimal } from "@prisma/client/runtime/library";
 
 const now = new Date("2025-01-01T00:00:00Z");

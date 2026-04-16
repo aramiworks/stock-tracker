@@ -1,5 +1,5 @@
 import { jest, describe, it, expect } from "@jest/globals";
-import { trackerAccountsListControllers } from "../controllers/trackerAccountsList.controllers.js";
+import { trackerAccountsListControllers } from "./trackerAccountsList.controllers.js";
 
 const now = new Date("2025-01-01T00:00:00Z");
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";

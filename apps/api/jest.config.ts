@@ -24,8 +24,30 @@ const config: Config = {
     ],
   },
   transformIgnorePatterns: ["node_modules/(?!(@stock-tracker|jose)/)"],
-  testMatch: ["**/__tests__/**/*.test.ts", "!**/__tests__/**/*.e2e.test.ts"],
+  testMatch: ["**/*.test.ts", "!**/*.e2e.test.ts"],
   testTimeout: 30000,
+  collectCoverage: true,
+  coverageReporters: ["lcov", "text"],
+  collectCoverageFrom: [
+    "src/**/*.ts",
+    "!src/**/index.ts",
+    "!src/server.ts",
+    "!src/**/*.e2e.test.ts",
+    "!src/**/*.test.ts",
+    // Empty stubs (export {})
+    "!src/**/*.lifecycles.ts",
+    "!src/**/*.experience.ts",
+    "!src/tracker/controllers/tracker.controllers.ts",
+    "!src/tracker/models/tracker.models.ts",
+    "!src/tracker/views/tracker.views.ts",
+    "!src/tracker/flows/*/controllers/*.controllers.ts",
+    "!src/tracker/flows/*/models/*.models.ts",
+    "!src/tracker/flows/*/views/*.views.ts",
+  ],
+  // TODO: enforce 100% once all coverage gaps are filled
+  // coverageThreshold: {
+  //   global: { branches: 100, functions: 100, lines: 100, statements: 100 },
+  // },
 };
 
 export default config;

@@ -34,6 +34,7 @@ const { url } = await startStandaloneServer(server, {
       "x-user-id": req.headers["x-user-id"] as string | undefined,
       "x-user-role": req.headers["x-user-role"] as string | undefined,
       "x-request-id": req.headers["x-request-id"] as string | undefined,
+      authorization: req.headers["authorization"] as string | undefined,
     };
     return {
       ...headers,

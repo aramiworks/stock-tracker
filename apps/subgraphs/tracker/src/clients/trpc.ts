@@ -18,6 +18,8 @@ export const createTrpcClient = (
           if (headers["x-user-role"]) h["x-user-role"] = headers["x-user-role"];
           if (headers["x-request-id"])
             h["x-request-id"] = headers["x-request-id"];
+          if (headers["authorization"])
+            h["authorization"] = headers["authorization"];
           return h;
         },
       }),

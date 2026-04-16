@@ -59,6 +59,25 @@ const config: StorybookConfig = {
       ...(config.optimizeDeps.exclude || []),
       "@aramiworks/ui",
     ];
+    // Intercept react-native deep-path imports (e.g. from react-native-reanimated)
+    // that the react-native→react-native-web alias converts to paths that don't
+    // exist in react-native-web. Return an empty module so the build succeeds.
+    config.plugins = config.plugins || [];
+    config.plugins.push({
+      name: "mock-react-native-deep-paths",
+      resolveId(id: string) {
+        if (id.startsWith("react-native-web/Libraries/")) {
+          return "\0react-native-deep-path-shim";
+        }
+        return undefined;
+      },
+      load(id: string) {
+        if (id === "\0react-native-deep-path-shim") {
+          return "export default {};";
+        }
+        return undefined;
+      },
+    });
     return config;
   },
 };

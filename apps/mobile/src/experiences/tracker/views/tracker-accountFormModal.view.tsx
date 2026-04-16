@@ -62,7 +62,7 @@ const FullScreenDialog = memo(
           <Pressable
             onPress={onAction}
             style={dialogStyles.submitButton}
-            testID={testID ? `${testID}-submit` : undefined}
+            testID={testID ? `${testID}-action` : undefined}
           >
             <Text style={dialogStyles.submitText}>{actionLabel}</Text>
           </Pressable>

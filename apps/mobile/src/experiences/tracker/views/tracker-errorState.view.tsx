@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { XStack, YStack } from "tamagui";
+import { Text, Button } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 
 type TrackerErrorStateViewProps = {
@@ -27,78 +28,58 @@ export const TrackerErrorStateView = memo(
     const resolvedSubtitle = subtitle ?? t("dashboard.errorState.subtitle");
     const resolvedRetryLabel = retryLabel ?? t("dashboard.errorState.retry");
     return (
-      <View style={[styles.container, { width, height }]} testID={testID}>
-        <View style={styles.errorIcon}>
-          <Text style={styles.errorIconText}>!</Text>
-        </View>
-        <Text style={styles.title}>{resolvedTitle}</Text>
-        <Text style={styles.subtitle}>{resolvedSubtitle}</Text>
-        <Pressable
-          style={styles.retryButton}
+      <YStack
+        width={width}
+        height={height}
+        backgroundColor="#FAFAFA"
+        borderRadius={12}
+        overflow="hidden"
+        alignItems="center"
+        justifyContent="center"
+        testID={testID}
+      >
+        <XStack
+          width={48}
+          height={48}
+          borderRadius={24}
+          backgroundColor="#FFE8ED"
+          alignItems="center"
+          justifyContent="center"
+          marginBottom={16}
+        >
+          <Text role="headline" size="small" fontWeight="700" color="#FF2D55">
+            !
+          </Text>
+        </XStack>
+        <Text
+          role="body"
+          size="medium"
+          fontWeight="600"
+          color="#1A1A1A"
+          textAlign="center"
+        >
+          {resolvedTitle}
+        </Text>
+        <Text
+          role="label"
+          size="medium"
+          color="#999"
+          textAlign="center"
+          marginTop={8}
+        >
+          {resolvedSubtitle}
+        </Text>
+        <Button
+          variant="filled"
           onPress={onRetry}
           testID={testID ? `${testID}-retry` : undefined}
+          marginTop={24}
         >
-          <Text style={styles.retryText}>{resolvedRetryLabel}</Text>
-        </Pressable>
-      </View>
+          {resolvedRetryLabel}
+        </Button>
+      </YStack>
     );
   },
 );
 
 TrackerErrorStateView.displayName = "TrackerErrorStateView";
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#FAFAFA",
-    borderRadius: 12,
-    overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  errorIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#FFE8ED",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-  },
-  errorIconText: {
-    fontFamily: "Inter",
-    fontWeight: "700",
-    fontSize: 28,
-    color: "#FF2D55",
-  },
-  title: {
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 16,
-    color: "#1A1A1A",
-    textAlign: "center",
-  },
-  subtitle: {
-    fontFamily: "Inter",
-    fontWeight: "400",
-    fontSize: 13,
-    color: "#999",
-    textAlign: "center",
-    marginTop: 8,
-  },
-  retryButton: {
-    width: 140,
-    height: 42,
-    backgroundColor: "#FF2D55",
-    borderRadius: 21,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 24,
-  },
-  retryText: {
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 14,
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
-});

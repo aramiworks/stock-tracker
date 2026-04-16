@@ -34,7 +34,7 @@ const config: StorybookConfig = {
         find: "@expo/vector-icons",
         replacement: path.resolve(__dirname, "./mocks/expo-vector-icons.js"),
       },
-      { find: "react-native", replacement: "react-native-web" },
+      { find: /^react-native$/, replacement: "react-native-web" },
       { find: "@", replacement: path.resolve(__dirname, "../../mobile/src") },
       {
         find: "@stock-tracker/validation",
@@ -43,14 +43,18 @@ const config: StorybookConfig = {
           "../../../packages/validation/src/index.ts",
         ),
       },
-      ...existingAliases.filter(
-        (a) =>
-          (a as { find: string }).find !== "react-native" &&
-          (a as { find: string }).find !== "@" &&
-          (a as { find: string }).find !== "@expo/vector-icons" &&
-          (a as { find: string }).find !== "@expo/vector-icons/MaterialIcons" &&
-          (a as { find: string }).find !== "@stock-tracker/validation",
-      ),
+      ...existingAliases.filter((a) => {
+        const find = (a as { find: string | RegExp }).find;
+        const findStr = find instanceof RegExp ? find.source : find;
+        return (
+          findStr !== "react-native" &&
+          findStr !== "^react-native$" &&
+          findStr !== "@" &&
+          findStr !== "@expo/vector-icons" &&
+          findStr !== "@expo/vector-icons/MaterialIcons" &&
+          findStr !== "@stock-tracker/validation"
+        );
+      }),
     ];
     // @aramiworks/ui ships TypeScript source (.tsx files). Exclude from
     // pre-bundling so Vite processes it through the regular TSX transform.

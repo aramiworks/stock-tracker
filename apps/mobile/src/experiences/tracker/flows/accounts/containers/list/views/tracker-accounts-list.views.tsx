@@ -139,7 +139,11 @@ export const TrackerAccountsListViews = memo(
           ))}
         </>
       ),
-      empty: <TrackerAccountsListEmptyStateView />,
+      empty: (
+        <TrackerAccountsListEmptyStateView
+          onCtaPress={() => setShowAccountModal(true)}
+        />
+      ),
       loading: (
         <>
           <TrackerAccountsListSkeletonCardView />

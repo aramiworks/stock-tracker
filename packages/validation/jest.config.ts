@@ -20,11 +20,11 @@ const config: Config = {
   passWithNoTests: true,
   collectCoverage: true,
   coverageReporters: ["lcov", "text"],
-  collectCoverageFrom: [
-    "src/**/*.ts",
-    "!src/**/index.ts",
-    "!src/**/*.test.ts",
-  ],
+  collectCoverageFrom: ["src/**/*.ts", "!src/**/index.ts", "!src/**/*.test.ts"],
+  // TODO: enforce 100% once all coverage gaps are filled
+  // coverageThreshold: {
+  //   global: { branches: 100, functions: 100, lines: 100, statements: 100 },
+  // },
 };
 
 export default config;

@@ -4,6 +4,7 @@
 # Runs automatically after mprocs exits.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+[ -f "$SCRIPT_DIR/ports.env" ] || { printf "\033[0;31m[cleanup] ERROR: ports.env not found\033[0m\n" >&2; exit 1; }
 set -a; . "$SCRIPT_DIR/ports.env"; set +a
 
 PORTS=("$API_PORT" "$SUBGRAPH_PORT" "$ROUTER_PORT" "$IOS_PORT" "$ANDROID_PORT" "$WEB_PORT" "$STORYBOOK_PORT")

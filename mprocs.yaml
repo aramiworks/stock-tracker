@@ -24,7 +24,7 @@ procs:
       ]
     cwd: apps/api
     env:
-      PORT: "${API_PORT:-4010}"
+      PORT: "4010"
     stop: "SIGTERM"
     autostart: true
 
@@ -37,7 +37,7 @@ procs:
       ]
     cwd: apps/subgraphs/tracker
     env:
-      PORT: "${SUBGRAPH_PORT:-4011}"
+      PORT: "4011"
     stop: "SIGTERM"
     autostart: true
 

@@ -29,7 +29,9 @@ export class AuthModels {
       },
       update: {
         email: data.email,
-        display_name: data.displayName ?? null,
+        ...(data.displayName !== undefined && {
+          display_name: data.displayName,
+        }),
       },
     });
   }

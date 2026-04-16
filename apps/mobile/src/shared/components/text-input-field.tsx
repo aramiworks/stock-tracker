@@ -1,6 +1,6 @@
 import { memo } from "react";
-import { View, TextInput, StyleSheet, type TextInputProps } from "react-native";
-import { Text } from "@aramiworks/ui";
+import type { TextInputProps } from "react-native";
+import { FormField } from "@aramiworks/ui";
 import {
   Controller,
   type Control,
@@ -30,65 +30,26 @@ function TextInputFieldInner<T extends FieldValues>({
   testID,
 }: TextInputFieldProps<T>) {
   return (
-    <View style={styles.container}>
-      <Text role="body" size="small" fontWeight="600" marginBottom={6}>
-        {label}
-      </Text>
-      <Controller
-        control={control}
-        name={name}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={[
-              styles.input,
-              multiline && styles.multilineInput,
-              error && styles.inputError,
-            ]}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value as string}
-            placeholder={placeholder}
-            placeholderTextColor="#CCC"
-            multiline={multiline}
-            keyboardType={keyboardType}
-            testID={testID}
-          />
-        )}
-      />
-      {error && (
-        <Text role="body" size="small" color="$error" marginTop={4}>
-          {error}
-        </Text>
+    <Controller
+      control={control}
+      name={name}
+      render={({ field: { onChange, onBlur, value } }) => (
+        <FormField
+          label={label}
+          placeholder={placeholder}
+          multiline={multiline}
+          keyboardType={keyboardType}
+          errorText={error}
+          onChangeText={onChange}
+          onBlur={onBlur}
+          value={value as string}
+          testID={testID}
+        />
       )}
-    </View>
+    />
   );
 }
 
 export const TextInputField = memo(
   TextInputFieldInner,
 ) as typeof TextInputFieldInner;
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-
-  input: {
-    height: 44,
-    borderWidth: 1,
-    borderColor: "#E5E5E5",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    fontFamily: "Inter",
-    fontSize: 15,
-    color: "#1A1A1A",
-  },
-  multilineInput: {
-    height: 88,
-    paddingTop: 12,
-    textAlignVertical: "top",
-  },
-  inputError: {
-    borderColor: "#FF2D55",
-  },
-});

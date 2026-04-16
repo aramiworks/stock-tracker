@@ -28,7 +28,7 @@ tags:
     id: "purchase-form-notes"
 - inputText: "E2E 수정 테스트"
 - tapOn:
-    id: "purchase-form-submit"
+    id: "purchase-form-action"
 
 # Verify back on detail screen
 - assertVisible:

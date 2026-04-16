@@ -22,7 +22,7 @@ tags:
     id: "account-form-storeName"
 - inputText: "빈 상태 테스트 부티크"
 - tapOn:
-    id: "account-form-submit"
+    id: "account-form-action"
 - assertVisible: "빈 상태 테스트 부티크"
 
 # Step 3: Navigate into the account and verify empty purchase list

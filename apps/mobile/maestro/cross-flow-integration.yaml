@@ -22,7 +22,7 @@ tags:
     id: "account-form-storeName"
 - inputText: "통합 테스트 부티크"
 - tapOn:
-    id: "account-form-submit"
+    id: "account-form-action"
 - assertVisible: "통합 테스트 부티크"
 
 # Step 3: Navigate into the new account
@@ -45,7 +45,7 @@ tags:
     id: "purchase-form-purchaseDate"
 - inputText: "2025-04-01"
 - tapOn:
-    id: "purchase-form-submit"
+    id: "purchase-form-action"
 - assertVisible: "통합 테스트 링"
 
 # Step 5: Navigate to history tab and verify the purchase appears

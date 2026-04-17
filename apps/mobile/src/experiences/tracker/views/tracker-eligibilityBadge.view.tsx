@@ -1,6 +1,5 @@
 import { memo } from "react";
-import { XStack } from "tamagui";
-import { Text } from "@aramiworks/ui";
+import { XStack, Text } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 
 type EligibilityBadgeStatus = "eligible" | "notEligible";

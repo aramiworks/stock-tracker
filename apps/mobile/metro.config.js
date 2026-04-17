@@ -37,7 +37,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
       type: "sourceFile",
     };
   }
-  if (TAMAGUI_V1_PACKAGES.has(moduleName)) {
+  if (TAMAGUI_V1_PACKAGES.has(moduleName) || Array.from(TAMAGUI_V1_PACKAGES).some((pkg) => moduleName.startsWith(pkg + "/"))) {
     // Resolve as if the import originated from the monorepo root, ensuring the
     // root node_modules (v1) is found instead of any nested v2 copy.
     return context.resolveRequest(

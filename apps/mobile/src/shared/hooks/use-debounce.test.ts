@@ -17,7 +17,8 @@ describe("useDebounce", () => {
 
   it("does not update before delay", () => {
     const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
+      ({ value, delay }: { value: string; delay: number }) =>
+        useDebounce(value, delay),
       { initialProps: { value: "hello", delay: 500 } },
     );
 
@@ -30,7 +31,8 @@ describe("useDebounce", () => {
 
   it("updates after delay", () => {
     const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
+      ({ value, delay }: { value: string; delay: number }) =>
+        useDebounce(value, delay),
       { initialProps: { value: "hello", delay: 500 } },
     );
 
@@ -43,7 +45,8 @@ describe("useDebounce", () => {
 
   it("resets timer on rapid value changes", () => {
     const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
+      ({ value, delay }: { value: string; delay: number }) =>
+        useDebounce(value, delay),
       { initialProps: { value: "a", delay: 300 } },
     );
 

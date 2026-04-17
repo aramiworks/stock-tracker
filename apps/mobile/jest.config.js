@@ -7,6 +7,11 @@ module.exports = {
   ],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    // jest-expo auto-generates this from tsconfig paths, but @aramiworks/ui is a
+    // private package not installed in all envs. Override with a valid file path
+    // so Jest's config validation passes; jest.mock() in setup.ts provides the
+    // actual mock at runtime.
+    "^@aramiworks/ui$": "<rootDir>/package.json",
   },
   testMatch: ["**/*.test.ts", "**/*.test.tsx"],
   collectCoverage: true,

@@ -10,8 +10,6 @@ export const TrackerHistoryBrowseEmptyStateView = memo(() => {
       title={t("history.browse.emptyState.title")}
       subtitle={t("history.browse.emptyState.subtitle")}
       ctaLabel={t("history.browse.emptyState.cta")}
-      width={310}
-      height={210}
     />
   );
 });

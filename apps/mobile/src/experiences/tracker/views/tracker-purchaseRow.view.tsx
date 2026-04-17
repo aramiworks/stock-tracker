@@ -1,6 +1,5 @@
 import { memo } from "react";
-import { XStack, YStack } from "tamagui";
-import { Text } from "@aramiworks/ui";
+import { XStack, YStack, Text } from "@aramiworks/ui";
 
 type PurchaseRowType = "regular" | "tank";
 

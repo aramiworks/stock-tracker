@@ -15,8 +15,6 @@ export const TrackerAccountsListEmptyStateView =
         subtitle={t("accounts.list.emptyState.subtitle")}
         ctaLabel={t("accounts.list.emptyState.cta")}
         onCtaPress={onCtaPress}
-        width={310}
-        height={230}
         testID="accounts-list-empty-state"
       />
     );

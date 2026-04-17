@@ -28,9 +28,7 @@ describe("QueryErrorBoundary", () => {
   it("renders children when no error", () => {
     const { getByText } = render(
       <QueryErrorBoundary
-        fallback={({ retry }) => (
-          <Text onPress={retry}>retry</Text>
-        )}
+        fallback={({ retry }) => <Text onPress={retry}>retry</Text>}
       >
         <ThrowingChild shouldThrow={false} />
       </QueryErrorBoundary>,
@@ -41,9 +39,7 @@ describe("QueryErrorBoundary", () => {
   it("renders fallback when child throws", () => {
     const { getByText, queryByText } = render(
       <QueryErrorBoundary
-        fallback={({ retry }) => (
-          <Text onPress={retry}>retry</Text>
-        )}
+        fallback={({ retry }) => <Text onPress={retry}>retry</Text>}
       >
         <ThrowingChild shouldThrow={true} />
       </QueryErrorBoundary>,
@@ -61,9 +57,7 @@ describe("QueryErrorBoundary", () => {
 
     const { getByText } = render(
       <QueryErrorBoundary
-        fallback={({ retry }) => (
-          <Text onPress={retry}>retry</Text>
-        )}
+        fallback={({ retry }) => <Text onPress={retry}>retry</Text>}
       >
         <ConditionalThrow />
       </QueryErrorBoundary>,

@@ -1,6 +1,5 @@
 import { memo } from "react";
-import { XStack } from "@aramiworks/ui";
-import { Button, EmptyStateTemplate, Text } from "@aramiworks/ui";
+import { XStack, Button, EmptyStateTemplate, Text } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 
 type TrackerErrorStateViewProps = {

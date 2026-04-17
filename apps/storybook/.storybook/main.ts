@@ -24,30 +24,6 @@ const config: StorybookConfig = {
             replacement: replacement as string,
           }),
         );
-    // Virtual module plugin: stubs react-native-reanimated's ReactFabric import,
-    // which has no equivalent in react-native-web.
-    const reactFabricMockPlugin = {
-      name: "mock-react-native-ReactFabric",
-      // enforce: "pre" so this runs before Vite's built-in alias plugin,
-      // intercepting the original import path before it gets rewritten to
-      // react-native-web/Libraries/Renderer/shims/ReactFabric (which doesn't exist).
-      enforce: "pre" as const,
-      resolveId(id: string) {
-        if (
-          id === "react-native/Libraries/Renderer/shims/ReactFabric" ||
-          id === "react-native-web/Libraries/Renderer/shims/ReactFabric"
-        ) {
-          return "\0react-native-ReactFabric-mock";
-        }
-      },
-      load(id: string) {
-        if (id === "\0react-native-ReactFabric-mock") {
-          return "export default null; export const findHostInstance_DEPRECATED = () => null; export const findNodeHandle = () => null;";
-        }
-      },
-    };
-    config.plugins = [...(config.plugins ?? []), reactFabricMockPlugin];
-
     config.resolve.alias = [
       // Specific sub-path aliases must come before prefix aliases
       {
@@ -57,6 +33,15 @@ const config: StorybookConfig = {
       {
         find: "@expo/vector-icons",
         replacement: path.resolve(__dirname, "./mocks/expo-vector-icons.js"),
+      },
+      // Mock all of react-native-reanimated — it uses native modules (TurboModuleRegistry,
+      // ReactFabric) absent from react-native-web. Components render without animations.
+      {
+        find: "react-native-reanimated",
+        replacement: path.resolve(
+          __dirname,
+          "./mocks/react-native-reanimated.js",
+        ),
       },
       { find: "react-native", replacement: "react-native-web" },
       { find: "@", replacement: path.resolve(__dirname, "../../mobile/src") },
@@ -70,6 +55,7 @@ const config: StorybookConfig = {
       ...existingAliases.filter(
         (a) =>
           (a as { find: string }).find !== "react-native" &&
+          (a as { find: string }).find !== "react-native-reanimated" &&
           (a as { find: string }).find !== "@" &&
           (a as { find: string }).find !== "@expo/vector-icons" &&
           (a as { find: string }).find !== "@expo/vector-icons/MaterialIcons" &&

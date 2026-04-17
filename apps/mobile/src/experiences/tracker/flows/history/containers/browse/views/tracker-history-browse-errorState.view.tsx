@@ -16,8 +16,6 @@ export const TrackerHistoryBrowseErrorStateView =
         subtitle={t("history.browse.errorState.subtitle")}
         retryLabel={t("history.browse.errorState.retry")}
         onRetry={onRetry}
-        width={310}
-        height={230}
       />
     );
   });

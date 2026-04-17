@@ -16,8 +16,6 @@ export const TrackerDashboardHomeErrorStateView =
         subtitle={t("dashboard.errorState.subtitle")}
         retryLabel={t("dashboard.errorState.retry")}
         onRetry={onRetry}
-        width={340}
-        height={240}
       />
     );
   });

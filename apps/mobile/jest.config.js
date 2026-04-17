@@ -24,6 +24,7 @@ module.exports = {
     "!src/**/*.test.ts",
     "!src/**/*.test.tsx",
     "!src/lib/graphql/generated/**",
+    "!src/lib/tamagui/tamagui.config.ts",
     "!src/setup.ts",
     "!src/test-utils.tsx",
   ],

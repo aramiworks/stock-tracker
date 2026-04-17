@@ -1,9 +1,9 @@
-import { memo } from "react";
+import { memo, type ReactElement } from "react";
 import { XStack, YStack, Button, EmptyStateTemplate } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 
 type TrackerEmptyStateViewProps = {
-  icon?: React.ReactElement;
+  icon?: ReactElement;
   title?: string;
   subtitle?: string;
   ctaLabel?: string;

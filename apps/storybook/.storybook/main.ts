@@ -33,7 +33,10 @@ const config: StorybookConfig = {
       // react-native-web/Libraries/Renderer/shims/ReactFabric (which doesn't exist).
       enforce: "pre" as const,
       resolveId(id: string) {
-        if (id === "react-native/Libraries/Renderer/shims/ReactFabric") {
+        if (
+          id === "react-native/Libraries/Renderer/shims/ReactFabric" ||
+          id === "react-native-web/Libraries/Renderer/shims/ReactFabric"
+        ) {
           return "\0react-native-ReactFabric-mock";
         }
       },

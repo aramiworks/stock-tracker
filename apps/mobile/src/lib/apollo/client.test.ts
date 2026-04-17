@@ -73,16 +73,37 @@ describe("apollo client", () => {
   });
 
   it("rewrites localhost to 10.0.2.2 on Android in dev mode", () => {
-    jest.isolateModules(() => {
-      jest.replaceProperty(Platform, "OS", "android" as typeof Platform.OS);
-      process.env.EXPO_PUBLIC_GRAPHQL_URL = "http://localhost:4002";
-      process.env.EXPO_PUBLIC_SUPABASE_URL = "http://localhost:54321";
-      process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = "test-key";
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require("./client");
-      const { HttpLink } = require("@apollo/client");
-      const lastCall = (HttpLink as jest.Mock).mock.calls.at(-1)!;
-      expect(lastCall[0].uri).toBe("http://10.0.2.2:4002");
-    });
+    const origGraphqlUrl = process.env.EXPO_PUBLIC_GRAPHQL_URL;
+    const origSupabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+    const origSupabaseKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+    try {
+      jest.isolateModules(() => {
+        jest.replaceProperty(Platform, "OS", "android" as typeof Platform.OS);
+        process.env.EXPO_PUBLIC_GRAPHQL_URL = "http://localhost:4002";
+        process.env.EXPO_PUBLIC_SUPABASE_URL = "http://localhost:54321";
+        process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = "test-key";
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        require("./client");
+        const { HttpLink } = require("@apollo/client");
+        const lastCall = (HttpLink as jest.Mock).mock.calls.at(-1)!;
+        expect(lastCall[0].uri).toBe("http://10.0.2.2:4002");
+      });
+    } finally {
+      if (origGraphqlUrl !== undefined) {
+        process.env.EXPO_PUBLIC_GRAPHQL_URL = origGraphqlUrl;
+      } else {
+        delete process.env.EXPO_PUBLIC_GRAPHQL_URL;
+      }
+      if (origSupabaseUrl !== undefined) {
+        process.env.EXPO_PUBLIC_SUPABASE_URL = origSupabaseUrl;
+      } else {
+        delete process.env.EXPO_PUBLIC_SUPABASE_URL;
+      }
+      if (origSupabaseKey !== undefined) {
+        process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = origSupabaseKey;
+      } else {
+        delete process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+      }
+    }
   });
 });

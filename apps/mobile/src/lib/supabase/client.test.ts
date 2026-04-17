@@ -83,13 +83,22 @@ describe("supabase client", () => {
   });
 
   it("rewrites localhost to 10.0.2.2 on Android in dev mode", () => {
-    jest.isolateModules(() => {
-      jest.replaceProperty(Platform, "OS", "android" as typeof Platform.OS);
-      process.env.EXPO_PUBLIC_SUPABASE_URL = "http://localhost:54321";
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require("./client");
-      const androidCallArgs = (createClient as jest.Mock).mock.calls.at(-1)!;
-      expect(androidCallArgs[0]).toBe("http://10.0.2.2:54321");
-    });
+    const origSupabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+    try {
+      jest.isolateModules(() => {
+        jest.replaceProperty(Platform, "OS", "android" as typeof Platform.OS);
+        process.env.EXPO_PUBLIC_SUPABASE_URL = "http://localhost:54321";
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        require("./client");
+        const androidCallArgs = (createClient as jest.Mock).mock.calls.at(-1)!;
+        expect(androidCallArgs[0]).toBe("http://10.0.2.2:54321");
+      });
+    } finally {
+      if (origSupabaseUrl !== undefined) {
+        process.env.EXPO_PUBLIC_SUPABASE_URL = origSupabaseUrl;
+      } else {
+        delete process.env.EXPO_PUBLIC_SUPABASE_URL;
+      }
+    }
   });
 });

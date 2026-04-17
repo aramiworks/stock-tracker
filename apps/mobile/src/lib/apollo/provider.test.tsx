@@ -1,10 +1,10 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 
 jest.mock("@apollo/client/react", () => ({
   ApolloProvider: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
+    <View testID="apollo-provider">{children}</View>
   ),
 }));
 
@@ -14,7 +14,7 @@ jest.mock("@apollo/client/testing/react", () => ({
   }: {
     children: React.ReactNode;
     mocks: unknown[];
-  }) => <>{children}</>,
+  }) => <View testID="mocked-provider">{children}</View>,
 }));
 
 jest.mock("./client", () => ({
@@ -41,23 +41,25 @@ describe("AppApolloProvider", () => {
     delete process.env.EXPO_PUBLIC_GRAPHQL_URL;
     const { AppApolloProvider } =
       require("./provider") as typeof import("./provider");
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <AppApolloProvider>
         <Text>child</Text>
       </AppApolloProvider>,
     );
     expect(getByText("child")).toBeTruthy();
+    expect(getByTestId("mocked-provider")).toBeTruthy();
   });
 
   it("renders children with ApolloProvider when GRAPHQL_URL is set", () => {
     process.env.EXPO_PUBLIC_GRAPHQL_URL = "http://localhost:4002";
     const { AppApolloProvider } =
       require("./provider") as typeof import("./provider");
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <AppApolloProvider>
         <Text>child</Text>
       </AppApolloProvider>,
     );
     expect(getByText("child")).toBeTruthy();
+    expect(getByTestId("apollo-provider")).toBeTruthy();
   });
 });

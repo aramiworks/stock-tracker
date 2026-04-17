@@ -21,6 +21,9 @@ trap cleanup EXIT HUP INT TERM
 
 cd "$REPO_ROOT"
 
+# Export ports so mprocs and all child processes inherit them
+set -a; . "$SCRIPT_DIR/ports.env"; set +a
+
 log "Cleaning up previous session..."
 cleanup
 

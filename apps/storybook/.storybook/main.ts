@@ -46,7 +46,7 @@ const config: StorybookConfig = {
       { find: "react-native", replacement: "react-native-web" },
       { find: "@", replacement: path.resolve(__dirname, "../../mobile/src") },
       {
-        find: "@tock-tracker/validation",
+        find: "@stock-tracker/validation",
         replacement: path.resolve(
           __dirname,
           "../../../packages/validation/src/index.ts",
@@ -59,7 +59,7 @@ const config: StorybookConfig = {
           (a as { find: string }).find !== "@" &&
           (a as { find: string }).find !== "@expo/vector-icons" &&
           (a as { find: string }).find !== "@expo/vector-icons/MaterialIcons" &&
-          (a as { find: string }).find !== "@tock-tracker/validation",
+          (a as { find: string }).find !== "@stock-tracker/validation",
       ),
     ];
     // @aramiworks/ui ships TypeScript source (.tsx files). Exclude from

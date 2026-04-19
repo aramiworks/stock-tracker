@@ -110,8 +110,16 @@ export async function executeAs({
   const apiTrpc = createApiTrpcClient(headers);
   const trackerTrpc = createTrackerTrpcClient(headers);
 
-  process.env["TRPC_API_URL"] = prevApi;
-  process.env["TRPC_TRACKER_SERVICE_URL"] = prevTracker;
+  if (prevApi !== undefined) {
+    process.env["TRPC_API_URL"] = prevApi;
+  } else {
+    delete process.env["TRPC_API_URL"];
+  }
+  if (prevTracker !== undefined) {
+    process.env["TRPC_TRACKER_SERVICE_URL"] = prevTracker;
+  } else {
+    delete process.env["TRPC_TRACKER_SERVICE_URL"];
+  }
 
   const response = await server.executeOperation(
     {

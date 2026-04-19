@@ -9,7 +9,10 @@ import { authTypeDefs } from "../auth/views/auth.views.js";
 import { authResolvers } from "../auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "../tracker/views/tracker.views.js";
 import { trackerResolvers } from "../tracker/controllers/tracker.controllers.js";
-import { createTrpcClient } from "../clients/trpc.js";
+import {
+  createApiTrpcClient,
+  createTrackerTrpcClient,
+} from "../clients/trpc.js";
 
 interface TrpcServerHandle {
   url: string;
@@ -81,8 +84,10 @@ interface ExecuteOptions {
 }
 
 /**
- * Execute a GraphQL operation against the test Apollo server with a real
- * tRPC client pointing at the running tRPC server.
+ * Execute a GraphQL operation against the test Apollo server with real
+ * tRPC clients pointing at the running tRPC server. Both the API client
+ * (for auth) and tracker client (for tracker) point at the same test
+ * server since apps/api's appRouter serves both namespaces.
  */
 export async function executeAs({
   server,
@@ -97,11 +102,16 @@ export async function executeAs({
     "x-request-id": "test-request-id",
   };
 
-  // Set the env so createTrpcClient picks up the test server URL
-  const prev = process.env["TRPC_SERVICE_URL"];
-  process.env["TRPC_SERVICE_URL"] = trpcUrl;
-  const trpc = createTrpcClient(headers);
-  process.env["TRPC_SERVICE_URL"] = prev;
+  const prevApi = process.env["TRPC_API_URL"];
+  const prevTracker = process.env["TRPC_TRACKER_SERVICE_URL"];
+  process.env["TRPC_API_URL"] = trpcUrl;
+  process.env["TRPC_TRACKER_SERVICE_URL"] = trpcUrl;
+
+  const apiTrpc = createApiTrpcClient(headers);
+  const trackerTrpc = createTrackerTrpcClient(headers);
+
+  process.env["TRPC_API_URL"] = prevApi;
+  process.env["TRPC_TRACKER_SERVICE_URL"] = prevTracker;
 
   const response = await server.executeOperation(
     {
@@ -115,7 +125,8 @@ export async function executeAs({
         "x-request-id": "test-request-id",
         userId,
         userRole: undefined,
-        trpc,
+        apiTrpc,
+        trackerTrpc,
       },
     },
   );

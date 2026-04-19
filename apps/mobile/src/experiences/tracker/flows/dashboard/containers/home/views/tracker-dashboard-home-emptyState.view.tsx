@@ -16,8 +16,6 @@ export const TrackerDashboardHomeEmptyStateView =
         subtitle={t("dashboard.emptyState.subtitle")}
         ctaLabel={t("dashboard.emptyState.cta")}
         onCtaPress={onCtaPress}
-        width={340}
-        height={240}
       />
     );
   });

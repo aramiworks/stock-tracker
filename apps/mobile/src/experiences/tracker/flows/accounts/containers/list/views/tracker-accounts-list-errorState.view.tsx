@@ -15,8 +15,6 @@ export const TrackerAccountsListErrorStateView =
         subtitle={t("accounts.list.errorState.subtitle")}
         retryLabel={t("accounts.list.errorState.retry")}
         onRetry={onRetry}
-        width={310}
-        height={230}
         testID="accounts-list-error-state"
       />
     );

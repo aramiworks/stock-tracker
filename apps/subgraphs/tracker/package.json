@@ -16,6 +16,7 @@
     "@apollo/server": "^4.11.0",
     "@apollo/subgraph": "^2.9.0",
     "@stock-tracker/api": "*",
+    "@stock-tracker/tracker-service": "*",
     "@stock-tracker/config": "*",
     "@stock-tracker/types": "*",
     "@stock-tracker/validation": "*",

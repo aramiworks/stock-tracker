@@ -1,15 +1,9 @@
-import type { TrpcClient } from "../../clients/trpc.js";
-
-interface SubgraphContext {
-  userId?: string;
-  userRole?: string;
-  trpc: TrpcClient;
-}
+import type { SubgraphContext } from "../../context.js";
 
 export const authResolvers = {
   Query: {
     me: async (_: unknown, __: unknown, context: SubgraphContext) => {
-      return context.trpc.auth.me.query();
+      return context.apiTrpc.auth.me.query();
     },
   },
   User: {

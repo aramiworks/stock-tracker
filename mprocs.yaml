@@ -28,6 +28,19 @@ procs:
     stop: "SIGTERM"
     autostart: true
 
+  tracker-service:
+    cmd:
+      [
+        "sh",
+        "-c",
+        "lsof -ti :${TRACKER_SERVICE_PORT:-4020} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/main.ts",
+      ]
+    cwd: apps/services/tracker
+    env:
+      PORT: "4020"
+    stop: "SIGTERM"
+    autostart: true
+
   subgraph:
     cmd:
       [
@@ -38,6 +51,7 @@ procs:
     cwd: apps/subgraphs/tracker
     env:
       PORT: "4011"
+      TRPC_TRACKER_SERVICE_URL: "http://localhost:4020/trpc"
     stop: "SIGTERM"
     autostart: true
 

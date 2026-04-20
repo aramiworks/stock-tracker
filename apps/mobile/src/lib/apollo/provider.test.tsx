@@ -2,20 +2,26 @@ import React from "react";
 import { render } from "@testing-library/react-native";
 import { Text, View } from "react-native";
 
-jest.mock("@apollo/client/react", () => ({
-  ApolloProvider: ({ children }: { children: React.ReactNode }) => (
-    <View testID="apollo-provider">{children}</View>
-  ),
-}));
+jest.mock("@apollo/client/react", () => {
+  const { View } = require("react-native");
+  return {
+    ApolloProvider: ({ children }: { children: React.ReactNode }) => (
+      <View testID="apollo-provider">{children}</View>
+    ),
+  };
+});
 
-jest.mock("@apollo/client/testing/react", () => ({
-  MockedProvider: ({
-    children,
-  }: {
-    children: React.ReactNode;
-    mocks: unknown[];
-  }) => <View testID="mocked-provider">{children}</View>,
-}));
+jest.mock("@apollo/client/testing/react", () => {
+  const { View } = require("react-native");
+  return {
+    MockedProvider: ({
+      children,
+    }: {
+      children: React.ReactNode;
+      mocks: unknown[];
+    }) => <View testID="mocked-provider">{children}</View>,
+  };
+});
 
 jest.mock("./client", () => ({
   createApolloClient: jest.fn(() => ({ __mock: true })),

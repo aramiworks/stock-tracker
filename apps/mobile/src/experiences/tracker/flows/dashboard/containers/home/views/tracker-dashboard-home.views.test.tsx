@@ -5,9 +5,7 @@ import { render, fireEvent } from "@testing-library/react-native";
 // Note: jest.mock factories run before imports, so all RN imports must be
 // required inline (see INF-1058 — factory may not reference out-of-scope vars).
 jest.mock("./tracker-dashboard-home-eligibilityBadge.view", () => ({
-  TrackerDashboardHomeEligibilityBadgeView: (props: {
-    state: string;
-  }) =>
+  TrackerDashboardHomeEligibilityBadgeView: (props: { state: string }) =>
     require("react").createElement(require("react-native").View, {
       testID: `eligibility-badge-${props.state}`,
     }),
@@ -29,27 +27,21 @@ jest.mock("./tracker-dashboard-home-saCard.view", () => ({
     }),
 }));
 jest.mock("./tracker-dashboard-home-refreshFab.view", () => ({
-  TrackerDashboardHomeRefreshFabView: (props: {
-    onPress?: () => void;
-  }) =>
+  TrackerDashboardHomeRefreshFabView: (props: { onPress?: () => void }) =>
     require("react").createElement(require("react-native").View, {
       testID: "refresh-fab",
       onPress: props.onPress,
     }),
 }));
 jest.mock("./tracker-dashboard-home-emptyState.view", () => ({
-  TrackerDashboardHomeEmptyStateView: (props: {
-    onCtaPress?: () => void;
-  }) =>
+  TrackerDashboardHomeEmptyStateView: (props: { onCtaPress?: () => void }) =>
     require("react").createElement(require("react-native").View, {
       testID: "empty-state",
       onPress: props.onCtaPress,
     }),
 }));
 jest.mock("./tracker-dashboard-home-errorState.view", () => ({
-  TrackerDashboardHomeErrorStateView: (props: {
-    onRetry?: () => void;
-  }) =>
+  TrackerDashboardHomeErrorStateView: (props: { onRetry?: () => void }) =>
     require("react").createElement(require("react-native").View, {
       testID: "error-state",
       onPress: props.onRetry,

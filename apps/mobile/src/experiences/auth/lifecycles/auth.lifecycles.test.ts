@@ -1,6 +1,7 @@
 import { renderHook, act } from "@testing-library/react-native";
 import { supabase } from "../../../lib/supabase";
 import { setSession } from "../models/auth.store";
+import { useAuthLifecycle } from "./auth.lifecycles";
 
 jest.mock("../models/auth.store", () => ({
   setSession: jest.fn(),
@@ -22,7 +23,6 @@ describe("useAuthLifecycle", () => {
       data: { session: mockSession },
     });
 
-    const { useAuthLifecycle } = require("./auth.lifecycles");
     renderHook(() => useAuthLifecycle());
 
     await act(async () => {
@@ -37,7 +37,6 @@ describe("useAuthLifecycle", () => {
       data: { session: null },
     });
 
-    const { useAuthLifecycle } = require("./auth.lifecycles");
     renderHook(() => useAuthLifecycle());
 
     await act(async () => {
@@ -52,7 +51,6 @@ describe("useAuthLifecycle", () => {
       new Error("fail"),
     );
 
-    const { useAuthLifecycle } = require("./auth.lifecycles");
     renderHook(() => useAuthLifecycle());
 
     await act(async () => {
@@ -67,7 +65,6 @@ describe("useAuthLifecycle", () => {
       new Promise(() => {}),
     );
 
-    const { useAuthLifecycle } = require("./auth.lifecycles");
     renderHook(() => useAuthLifecycle());
 
     act(() => {
@@ -85,7 +82,6 @@ describe("useAuthLifecycle", () => {
       }),
     );
 
-    const { useAuthLifecycle } = require("./auth.lifecycles");
     renderHook(() => useAuthLifecycle());
 
     act(() => {
@@ -109,7 +105,6 @@ describe("useAuthLifecycle", () => {
       new Promise(() => {}),
     );
 
-    const { useAuthLifecycle } = require("./auth.lifecycles");
     renderHook(() => useAuthLifecycle());
 
     const changeCallback = (supabase.auth.onAuthStateChange as jest.Mock).mock
@@ -130,7 +125,6 @@ describe("useAuthLifecycle", () => {
       data: { subscription: { unsubscribe: mockUnsubscribe } },
     });
 
-    const { useAuthLifecycle } = require("./auth.lifecycles");
     const { unmount } = renderHook(() => useAuthLifecycle());
 
     unmount();

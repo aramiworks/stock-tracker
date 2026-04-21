@@ -1,6 +1,6 @@
 import { memo, useState, type ReactNode } from "react";
-import { View, ScrollView, RefreshControl, StyleSheet } from "react-native";
-import { Text, FAB } from "@aramiworks/ui";
+import { View, RefreshControl, StyleSheet } from "react-native";
+import { Text, FAB, DashboardTemplate } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerDashboardHomeScreenState,
@@ -89,41 +89,47 @@ export const TrackerDashboardHomeViews = memo(
       error: <TrackerDashboardHomeErrorStateView onRetry={onRetry} />,
     };
 
+    const showFab = screenState === "default" || screenState === "empty";
+    const fab = showFab ? (
+      <>
+        {screenState === "default" && (
+          <>
+            <TrackerDashboardHomeRefreshFabView onPress={onRefresh} />
+            <View style={styles.fabSpacer} />
+          </>
+        )}
+        <FAB
+          icon="add"
+          color="primary"
+          onPress={() => setShowAccountModal(true)}
+          accessibilityLabel={t("dashboard.addAccountFab")}
+          testID="add-account-fab"
+        />
+      </>
+    ) : undefined;
+
     return (
-      <View style={styles.screen} testID="dashboard-home-screen">
-        <View style={styles.statusBar} />
-        <View style={styles.appBar}>
-          <Text role="title" size="large" testID="dashboard-home-title">
-            {t("dashboard.title")}
-          </Text>
-        </View>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+      <>
+        <DashboardTemplate
+          testID="dashboard-home-screen"
+          topBar={
+            <>
+              <View style={styles.statusBar} />
+              <View style={styles.appBar}>
+                <Text role="title" size="large" testID="dashboard-home-title">
+                  {t("dashboard.title")}
+                </Text>
+              </View>
+            </>
+          }
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
           }
+          contentContainerStyle={styles.scrollContent}
+          fab={fab}
         >
           {content[screenState ?? "default"]}
-        </ScrollView>
-        {(screenState === "default" || screenState === "empty") && (
-          <View style={styles.fabContainer}>
-            {screenState === "default" && (
-              <>
-                <TrackerDashboardHomeRefreshFabView onPress={onRefresh} />
-                <View style={styles.fabSpacer} />
-              </>
-            )}
-            <FAB
-              icon="add"
-              color="primary"
-              onPress={() => setShowAccountModal(true)}
-              accessibilityLabel={t("dashboard.addAccountFab")}
-              testID="add-account-fab"
-            />
-          </View>
-        )}
+        </DashboardTemplate>
         {onCreateAccount && (
           <TrackerAccountFormModalView
             visible={showAccountModal}
@@ -131,7 +137,7 @@ export const TrackerDashboardHomeViews = memo(
             onSubmit={onCreateAccount}
           />
         )}
-      </View>
+      </>
     );
   },
 );
@@ -139,10 +145,6 @@ export const TrackerDashboardHomeViews = memo(
 TrackerDashboardHomeViews.displayName = "TrackerDashboardHomeViews";
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
   statusBar: {
     height: 54,
   },
@@ -151,19 +153,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
   },
-  scrollView: {
-    flex: 1,
-  },
   scrollContent: {
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingBottom: 80,
-  },
-  fabContainer: {
-    position: "absolute",
-    bottom: 96,
-    right: 20,
-    alignItems: "center",
+    paddingBottom: 64,
   },
   fabSpacer: {
     height: 12,

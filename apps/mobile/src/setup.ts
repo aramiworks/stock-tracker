@@ -100,6 +100,16 @@ jest.mock("@aramiworks/ui", () => {
       require("react").createElement(View, { testID: "progress-indicator" }),
     OverviewLayout: (props: Record<string, unknown>) =>
       require("react").createElement(View, null, props.children),
+    DashboardTemplate: (props: Record<string, unknown>) => {
+      const React = require("react");
+      return React.createElement(
+        View,
+        { testID: props.testID },
+        props.topBar ?? null,
+        props.children ?? null,
+        props.fab ?? null,
+      );
+    },
   };
 });
 

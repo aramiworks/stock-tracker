@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
 
 jest.mock("@apollo/client/react", () => {
   const { View } = require("react-native");

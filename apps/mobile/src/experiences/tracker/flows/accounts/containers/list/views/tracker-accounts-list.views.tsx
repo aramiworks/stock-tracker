@@ -1,13 +1,6 @@
 import { memo, useState, type ReactNode } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  RefreshControl,
-  StyleSheet,
-  Pressable,
-  Alert,
-} from "react-native";
+import { View, RefreshControl, StyleSheet, Alert } from "react-native";
+import { Text, FAB, ListTemplate, SearchBar } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsListScreenState,
@@ -20,7 +13,6 @@ import { TrackerAccountsListErrorStateView } from "./tracker-accounts-list-error
 import { TrackerAccountsListSkeletonCardView } from "./tracker-accounts-list-skeletonCard.view";
 import { TrackerAccountsListSortToggleView } from "./tracker-accounts-list-sortToggle.view";
 import { TrackerAccountFormModalView } from "@/experiences/tracker/views/tracker-accountFormModal.view";
-import { SearchBar } from "@aramiworks/ui";
 
 const STORYBOOK_ACCOUNTS: SaAccountListItem[] = [
   {
@@ -157,58 +149,65 @@ export const TrackerAccountsListViews = memo(
       error: <TrackerAccountsListErrorStateView onRetry={onRetry} />,
     };
 
-    return (
-      <View style={styles.screen} testID="accounts-list-screen">
-        <View style={styles.statusBar} />
-        <View style={styles.appBar}>
-          <Text style={styles.appBarTitle} testID="accounts-list-title">
-            {t("accounts.list.title")}
-          </Text>
-        </View>
-        {screenState !== "error" && (
-          <>
-            {onSearchChange && (
-              <SearchBar
-                value={searchQuery}
-                onChangeText={onSearchChange}
-                placeholder={t(
-                  "accounts.list.searchPlaceholder",
-                  "부티크 검색...",
-                )}
-                testID="accounts-list-search"
+    const showFab = screenState === "default" || screenState === "empty";
+    const fab = showFab ? (
+      <FAB
+        icon="add"
+        color="primary"
+        onPress={() => setShowAccountModal(true)}
+        accessibilityLabel={t("accounts.list.addAccountFab", "계좌 추가")}
+        testID="add-account-fab"
+      />
+    ) : undefined;
+
+    const headerContent =
+      screenState !== "error" && (onSearchChange || onSortByToggle) ? (
+        <>
+          {onSearchChange && (
+            <SearchBar
+              value={searchQuery}
+              onChangeText={onSearchChange}
+              placeholder={t(
+                "accounts.list.searchPlaceholder",
+                "부티크 검색...",
+              )}
+              testID="accounts-list-search"
+            />
+          )}
+          {onSortByToggle && (
+            <View style={styles.sortBar} testID="sort-toggle-bar">
+              <TrackerAccountsListSortToggleView
+                sortBy={sortBy}
+                onToggle={onSortByToggle}
               />
-            )}
-            {onSortByToggle && (
-              <View style={styles.sortBar} testID="sort-toggle-bar">
-                <TrackerAccountsListSortToggleView
-                  sortBy={sortBy}
-                  onToggle={onSortByToggle}
-                />
+            </View>
+          )}
+        </>
+      ) : undefined;
+
+    return (
+      <>
+        <ListTemplate
+          testID="accounts-list-screen"
+          topBar={
+            <>
+              <View style={styles.statusBar} />
+              <View style={styles.appBar}>
+                <Text role="title" size="large" testID="accounts-list-title">
+                  {t("accounts.list.title")}
+                </Text>
               </View>
-            )}
-          </>
-        )}
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+            </>
+          }
+          headerContent={headerContent}
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
           }
+          contentContainerStyle={styles.scrollContent}
+          fab={fab}
         >
           {content[screenState]}
-        </ScrollView>
-        {(screenState === "default" || screenState === "empty") && (
-          <View style={styles.fabContainer}>
-            <Pressable
-              style={styles.addFab}
-              onPress={() => setShowAccountModal(true)}
-              testID="add-account-fab"
-            >
-              <Text style={styles.addFabIcon}>+</Text>
-            </Pressable>
-          </View>
-        )}
+        </ListTemplate>
         {onCreateAccount && (
           <TrackerAccountFormModalView
             visible={showAccountModal}
@@ -216,7 +215,7 @@ export const TrackerAccountsListViews = memo(
             onSubmit={onCreateAccount}
           />
         )}
-      </View>
+      </>
     );
   },
 );
@@ -224,10 +223,6 @@ export const TrackerAccountsListViews = memo(
 TrackerAccountsListViews.displayName = "TrackerAccountsListViews";
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
   statusBar: {
     height: 54,
   },
@@ -236,17 +231,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
   },
-  appBarTitle: {
-    fontFamily: "Inter",
-    fontWeight: "700",
-    fontSize: 20,
-    color: "#1A1A1A",
-  },
   sortBar: {
     paddingBottom: 12,
-  },
-  scrollView: {
-    flex: 1,
   },
   scrollContent: {
     alignItems: "center",
@@ -255,28 +241,5 @@ const styles = StyleSheet.create({
   },
   spacer12: {
     height: 12,
-  },
-  fabContainer: {
-    position: "absolute",
-    bottom: 96,
-    right: 20,
-  },
-  addFab: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#FF2D55",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-  },
-  addFabIcon: {
-    fontSize: 24,
-    color: "#FFFFFF",
-    fontFamily: "Inter",
-    fontWeight: "700",
   },
 });

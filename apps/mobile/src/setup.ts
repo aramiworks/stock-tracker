@@ -110,6 +110,17 @@ jest.mock("@aramiworks/ui", () => {
         props.fab ?? null,
       );
     },
+    ListTemplate: (props: Record<string, unknown>) => {
+      const React = require("react");
+      return React.createElement(
+        View,
+        { testID: props.testID },
+        props.topBar ?? null,
+        props.headerContent ?? null,
+        props.children ?? null,
+        props.fab ?? null,
+      );
+    },
   };
 });
 

@@ -1,12 +1,6 @@
 import { memo, type ReactNode } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  RefreshControl,
-  StyleSheet,
-  Alert,
-} from "react-native";
+import { View, RefreshControl, StyleSheet, Alert } from "react-native";
+import { Text, ListTemplate, SearchBar } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerHistoryBrowseScreenState,
@@ -20,7 +14,6 @@ import { TrackerHistoryBrowsePurchaseRowView } from "./tracker-history-browse-pu
 import { TrackerHistoryBrowseEmptyStateView } from "./tracker-history-browse-emptyState.view";
 import { TrackerHistoryBrowseErrorStateView } from "./tracker-history-browse-errorState.view";
 import { TrackerHistoryBrowseSkeletonCardView } from "./tracker-history-browse-skeletonCard.view";
-import { SearchBar } from "@aramiworks/ui";
 
 const STORYBOOK_PURCHASES: PurchaseHistoryItem[] = [
   {
@@ -132,52 +125,56 @@ export const TrackerHistoryBrowseViews = memo(
       error: <TrackerHistoryBrowseErrorStateView onRetry={onRetry} />,
     };
 
+    const headerContent =
+      screenState !== "error" ? (
+        <>
+          {onSearchChange && (
+            <SearchBar
+              value={searchQuery}
+              onChangeText={onSearchChange}
+              placeholder={t(
+                "history.browse.searchPlaceholder",
+                "부티크 검색...",
+              )}
+              testID="history-browse-search"
+            />
+          )}
+          <View style={styles.filterBar} testID="date-filter-bar">
+            <TrackerHistoryBrowseDateFilterChipsView
+              selected={selectedFilter}
+              onSelect={onFilterSelect}
+            />
+          </View>
+          <View style={styles.categoryBar} testID="category-filter-bar">
+            <TrackerHistoryBrowseCategoryFilterChipsView
+              selected={selectedCategory}
+              onSelect={onCategorySelect}
+            />
+          </View>
+        </>
+      ) : undefined;
+
     return (
-      <View style={styles.screen} testID="history-browse-screen">
-        <View style={styles.statusBar} />
-        <View style={styles.appBar}>
-          <Text style={styles.appBarTitle} testID="history-browse-title">
-            {t("history.browse.title")}
-          </Text>
-        </View>
-        {screenState !== "error" && (
+      <ListTemplate
+        testID="history-browse-screen"
+        topBar={
           <>
-            {onSearchChange && (
-              <SearchBar
-                value={searchQuery}
-                onChangeText={onSearchChange}
-                placeholder={t(
-                  "history.browse.searchPlaceholder",
-                  "부티크 검색...",
-                )}
-                testID="history-browse-search"
-              />
-            )}
-            <View style={styles.filterBar} testID="date-filter-bar">
-              <TrackerHistoryBrowseDateFilterChipsView
-                selected={selectedFilter}
-                onSelect={onFilterSelect}
-              />
-            </View>
-            <View style={styles.categoryBar} testID="category-filter-bar">
-              <TrackerHistoryBrowseCategoryFilterChipsView
-                selected={selectedCategory}
-                onSelect={onCategorySelect}
-              />
+            <View style={styles.statusBar} />
+            <View style={styles.appBar}>
+              <Text role="title" size="large" testID="history-browse-title">
+                {t("history.browse.title")}
+              </Text>
             </View>
           </>
-        )}
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
-          }
-        >
-          {scrollContent[screenState]}
-        </ScrollView>
-      </View>
+        }
+        headerContent={headerContent}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={styles.scrollContent}
+      >
+        {scrollContent[screenState]}
+      </ListTemplate>
     );
   },
 );
@@ -185,10 +182,6 @@ export const TrackerHistoryBrowseViews = memo(
 TrackerHistoryBrowseViews.displayName = "TrackerHistoryBrowseViews";
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
   statusBar: {
     height: 54,
   },
@@ -197,21 +190,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
   },
-  appBarTitle: {
-    fontFamily: "Inter",
-    fontWeight: "700",
-    fontSize: 20,
-    color: "#1A1A1A",
-  },
   filterBar: {
     paddingHorizontal: 20,
     paddingBottom: 8,
   },
   categoryBar: {
     paddingBottom: 12,
-  },
-  scrollView: {
-    flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 20,

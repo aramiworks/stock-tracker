@@ -2,10 +2,12 @@ import { ApolloServer } from "@apollo/server";
 import { buildSubgraphSchema } from "@apollo/subgraph";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { appRouter } from "@stock-tracker/api/trpc";
-import { startTrackerTestServer } from "@stock-tracker/tracker-service/test-server";
 import { prisma } from "@stock-tracker/prisma/client";
 import type { CreateHTTPContextOptions } from "@trpc/server/adapters/standalone";
+import type { ChildProcess } from "node:child_process";
+import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { resolve as pathResolve } from "node:path";
 import { authTypeDefs } from "../auth/views/auth.views.js";
 import { authResolvers } from "../auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "../tracker/views/tracker.views.js";
@@ -31,9 +33,52 @@ async function createContext({ req }: CreateHTTPContextOptions) {
 }
 
 /**
+ * Spawns the tracker-service test server as a child process via tsx.
+ * Avoids transforming @nestjs/* through ts-jest (too slow for CI).
+ * Reads TRACKER_URL=<url> from stdout when the server is ready.
+ */
+function spawnTrackerTestServer(): Promise<{
+  url: string;
+  child: ChildProcess;
+}> {
+  const cliPath = pathResolve(
+    __dirname,
+    "../../../../services/tracker/src/test-server-cli.ts",
+  );
+
+  return new Promise((resolve, reject) => {
+    const child = spawn("npx", ["tsx", cliPath], {
+      env: { ...process.env },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    let stdout = "";
+    child.stdout!.on("data", (chunk: Buffer) => {
+      stdout += chunk.toString();
+      const match = stdout.match(/TRACKER_URL=(.+)/);
+      if (match) {
+        resolve({ url: match[1]!.trim(), child });
+      }
+    });
+
+    let stderr = "";
+    child.stderr!.on("data", (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+
+    child.on("error", reject);
+    child.on("exit", (code) => {
+      if (code !== 0) {
+        reject(new Error(`tracker test server exited ${code}: ${stderr}`));
+      }
+    });
+  });
+}
+
+/**
  * Starts two tRPC servers:
  * - Auth server: standalone tRPC HTTP server from apps/api (auth procedures)
- * - Tracker server: NestJS app from tracker-service (tracker procedures)
+ * - Tracker server: child process running tracker-service via tsx
  */
 export async function startTrpcServers(): Promise<TrpcServersHandle> {
   // Auth server — standalone tRPC HTTP server from apps/api
@@ -61,14 +106,15 @@ export async function startTrpcServers(): Promise<TrpcServersHandle> {
     });
   });
 
-  // Tracker server — NestJS app from tracker-service
-  const trackerHandle = await startTrackerTestServer();
+  // Tracker server — spawned as child process (avoids ts-jest @nestjs transform)
+  const trackerHandle = await spawnTrackerTestServer();
 
   return {
     apiUrl: apiHandle.url,
     trackerUrl: trackerHandle.url,
     close: async () => {
-      await Promise.all([apiHandle.close(), trackerHandle.close()]);
+      trackerHandle.child.kill("SIGTERM");
+      await apiHandle.close();
     },
   };
 }

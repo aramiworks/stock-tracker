@@ -26,7 +26,10 @@ export class TrackerHistoryBrowseModels {
     };
 
     if (params.search) {
-      where.item_name = { contains: params.search, mode: "insensitive" };
+      trackerAccountWhere.store_name = {
+        contains: params.search,
+        mode: "insensitive",
+      };
     }
 
     if (params.accountId) {

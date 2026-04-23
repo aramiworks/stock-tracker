@@ -28,11 +28,11 @@ export async function startTrackerTestServer(): Promise<{
     }),
   );
 
-  await app.listen(0);
-  const appUrl = await app.getUrl();
+  await app.listen(0, "127.0.0.1");
+  const port = (app.getHttpServer().address() as { port: number }).port;
 
   return {
-    url: `${appUrl}/trpc`,
+    url: `http://127.0.0.1:${port}/trpc`,
     close: () => app.close(),
   };
 }

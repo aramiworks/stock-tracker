@@ -5,6 +5,17 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { AppModule } from "./app.module.js";
 import { TrpcRouter } from "./trpc/trpc.router.js";
 
+// Set placeholder env vars for NestJS config validation in test.
+// The test server doesn't use Supabase — only the schema validation needs them.
+const testDefaults: Record<string, string> = {
+  SUPABASE_URL: "http://localhost:54321",
+  SUPABASE_ANON_KEY: "test-anon-key",
+  SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+};
+for (const [key, value] of Object.entries(testDefaults)) {
+  if (!process.env[key]) process.env[key] = value;
+}
+
 /**
  * Starts a tracker-service NestJS app on a random port for e2e testing.
  * Returns the base tRPC URL (with /trpc path) and a close function.
@@ -14,7 +25,7 @@ export async function startTrackerTestServer(): Promise<{
   close: () => Promise<void>;
 }> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: false,
+    abortOnError: false,
   });
 
   const trpcRouter = app.get(TrpcRouter);

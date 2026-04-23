@@ -24,9 +24,11 @@ export async function startTrackerTestServer(): Promise<{
   url: string;
   close: () => Promise<void>;
 }> {
-  // Create DI context without starting an HTTP server
+  // Create DI context without starting an HTTP server.
+  // abortOnError: false makes NestJS throw instead of process.exit(1).
   const appContext = await NestFactory.createApplicationContext(AppModule, {
-    logger: false,
+    logger: ["error"],
+    abortOnError: false,
   });
 
   const trpcRouter = appContext.get(TrpcRouter);

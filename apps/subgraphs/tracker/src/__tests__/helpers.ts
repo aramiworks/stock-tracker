@@ -52,11 +52,13 @@ function spawnTrackerTestServer(): Promise<{
       stdio: ["ignore", "pipe", "pipe"],
     });
 
+    let resolved = false;
     let stdout = "";
     child.stdout!.on("data", (chunk: Buffer) => {
       stdout += chunk.toString();
       const match = stdout.match(/TRACKER_URL=(.+)/);
       if (match) {
+        resolved = true;
         resolve({ url: match[1]!.trim(), child });
       }
     });
@@ -67,9 +69,13 @@ function spawnTrackerTestServer(): Promise<{
     });
 
     child.on("error", reject);
-    child.on("exit", (code) => {
-      if (code !== 0) {
-        reject(new Error(`tracker test server exited ${code}: ${stderr}`));
+    child.on("exit", (code, signal) => {
+      if (!resolved) {
+        reject(
+          new Error(
+            `tracker test server exited before ready (code=${code}, signal=${signal}): ${stderr}`,
+          ),
+        );
       }
     });
   });

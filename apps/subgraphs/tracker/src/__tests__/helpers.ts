@@ -116,7 +116,13 @@ export async function startTrpcServers(): Promise<TrpcServersHandle> {
   });
 
   // Tracker server — spawned as child process (avoids ts-jest @nestjs transform)
-  const trackerHandle = await spawnTrackerTestServer();
+  let trackerHandle: Awaited<ReturnType<typeof spawnTrackerTestServer>>;
+  try {
+    trackerHandle = await spawnTrackerTestServer();
+  } catch (err) {
+    await apiHandle.close();
+    throw err;
+  }
 
   return {
     apiUrl: apiHandle.url,

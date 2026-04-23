@@ -1,7 +1,7 @@
 import { ApolloServer } from "@apollo/server";
 import { PrismaClient } from "@prisma/client";
 import {
-  startTrpcServer,
+  startTrpcServers,
   createTestApolloServer,
   executeAs,
 } from "./helpers.js";
@@ -10,17 +10,19 @@ const prisma = new PrismaClient();
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000001";
 
 let server: ApolloServer;
-let trpcUrl: string;
-let closeTrpc: () => Promise<void>;
+let apiUrl: string;
+let trackerUrl: string;
+let closeServers: () => Promise<void>;
 
 let seededAccountId: string;
 let seededAccountId2: string;
 let seededPurchaseId: string;
 
 beforeAll(async () => {
-  const trpcHandle = await startTrpcServer();
-  trpcUrl = trpcHandle.url;
-  closeTrpc = trpcHandle.close;
+  const handles = await startTrpcServers();
+  apiUrl = handles.apiUrl;
+  trackerUrl = handles.trackerUrl;
+  closeServers = handles.close;
 
   server = createTestApolloServer();
   await server.start();
@@ -88,7 +90,7 @@ afterAll(async () => {
   await prisma.auth_users.deleteMany({ where: { id: TEST_USER_ID } });
   await prisma.$disconnect();
   await server.stop();
-  await closeTrpc();
+  await closeServers();
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -106,7 +108,8 @@ function exec(
     server,
     query,
     variables,
-    trpcUrl,
+    apiUrl,
+    trackerUrl,
     userId: userId ?? TEST_USER_ID,
   });
 }
@@ -116,7 +119,8 @@ function execUnauth(query: string, variables?: Record<string, unknown>) {
     server,
     query,
     variables,
-    trpcUrl,
+    apiUrl,
+    trackerUrl,
     userId: undefined,
   });
 }

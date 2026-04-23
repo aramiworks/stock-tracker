@@ -37,19 +37,8 @@ const config: Config = {
     // Empty stubs (export {})
     "!src/**/*.lifecycles.ts",
     "!src/**/*.experience.ts",
-    "!src/tracker/controllers/tracker.controllers.ts",
-    "!src/tracker/models/tracker.models.ts",
-    "!src/tracker/views/tracker.views.ts",
-    "!src/tracker/flows/*/controllers/*.controllers.ts",
-    "!src/tracker/flows/*/models/*.models.ts",
-    "!src/tracker/flows/*/views/*.views.ts",
-    // Metadata stubs (name-only objects, constant arrays)
-    "!src/tracker/flows/tracker.flows.ts",
-    "!src/tracker/flows/*/*.flow.ts",
-    "!src/tracker/flows/*/containers/*/*.container.ts",
     // Router procedure wiring (lambda bodies tested via controller tests)
     "!src/trpc/auth.router.ts",
-    "!src/trpc/tracker.router.ts",
     // Thin config wrapper (delegates to @stock-tracker/config)
     "!src/common/logger.ts",
   ],

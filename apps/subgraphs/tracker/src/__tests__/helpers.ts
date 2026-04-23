@@ -4,7 +4,10 @@ import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { appRouter } from "@stock-tracker/api/trpc";
 import { prisma } from "@stock-tracker/prisma/client";
 import type { CreateHTTPContextOptions } from "@trpc/server/adapters/standalone";
+import type { ChildProcess } from "node:child_process";
+import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { resolve as pathResolve } from "node:path";
 import { authTypeDefs } from "../auth/views/auth.views.js";
 import { authResolvers } from "../auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "../tracker/views/tracker.views.js";
@@ -14,8 +17,9 @@ import {
   createTrackerTrpcClient,
 } from "../clients/trpc.js";
 
-interface TrpcServerHandle {
-  url: string;
+interface TrpcServersHandle {
+  apiUrl: string;
+  trackerUrl: string;
   close: () => Promise<void>;
 }
 
@@ -28,8 +32,66 @@ async function createContext({ req }: CreateHTTPContextOptions) {
   return { prisma, userId, userRole, requestId };
 }
 
-export async function startTrpcServer(): Promise<TrpcServerHandle> {
-  return new Promise((resolve) => {
+/**
+ * Spawns the tracker-service test server as a child process via tsx.
+ * Avoids transforming @nestjs/* through ts-jest (too slow for CI).
+ * Reads TRACKER_URL=<url> from stdout when the server is ready.
+ */
+function spawnTrackerTestServer(): Promise<{
+  url: string;
+  child: ChildProcess;
+}> {
+  const cliPath = pathResolve(
+    __dirname,
+    "../../../../services/tracker/src/test-server-cli.ts",
+  );
+
+  return new Promise((resolve, reject) => {
+    const child = spawn("npx", ["tsx", cliPath], {
+      env: { ...process.env },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    let resolved = false;
+    let stdout = "";
+    child.stdout!.on("data", (chunk: Buffer) => {
+      stdout += chunk.toString();
+      const match = stdout.match(/TRACKER_URL=(.+)/);
+      if (match) {
+        resolved = true;
+        resolve({ url: match[1]!.trim(), child });
+      }
+    });
+
+    let stderr = "";
+    child.stderr!.on("data", (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+
+    child.on("error", reject);
+    child.on("exit", (code, signal) => {
+      if (!resolved) {
+        reject(
+          new Error(
+            `tracker test server exited before ready (code=${code}, signal=${signal}): ${stderr}`,
+          ),
+        );
+      }
+    });
+  });
+}
+
+/**
+ * Starts two tRPC servers:
+ * - Auth server: standalone tRPC HTTP server from apps/api (auth procedures)
+ * - Tracker server: child process running tracker-service via tsx
+ */
+export async function startTrpcServers(): Promise<TrpcServersHandle> {
+  // Auth server — standalone tRPC HTTP server from apps/api
+  const apiHandle = await new Promise<{
+    url: string;
+    close: () => Promise<void>;
+  }>((resolve) => {
     const httpServer = createHTTPServer({
       router: appRouter,
       createContext,
@@ -49,6 +111,21 @@ export async function startTrpcServer(): Promise<TrpcServerHandle> {
       });
     });
   });
+
+  // Tracker server — spawned as child process (avoids ts-jest @nestjs transform)
+  const trackerHandle = await spawnTrackerTestServer();
+
+  return {
+    apiUrl: apiHandle.url,
+    trackerUrl: trackerHandle.url,
+    close: async () => {
+      await new Promise<void>((res) => {
+        trackerHandle.child.on("exit", () => res());
+        trackerHandle.child.kill("SIGTERM");
+      });
+      await apiHandle.close();
+    },
+  };
 }
 
 export function createTestApolloServer(): ApolloServer {
@@ -79,21 +156,22 @@ interface ExecuteOptions {
   server: ApolloServer;
   query: string;
   variables?: Record<string, unknown>;
-  trpcUrl: string;
+  apiUrl: string;
+  trackerUrl: string;
   userId?: string;
 }
 
 /**
  * Execute a GraphQL operation against the test Apollo server with real
- * tRPC clients pointing at the running tRPC server. Both the API client
- * (for auth) and tracker client (for tracker) point at the same test
- * server since apps/api's appRouter serves both namespaces.
+ * tRPC clients. The API client points at the auth server (apps/api)
+ * and the tracker client points at the tracker-service.
  */
 export async function executeAs({
   server,
   query,
   variables,
-  trpcUrl,
+  apiUrl,
+  trackerUrl,
   userId,
 }: ExecuteOptions) {
   const headers: Record<string, string | undefined> = {
@@ -104,8 +182,8 @@ export async function executeAs({
 
   const prevApi = process.env["TRPC_API_URL"];
   const prevTracker = process.env["TRPC_TRACKER_SERVICE_URL"];
-  process.env["TRPC_API_URL"] = trpcUrl;
-  process.env["TRPC_TRACKER_SERVICE_URL"] = trpcUrl;
+  process.env["TRPC_API_URL"] = apiUrl;
+  process.env["TRPC_TRACKER_SERVICE_URL"] = trackerUrl;
 
   const apiTrpc = createApiTrpcClient(headers);
   const trackerTrpc = createTrackerTrpcClient(headers);

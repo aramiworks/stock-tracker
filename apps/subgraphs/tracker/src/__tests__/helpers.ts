@@ -36,9 +36,10 @@ async function createContext({ req }: CreateHTTPContextOptions) {
 }
 
 /**
- * Spawns the tracker-service test server as a child process via tsx.
- * Avoids transforming @nestjs/* through ts-jest (too slow for CI).
- * Reads TRACKER_URL=<url> from stdout when the server is ready.
+ * Spawns the tracker-service test server as a child process.
+ * Uses the pre-compiled JS (tsc output in dist/) to avoid ts-jest
+ * transforming @nestjs/* (too slow) and to support emitDecoratorMetadata
+ * (tsx/esbuild doesn't). Reads TRACKER_URL=<url> from stdout when ready.
  */
 function spawnTrackerTestServer(): Promise<{
   url: string;
@@ -46,11 +47,11 @@ function spawnTrackerTestServer(): Promise<{
 }> {
   const cliPath = pathResolve(
     __dirname,
-    "../../../../services/tracker/src/test-server-cli.ts",
+    "../../../../services/tracker/dist/test-server-cli.js",
   );
 
   return new Promise((resolve, reject) => {
-    const child = spawn("npx", ["tsx", cliPath], {
+    const child = spawn("node", [cliPath], {
       env: {
         ...process.env,
         // NestJS config validation needs these — the test server doesn't

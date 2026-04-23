@@ -123,7 +123,11 @@ export async function startTrpcServers(): Promise<TrpcServersHandle> {
     trackerUrl: trackerHandle.url,
     close: async () => {
       await new Promise<void>((res) => {
-        trackerHandle.child.on("exit", () => res());
+        if (trackerHandle.child.exitCode !== null) {
+          res();
+          return;
+        }
+        trackerHandle.child.once("exit", () => res());
         trackerHandle.child.kill("SIGTERM");
       });
       await apiHandle.close();

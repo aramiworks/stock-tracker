@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
-import type { NestExpressApplication } from "@nestjs/platform-express";
-import { createExpressMiddleware } from "@trpc/server/adapters/express";
+import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { AppModule } from "./app.module.js";
 import { TrpcRouter } from "./trpc/trpc.router.js";
 
@@ -17,33 +16,44 @@ for (const [key, value] of Object.entries(testDefaults)) {
 }
 
 /**
- * Starts a tracker-service NestJS app on a random port for e2e testing.
- * Returns the base tRPC URL (with /trpc path) and a close function.
+ * Starts a tracker-service tRPC server on a random port for e2e testing.
+ * Uses NestJS application context (no HTTP server) to resolve DI, then
+ * creates a standalone tRPC HTTP server — avoids Express hanging issues.
  */
 export async function startTrackerTestServer(): Promise<{
   url: string;
   close: () => Promise<void>;
 }> {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    abortOnError: false,
+  // Create DI context without starting an HTTP server
+  const appContext = await NestFactory.createApplicationContext(AppModule, {
+    logger: false,
   });
 
-  const trpcRouter = app.get(TrpcRouter);
-  const expressApp = app.getHttpAdapter().getInstance();
+  const trpcRouter = appContext.get(TrpcRouter);
 
-  expressApp.use(
-    "/trpc",
-    createExpressMiddleware({
+  // Use standalone tRPC HTTP server (same pattern as apps/api tests)
+  return new Promise((resolve) => {
+    const httpServer = createHTTPServer({
       router: trpcRouter.appRouter,
-      createContext: trpcRouter.createContext,
-    }),
-  );
+      // Cast: standalone adapter uses IncomingMessage, NestJS context uses
+      // Express Request — both expose req.headers identically at runtime.
+      createContext: trpcRouter.createContext as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    });
 
-  await app.listen(0, "127.0.0.1");
-  const port = (app.getHttpServer().address() as { port: number }).port;
-
-  return {
-    url: `http://127.0.0.1:${port}/trpc`,
-    close: () => app.close(),
-  };
+    const listener = httpServer.listen(0, () => {
+      const address = listener.address();
+      const port =
+        typeof address === "object" && address !== null ? address.port : 0;
+      const url = `http://localhost:${port}`;
+      resolve({
+        url,
+        close: async () => {
+          await new Promise<void>((res, rej) => {
+            listener.close((err?: Error) => (err ? rej(err) : res()));
+          });
+          await appContext.close();
+        },
+      });
+    });
+  });
 }

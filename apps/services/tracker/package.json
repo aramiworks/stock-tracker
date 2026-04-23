@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./trpc": "./src/trpc/trpc.router.ts"
+    "./trpc": "./src/trpc/trpc.router.ts",
+    "./test-server": "./src/test-server.ts"
   },
   "scripts": {
     "dev": "tsx watch src/main.ts",

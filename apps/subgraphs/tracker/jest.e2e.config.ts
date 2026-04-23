@@ -14,6 +14,12 @@ const config: Config = {
       "<rootDir>/../../../packages/validation/src/index.ts",
     "^@stock-tracker/types$": "<rootDir>/../../../packages/types/src/index.ts",
     "^@stock-tracker/api/trpc$": "<rootDir>/../../api/src/trpc/router.ts",
+    "^@stock-tracker/tracker-service/test-server$":
+      "<rootDir>/../../services/tracker/src/test-server.ts",
+    "^@stock-tracker/tracker-service/trpc$":
+      "<rootDir>/../../services/tracker/src/trpc/trpc.router.ts",
+    "^@stock-tracker/nestjs-common$":
+      "<rootDir>/../../../packages/nestjs-common/src/index.ts",
   },
   transform: {
     "^.+\\.tsx?$": [
@@ -24,7 +30,9 @@ const config: Config = {
       },
     ],
   },
-  transformIgnorePatterns: ["node_modules/(?!(@stock-tracker)/)"],
+  transformIgnorePatterns: [
+    "node_modules/(?!(@stock-tracker|@nestjs|reflect-metadata)/)",
+  ],
   testMatch: ["**/__tests__/**/*.e2e.test.ts"],
   testTimeout: 30000,
 };

@@ -24,9 +24,7 @@ const config: Config = {
       },
     ],
   },
-  transformIgnorePatterns: [
-    "node_modules/(?!(@stock-tracker)/)",
-  ],
+  transformIgnorePatterns: ["node_modules/(?!(@stock-tracker)/)"],
   testMatch: ["**/__tests__/**/*.e2e.test.ts"],
   testTimeout: 30000,
 };

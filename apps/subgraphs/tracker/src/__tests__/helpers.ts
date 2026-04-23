@@ -7,7 +7,8 @@ import type { CreateHTTPContextOptions } from "@trpc/server/adapters/standalone"
 import type { ChildProcess } from "node:child_process";
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { resolve as pathResolve } from "node:path";
+import { dirname, resolve as pathResolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { authTypeDefs } from "../auth/views/auth.views.js";
 import { authResolvers } from "../auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "../tracker/views/tracker.views.js";
@@ -16,6 +17,8 @@ import {
   createApiTrpcClient,
   createTrackerTrpcClient,
 } from "../clients/trpc.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 interface TrpcServersHandle {
   apiUrl: string;

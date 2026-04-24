@@ -35,8 +35,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build packages
+        run: npx turbo run build --filter='./packages/*'
       - name: Generate Prisma client
-        run: npx prisma generate --schema packages/prisma/prisma/schema
+        run: npx turbo run db:generate
       - name: Push schema to database
         run: npx prisma db push --schema packages/prisma/prisma/schema --skip-generate
         env:
@@ -45,6 +47,8 @@ jobs:
         run: npm run test:e2e -w apps/api
         env:
           DATABASE_URL: postgresql://postgres:test@localhost:5432/test
+      - name: Build tracker-service
+        run: npx tsc -p apps/services/tracker/tsconfig.json
       - name: Run subgraph e2e tests
         run: npm run test:e2e -w apps/subgraphs/tracker
         env:

@@ -2,12 +2,12 @@ import { memo, useState, useCallback, type ReactNode } from "react";
 import {
   View,
   Text,
-  ScrollView,
   RefreshControl,
   StyleSheet,
   Pressable,
   Alert,
 } from "react-native";
+import { DetailTemplate } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsDetailScreenState,
@@ -217,51 +217,56 @@ export const TrackerAccountsDetailViews = memo(
     };
 
     return (
-      <View style={styles.screen} testID="accounts-detail-screen">
-        <View style={styles.statusBar} />
-        <View style={styles.appBar}>
-          <Pressable
-            onPress={onBack}
-            style={styles.backButton}
-            testID="accounts-detail-back"
-          >
-            <Text style={styles.backArrow}>←</Text>
-          </Pressable>
-          <Text style={styles.appBarTitle}>{t("accounts.detail.title")}</Text>
-          <View style={styles.appBarSpacer} />
-          {screenState === "default" && onUpdateAccount && (
-            <Pressable
-              onPress={() => setEditAccountVisible(true)}
-              style={styles.appBarAction}
-              testID="accounts-detail-edit"
-            >
-              <Text style={styles.appBarActionText}>
-                {t("accounts.detail.editAction")}
-              </Text>
-            </Pressable>
-          )}
-          {screenState === "default" && onDeleteAccount && (
-            <Pressable
-              onPress={handleDeleteAccount}
-              style={styles.appBarAction}
-              testID="accounts-detail-delete"
-            >
-              <Text style={styles.appBarDeleteText}>
-                {t("accounts.detail.deleteAction")}
-              </Text>
-            </Pressable>
-          )}
-        </View>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+      <>
+        <DetailTemplate
+          testID="accounts-detail-screen"
+          topBar={
+            <>
+              <View style={styles.statusBar} />
+              <View style={styles.appBar}>
+                <Pressable
+                  onPress={onBack}
+                  style={styles.backButton}
+                  testID="accounts-detail-back"
+                >
+                  <Text style={styles.backArrow}>←</Text>
+                </Pressable>
+                <Text style={styles.appBarTitle}>
+                  {t("accounts.detail.title")}
+                </Text>
+                <View style={styles.appBarSpacer} />
+                {screenState === "default" && onUpdateAccount && (
+                  <Pressable
+                    onPress={() => setEditAccountVisible(true)}
+                    style={styles.appBarAction}
+                    testID="accounts-detail-edit"
+                  >
+                    <Text style={styles.appBarActionText}>
+                      {t("accounts.detail.editAction")}
+                    </Text>
+                  </Pressable>
+                )}
+                {screenState === "default" && onDeleteAccount && (
+                  <Pressable
+                    onPress={handleDeleteAccount}
+                    style={styles.appBarAction}
+                    testID="accounts-detail-delete"
+                  >
+                    <Text style={styles.appBarDeleteText}>
+                      {t("accounts.detail.deleteAction")}
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            </>
+          }
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
           }
+          contentContainerStyle={styles.scrollContent}
         >
           {content[screenState]}
-        </ScrollView>
+        </DetailTemplate>
 
         {onUpdateAccount && (
           <TrackerAccountsDetailEditAccountModalView
@@ -293,7 +298,7 @@ export const TrackerAccountsDetailViews = memo(
             }
           />
         )}
-      </View>
+      </>
     );
   },
 );
@@ -301,10 +306,6 @@ export const TrackerAccountsDetailViews = memo(
 TrackerAccountsDetailViews.displayName = "TrackerAccountsDetailViews";
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
   statusBar: {
     height: 54,
   },
@@ -345,9 +346,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
     color: "#999",
-  },
-  scrollView: {
-    flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 20,

@@ -1,5 +1,17 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
+
+jest.mock("@aramiworks/ui", () => {
+  const { View, Text: RNText } = require("react-native");
+  const React = require("react");
+  return {
+    XStack: ({ children, testID }: Record<string, unknown>) =>
+      React.createElement(View, { testID }, children),
+    Text: ({ children }: Record<string, unknown>) =>
+      React.createElement(RNText, {}, children),
+  };
+});
+
 import { TrackerEligibilityBadgeView } from "./tracker-eligibilityBadge.view";
 
 describe("TrackerEligibilityBadgeView", () => {

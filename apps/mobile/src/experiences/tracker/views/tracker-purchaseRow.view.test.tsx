@@ -1,5 +1,19 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
+
+jest.mock("@aramiworks/ui", () => {
+  const { View, Text: RNText } = require("react-native");
+  const React = require("react");
+  const spread = ({ children, ...rest }: Record<string, unknown>) =>
+    React.createElement(View, rest, children);
+  return {
+    XStack: spread,
+    YStack: spread,
+    Text: ({ children, ...rest }: Record<string, unknown>) =>
+      React.createElement(RNText, rest, children),
+  };
+});
+
 import { TrackerPurchaseRowView } from "./tracker-purchaseRow.view";
 
 describe("TrackerPurchaseRowView", () => {

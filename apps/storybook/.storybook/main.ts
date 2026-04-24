@@ -24,6 +24,25 @@ const config: StorybookConfig = {
             replacement: replacement as string,
           }),
         );
+    // Virtual module plugin: stubs react-native-reanimated's ReactFabric import,
+    // which has no equivalent in react-native-web. Must run before Vite's alias
+    // plugin rewrites the path to react-native-web/... (which doesn't exist).
+    const reactFabricMockPlugin = {
+      name: "mock-react-native-ReactFabric",
+      enforce: "pre" as const,
+      resolveId(id: string) {
+        if (id === "react-native/Libraries/Renderer/shims/ReactFabric") {
+          return "\0react-native-ReactFabric-mock";
+        }
+      },
+      load(id: string) {
+        if (id === "\0react-native-ReactFabric-mock") {
+          return "export default null; export const findHostInstance_DEPRECATED = () => null; export const findNodeHandle = () => null;";
+        }
+      },
+    };
+    config.plugins = [...(config.plugins ?? []), reactFabricMockPlugin];
+
     config.resolve.alias = [
       // Specific sub-path aliases must come before prefix aliases
       {

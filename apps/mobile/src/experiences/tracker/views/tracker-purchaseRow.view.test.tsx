@@ -1,5 +1,21 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
+
+jest.mock("@aramiworks/ui", () => {
+  const { View, Text: RNText } = require("react-native");
+  const React = require("react");
+  const passthrough = (props: Record<string, unknown>) => {
+    const { children, ...rest } = props;
+    return React.createElement(View, rest as object, children);
+  };
+  return {
+    XStack: passthrough,
+    YStack: passthrough,
+    Text: (props: Record<string, unknown>) =>
+      React.createElement(RNText, props, props.children),
+  };
+});
+
 import { TrackerPurchaseRowView } from "./tracker-purchaseRow.view";
 
 describe("TrackerPurchaseRowView", () => {

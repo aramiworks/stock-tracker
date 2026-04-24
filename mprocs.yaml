@@ -33,7 +33,7 @@ procs:
       [
         "sh",
         "-c",
-        "lsof -ti :${TRACKER_SERVICE_PORT:-4020} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/main.ts",
+        "lsof -ti :${TRACKER_SERVICE_PORT:-4020} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- node --watch --loader ts-node/esm src/main.ts",
       ]
     cwd: apps/services/tracker
     env:

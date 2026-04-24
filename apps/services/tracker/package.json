@@ -8,7 +8,7 @@
     "./test-server": "./src/test-server.ts"
   },
   "scripts": {
-    "dev": "node --watch --loader ts-node/esm src/main.ts",
+    "dev": "node --watch --no-warnings=ExperimentalWarning --loader ts-node/esm src/main.ts",
     "build": "tsc",
     "start": "node dist/main.js",
     "lint": "eslint .",
@@ -37,7 +37,6 @@
     "@jest/globals": "^29.7.0",
     "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
-    "tsx": "^4.19.0",
     "typescript": "5.9.2"
   }
 }

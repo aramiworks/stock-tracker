@@ -38,10 +38,12 @@ const MOCK_ACCOUNTS = [
   },
 ];
 
-function setQueryData(overrides: {
-  accounts?: typeof MOCK_ACCOUNTS;
-  totalSpent?: number;
-} = {}) {
+function setQueryData(
+  overrides: {
+    accounts?: typeof MOCK_ACCOUNTS;
+    totalSpent?: number;
+  } = {},
+) {
   (useSuspenseQuery as unknown as jest.Mock).mockReturnValue({
     data: {
       dashboard: {

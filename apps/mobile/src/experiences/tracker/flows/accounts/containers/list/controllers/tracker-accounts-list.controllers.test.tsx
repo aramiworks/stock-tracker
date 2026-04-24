@@ -33,7 +33,12 @@ const MOCK_ACCOUNTS = [
     notes: null,
     createdAt: "2024-01-01",
     purchases: [
-      { id: "p1", itemName: "Watch", amount: 35000000, purchaseDate: "2024-01-15" },
+      {
+        id: "p1",
+        itemName: "Watch",
+        amount: 35000000,
+        purchaseDate: "2024-01-15",
+      },
     ],
   },
   {

@@ -26,10 +26,7 @@ jest.mock("../../../lib/apollo/mocks", () => ({
 }));
 
 import { apolloClient } from "../../../lib/apollo/provider";
-import {
-  AuthControllers,
-  useAuthControllers,
-} from "./auth.controllers";
+import { AuthControllers, useAuthControllers } from "./auth.controllers";
 
 interface ConsumerHandle {
   signOut: () => Promise<void>;
@@ -49,7 +46,7 @@ describe("AuthControllers", () => {
     jest.clearAllMocks();
     resetStoreSpy = jest
       .spyOn(apolloClient, "resetStore")
-      .mockResolvedValue(null);
+      .mockResolvedValue(undefined as never);
   });
 
   afterEach(() => {

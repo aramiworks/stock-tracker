@@ -69,9 +69,7 @@ const Consumer = forwardRef<ConsumerHandle>((_props, ref) => {
   useImperativeHandle(ref, () => ({
     onFilterSelect: ctx.onFilterSelect as (filter: string) => void,
     onSearchChange: ctx.onSearchChange,
-    onCategorySelect: ctx.onCategorySelect as (
-      category: string | null,
-    ) => void,
+    onCategorySelect: ctx.onCategorySelect as (category: string | null) => void,
     onDeletePurchase: ctx.onDeletePurchase,
     onRefresh: ctx.onRefresh,
   }));
@@ -81,9 +79,7 @@ const Consumer = forwardRef<ConsumerHandle>((_props, ref) => {
       <Text testID="purchases">{JSON.stringify(ctx.purchases)}</Text>
       <Text testID="selected-filter">{ctx.selectedFilter}</Text>
       <Text testID="search-query">{ctx.searchQuery}</Text>
-      <Text testID="selected-category">
-        {ctx.selectedCategory ?? "null"}
-      </Text>
+      <Text testID="selected-category">{ctx.selectedCategory ?? "null"}</Text>
       <Text testID="refreshing">{String(ctx.isRefreshing)}</Text>
     </>
   );

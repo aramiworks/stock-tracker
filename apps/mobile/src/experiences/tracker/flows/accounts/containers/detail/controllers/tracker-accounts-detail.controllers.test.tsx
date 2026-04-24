@@ -84,10 +84,7 @@ interface ConsumerHandle {
     amount: number;
     purchaseDate: string;
   }) => Promise<void>;
-  onUpdatePurchase: (
-    id: string,
-    input: { amount?: number },
-  ) => Promise<void>;
+  onUpdatePurchase: (id: string, input: { amount?: number }) => Promise<void>;
   onDeletePurchase: (id: string) => Promise<void>;
   onRefresh: () => void;
 }

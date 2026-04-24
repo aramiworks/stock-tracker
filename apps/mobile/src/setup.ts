@@ -73,63 +73,74 @@ jest.mock("react-i18next", () => ({
 // @aramiworks/ui — stub all exported components as simple passthrough
 jest.mock("@aramiworks/ui", () => {
   const { View, Text: RNText } = require("react-native");
+  const React = require("react");
+  const passthrough = (props: Record<string, unknown>) =>
+    React.createElement(View, { testID: props.testID }, props.children);
   return {
     config: {},
-    Button: (props: Record<string, unknown>) =>
-      require("react").createElement(
+    XStack: passthrough,
+    YStack: passthrough,
+    Skeleton: (props: Record<string, unknown>) =>
+      React.createElement(View, { testID: props.testID || "skeleton" }),
+    Spacer: () => React.createElement(View),
+    EmptyStateTemplate: (props: Record<string, unknown>) =>
+      React.createElement(
         View,
         { testID: props.testID },
-        require("react").createElement(RNText, null, props.children),
+        props.icon ?? null,
+        React.createElement(RNText, null, props.title),
+        React.createElement(RNText, null, props.body),
+        props.action ?? null,
+      ),
+    Button: (props: Record<string, unknown>) =>
+      React.createElement(
+        View,
+        { testID: props.testID, onPress: props.onPress },
+        React.createElement(RNText, null, props.children),
       ),
     Text: (props: Record<string, unknown>) =>
-      require("react").createElement(RNText, props, props.children),
+      React.createElement(RNText, props, props.children),
     FAB: (props: Record<string, unknown>) =>
-      require("react").createElement(View, {
+      React.createElement(View, {
         testID: props.testID,
         onPress: props.onPress,
+        accessibilityLabel: props.accessibilityLabel,
       }),
     FormField: (props: Record<string, unknown>) =>
-      require("react").createElement(View, {
+      React.createElement(View, {
         testID: props.testID || "form-field",
       }),
     SearchBar: (props: Record<string, unknown>) =>
-      require("react").createElement(View, {
+      React.createElement(View, {
         testID: props.testID || "search-bar",
       }),
     ProgressIndicator: () =>
-      require("react").createElement(View, { testID: "progress-indicator" }),
-    OverviewLayout: (props: Record<string, unknown>) =>
-      require("react").createElement(View, null, props.children),
-    DashboardTemplate: (props: Record<string, unknown>) => {
-      const React = require("react");
-      return React.createElement(
+      React.createElement(View, { testID: "progress-indicator" }),
+    OverviewLayout: passthrough,
+    DashboardTemplate: (props: Record<string, unknown>) =>
+      React.createElement(
         View,
         { testID: props.testID },
         props.topBar ?? null,
         props.children ?? null,
         props.fab ?? null,
-      );
-    },
-    ListTemplate: (props: Record<string, unknown>) => {
-      const React = require("react");
-      return React.createElement(
+      ),
+    ListTemplate: (props: Record<string, unknown>) =>
+      React.createElement(
         View,
         { testID: props.testID },
         props.topBar ?? null,
         props.headerContent ?? null,
         props.children ?? null,
         props.fab ?? null,
-      );
-    },
-    DetailTemplate: (props: Record<string, unknown>) => {
-      const React = require("react");
-      return React.createElement(
+      ),
+    DetailTemplate: (props: Record<string, unknown>) =>
+      React.createElement(
         View,
         { testID: props.testID },
         props.topBar ?? null,
         props.children ?? null,
-      );
-    },
+      ),
   };
 });
 

@@ -6,7 +6,7 @@ import {
   purchaseWithAccountOutputSchema,
 } from "./purchase.js";
 
-const today = new Date().toISOString().slice(0, 10);
+const getToday = () => new Date().toISOString().slice(0, 10);
 
 const validCreate = {
   itemName: "Watch",
@@ -115,9 +115,9 @@ describe("purchaseCreateInputSchema", () => {
     expect(
       purchaseCreateInputSchema.parse({
         ...validCreate,
-        purchaseDate: today,
+        purchaseDate: getToday(),
       }).purchaseDate,
-    ).toBe(today);
+    ).toBe(getToday());
   });
 
   it("rejects an invalid date string", () => {

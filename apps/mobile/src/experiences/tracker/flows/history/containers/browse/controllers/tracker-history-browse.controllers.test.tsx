@@ -50,7 +50,7 @@ const MOCK_PURCHASES = [
 ];
 
 function setQueryData(purchases = MOCK_PURCHASES) {
-  (useSuspenseQuery as jest.Mock).mockReturnValue({
+  (useSuspenseQuery as unknown as jest.Mock).mockReturnValue({
     data: { purchases },
     refetch: mockRefetch,
   });

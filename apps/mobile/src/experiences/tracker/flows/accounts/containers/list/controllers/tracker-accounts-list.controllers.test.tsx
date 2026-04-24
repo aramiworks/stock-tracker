@@ -47,7 +47,7 @@ const MOCK_ACCOUNTS = [
 ];
 
 function setQueryData(accounts = MOCK_ACCOUNTS) {
-  (useSuspenseQuery as jest.Mock).mockReturnValue({
+  (useSuspenseQuery as unknown as jest.Mock).mockReturnValue({
     data: { accounts },
     refetch: mockRefetch,
   });
@@ -93,7 +93,7 @@ describe("TrackerAccountsListControllers", () => {
     jest.clearAllMocks();
     const mutations = [mockCreateAccount, mockDeleteAccount];
     let callIdx = 0;
-    (useMutation as jest.Mock).mockImplementation(() => {
+    (useMutation as unknown as jest.Mock).mockImplementation(() => {
       const fn = mutations[callIdx % mutations.length];
       callIdx++;
       return [fn];

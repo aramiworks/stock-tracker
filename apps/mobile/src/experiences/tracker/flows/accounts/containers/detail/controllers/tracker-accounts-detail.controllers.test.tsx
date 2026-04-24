@@ -57,7 +57,7 @@ const MOCK_ACCOUNT = {
 };
 
 function setupMocks(account = MOCK_ACCOUNT) {
-  (useSuspenseQuery as jest.Mock).mockReturnValue({
+  (useSuspenseQuery as unknown as jest.Mock).mockReturnValue({
     data: { account },
     refetch: mockRefetch,
   });
@@ -69,7 +69,7 @@ function setupMocks(account = MOCK_ACCOUNT) {
     mockDeletePurchase,
   ];
   let callIdx = 0;
-  (useMutation as jest.Mock).mockImplementation(() => {
+  (useMutation as unknown as jest.Mock).mockImplementation(() => {
     const fn = mutations[callIdx % mutations.length];
     callIdx++;
     return [fn];

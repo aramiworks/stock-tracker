@@ -49,7 +49,7 @@ describe("AuthControllers", () => {
     jest.clearAllMocks();
     resetStoreSpy = jest
       .spyOn(apolloClient, "resetStore")
-      .mockResolvedValue(undefined);
+      .mockResolvedValue(null);
   });
 
   afterEach(() => {

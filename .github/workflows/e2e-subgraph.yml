@@ -6,6 +6,7 @@ on:
     paths:
       - "apps/subgraphs/tracker/**"
       - "apps/api/**"
+      - "apps/services/tracker/**"
       - "packages/prisma/**"
       - "packages/validation/**"
       - "packages/types/**"
@@ -14,6 +15,7 @@ on:
     paths:
       - "apps/subgraphs/tracker/**"
       - "apps/api/**"
+      - "apps/services/tracker/**"
       - "packages/prisma/**"
       - "packages/validation/**"
       - "packages/types/**"
@@ -56,6 +58,8 @@ jobs:
         run: npx turbo run db:generate
       - name: Push schema to test DB
         run: npx prisma db push --schema packages/prisma/prisma/schema --skip-generate
+      - name: Build tracker-service
+        run: npx tsc -p apps/services/tracker/tsconfig.json
       - name: Run subgraph E2E tests
         working-directory: apps/subgraphs/tracker
         run: NODE_OPTIONS='--experimental-vm-modules' npx jest --config jest.e2e.config.ts

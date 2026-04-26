@@ -10,11 +10,11 @@ fn subgraph_service(service, subgraph) {
             if claims != () {
                 let sub = claims["sub"];
                 if sub != () {
-                    request.headers["x-user-id"] = sub;
+                    request.headers["x-user-id"] = sub.to_string();
                 }
                 let role = claims["role"];
                 if role != () {
-                    request.headers["x-user-role"] = role;
+                    request.headers["x-user-role"] = role.to_string();
                 }
             }
         }

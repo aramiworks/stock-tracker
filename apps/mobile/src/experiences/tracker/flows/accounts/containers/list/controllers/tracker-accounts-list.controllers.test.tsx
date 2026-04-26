@@ -51,7 +51,23 @@ const MOCK_ACCOUNTS = [
   },
 ];
 
-function setQueryData(accounts = MOCK_ACCOUNTS) {
+function setQueryData(
+  accounts: Array<{
+    id: string | null;
+    storeName: string | null;
+    saName: string | null;
+    notes: string | null;
+    createdAt: string;
+    purchases:
+      | Array<{
+          id: string;
+          itemName: string;
+          amount: number;
+          purchaseDate: string;
+        }>
+      | null;
+  }> = MOCK_ACCOUNTS,
+) {
   (useSuspenseQuery as unknown as jest.Mock).mockReturnValue({
     data: { accounts },
     refetch: mockRefetch,

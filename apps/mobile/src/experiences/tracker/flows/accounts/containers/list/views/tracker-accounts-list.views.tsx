@@ -1,6 +1,6 @@
 import { memo, useState, type ReactNode } from "react";
 import { View, RefreshControl, StyleSheet, Alert } from "react-native";
-import { Text, FAB, ListTemplate, SearchBar } from "@aramiworks/ui";
+import { FAB, ListTemplate, SearchBar, TopAppBar } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsListScreenState,
@@ -190,14 +190,11 @@ export const TrackerAccountsListViews = memo(
         <ListTemplate
           testID="accounts-list-screen"
           topBar={
-            <>
-              <View style={styles.statusBar} />
-              <View style={styles.appBar}>
-                <Text role="title" size="large" testID="accounts-list-title">
-                  {t("accounts.list.title")}
-                </Text>
-              </View>
-            </>
+            <TopAppBar
+              type="small"
+              title={t("accounts.list.title")}
+              testID="accounts-list-title"
+            />
           }
           headerContent={headerContent}
           refreshControl={
@@ -223,14 +220,6 @@ export const TrackerAccountsListViews = memo(
 TrackerAccountsListViews.displayName = "TrackerAccountsListViews";
 
 const styles = StyleSheet.create({
-  statusBar: {
-    height: 54,
-  },
-  appBar: {
-    height: 56,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
   sortBar: {
     paddingBottom: 12,
   },

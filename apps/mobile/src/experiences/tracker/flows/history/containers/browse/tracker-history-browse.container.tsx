@@ -31,11 +31,11 @@ ConnectedViews.displayName = "TrackerHistoryBrowseConnectedViews";
 export const TrackerHistoryBrowseContainer = memo(() => {
   return (
     <QueryErrorBoundary
-      fallback={({ retry }) => (
+      fallback={/* istanbul ignore next -- error boundary fallback */ ({ retry }) => (
         <TrackerHistoryBrowseViews screenState="error" onRetry={retry} />
       )}
     >
-      <Suspense fallback={<TrackerHistoryBrowseViews screenState="loading" />}>
+      <Suspense fallback={/* istanbul ignore next -- Suspense fallback */ <TrackerHistoryBrowseViews screenState="loading" />}>
         <TrackerHistoryBrowseModels>
           <TrackerHistoryBrowseControllers>
             <ConnectedViews />

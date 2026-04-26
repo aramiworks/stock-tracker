@@ -87,6 +87,7 @@ export const TrackerHistoryBrowseControllers =
     );
 
     const purchases = useMemo(() => {
+      /* istanbul ignore next -- defensive guard, query always returns purchases array */
       if (!data?.purchases) return [];
       return data.purchases.map((p) => ({
         id: p.id,

@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
+import { render, fireEvent, act } from "@testing-library/react-native";
 
 jest.mock("@/shared/components/text-input-field", () => ({
   TextInputField: (props: Record<string, unknown>) =>
@@ -62,6 +62,23 @@ describe("TrackerAccountFormModalView", () => {
     );
     fireEvent.press(getByTestId("account-form-cancel"));
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("action button triggers form submission", async () => {
+    const onSubmit = jest.fn().mockResolvedValue(undefined);
+    const onClose = jest.fn();
+    const { getByTestId } = render(
+      <TrackerAccountFormModalView
+        {...defaultProps}
+        onSubmit={onSubmit}
+        onClose={onClose}
+      />,
+    );
+    await act(async () => {
+      fireEvent.press(getByTestId("account-form-action"));
+    });
+    expect(onSubmit).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
   });
 });
 

@@ -31,4 +31,9 @@ describe("TrackerAccountsDetailTankStatusView", () => {
     render(<TrackerAccountsDetailTankStatusView state="notEligible" />);
     expect(screen.getByText("notEligible")).toBeTruthy();
   });
+
+  it("defaults to eligible when no state prop", () => {
+    render(<TrackerAccountsDetailTankStatusView />);
+    expect(screen.getByText("eligible")).toBeTruthy();
+  });
 });

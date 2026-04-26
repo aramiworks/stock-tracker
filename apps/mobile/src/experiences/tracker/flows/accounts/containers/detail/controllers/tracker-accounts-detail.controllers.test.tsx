@@ -173,6 +173,40 @@ describe("TrackerAccountsDetailControllers", () => {
     expect(getByTestId("tank-state").props.children).toBe("notEligible");
   });
 
+  it("falls back to storeName when saName is null", () => {
+    setupMocks({ ...MOCK_ACCOUNT, saName: null });
+    const { getByTestId } = render(
+      <TrackerAccountsDetailControllers accountId="acc-1">
+        <Consumer />
+      </TrackerAccountsDetailControllers>,
+    );
+    expect(getByTestId("name").props.children).toBe("Cartier Gangnam");
+    expect(getByTestId("initial").props.children).toBe("C");
+    expect(getByTestId("sa-name").props.children).toBe("");
+  });
+
+  it("falls back to empty string when both saName and storeName are null", () => {
+    setupMocks({ ...MOCK_ACCOUNT, saName: null, storeName: null });
+    const { getByTestId } = render(
+      <TrackerAccountsDetailControllers accountId="acc-1">
+        <Consumer />
+      </TrackerAccountsDetailControllers>,
+    );
+    expect(getByTestId("name").props.children).toBe("");
+    expect(getByTestId("initial").props.children).toBe("");
+    expect(getByTestId("boutique").props.children).toBe("");
+  });
+
+  it("falls back to empty string when notes is null", () => {
+    setupMocks({ ...MOCK_ACCOUNT, notes: null });
+    const { getByTestId } = render(
+      <TrackerAccountsDetailControllers accountId="acc-1">
+        <Consumer />
+      </TrackerAccountsDetailControllers>,
+    );
+    expect(getByTestId("notes").props.children).toBe("");
+  });
+
   it("computes tankState as eligible when at goal", () => {
     setupMocks({
       ...MOCK_ACCOUNT,

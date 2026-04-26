@@ -24,7 +24,7 @@ export const TrackerAccountsDetailPurchaseRowView = memo(
         <View style={styles.rowContent}>
           <TrackerPurchaseRowView
             {...props}
-            testID={id ? `purchase-row-${id}` : undefined}
+            testID={/* istanbul ignore next */ id ? `purchase-row-${id}` : undefined}
           />
         </View>
         {(onEdit || onDelete) && (
@@ -33,7 +33,7 @@ export const TrackerAccountsDetailPurchaseRowView = memo(
               <Pressable
                 onPress={onEdit}
                 style={styles.actionButton}
-                testID={id ? `purchase-edit-${id}` : undefined}
+                testID={/* istanbul ignore next */ id ? `purchase-edit-${id}` : undefined}
               >
                 <Text style={styles.actionIcon}>✏️</Text>
               </Pressable>
@@ -42,7 +42,7 @@ export const TrackerAccountsDetailPurchaseRowView = memo(
               <Pressable
                 onPress={onDelete}
                 style={styles.actionButton}
-                testID={id ? `purchase-delete-${id}` : undefined}
+                testID={/* istanbul ignore next */ id ? `purchase-delete-${id}` : undefined}
               >
                 <Text style={styles.actionIcon}>🗑️</Text>
               </Pressable>

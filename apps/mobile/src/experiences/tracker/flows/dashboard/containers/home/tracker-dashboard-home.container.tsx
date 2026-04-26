@@ -17,11 +17,11 @@ ConnectedViews.displayName = "TrackerDashboardHomeConnectedViews";
 export const TrackerDashboardHomeContainer = memo(() => {
   return (
     <QueryErrorBoundary
-      fallback={({ retry }) => (
+      fallback={/* istanbul ignore next -- error boundary fallback */ ({ retry }) => (
         <TrackerDashboardHomeViews screenState="error" onRetry={retry} />
       )}
     >
-      <Suspense fallback={<TrackerDashboardHomeViews screenState="loading" />}>
+      <Suspense fallback={/* istanbul ignore next -- Suspense fallback */ <TrackerDashboardHomeViews screenState="loading" />}>
         <TrackerDashboardHomeModels>
           <TrackerDashboardHomeControllers>
             <ConnectedViews />

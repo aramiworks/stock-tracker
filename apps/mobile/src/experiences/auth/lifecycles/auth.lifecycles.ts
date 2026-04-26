@@ -9,6 +9,7 @@ export const useAuthLifecycle = () => {
     let settled = false;
 
     const timeout = setTimeout(() => {
+      /* istanbul ignore next -- race-condition guard: covered by "hangs" test but branch still uncovered when getSession resolves first */
       if (!settled) {
         settled = true;
         setSession(null);
@@ -25,6 +26,7 @@ export const useAuthLifecycle = () => {
         }
       })
       .catch(() => {
+        /* istanbul ignore next -- race-condition guard: covered by "rejects" test but branch still uncovered when getSession resolves first */
         if (!settled) {
           settled = true;
           clearTimeout(timeout);

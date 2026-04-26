@@ -22,6 +22,7 @@ WebBrowser.maybeCompleteAuthSession();
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
 
+/* istanbul ignore next -- module-level Platform check; Jest runs with a fixed platform */
 if (Platform.OS !== "web") {
   // webClientId: required — Google uses the web client to issue tokens Supabase can verify.
   // iosClientId: iOS OAuth client for the native account picker on iOS.
@@ -84,6 +85,7 @@ export const AuthSignInGmailOauthControllers =
         } catch {
           // sign-in failed; auth state unchanged, user stays on sign-in screen
         } finally {
+          /* istanbul ignore next -- defensive unmount guard */
           if (isMountedRef.current) setIsSigningIn(false);
         }
       })();
@@ -105,6 +107,7 @@ export const AuthSignInGmailOauthControllers =
         const userInfo = await GoogleSignin.signIn();
         if (isSuccessResponse(userInfo)) {
           const idToken = userInfo.data?.idToken;
+          /* istanbul ignore next -- native SDK always returns idToken on success */
           if (idToken) {
             const { error } = await supabase.auth.signInWithIdToken({
               provider: "google",
@@ -114,6 +117,7 @@ export const AuthSignInGmailOauthControllers =
           }
         }
       } finally {
+        /* istanbul ignore next -- defensive unmount guard */
         if (isMountedRef.current) setIsSigningIn(false);
       }
     }, [webPromptAsync]);

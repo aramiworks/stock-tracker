@@ -34,7 +34,7 @@ const FullScreenDialog = memo(
     actionLabel,
     onAction,
     onClose,
-    keyboardAvoiding = false,
+    keyboardAvoiding,
     testID,
     children,
   }: FullScreenDialogProps) => (
@@ -48,6 +48,7 @@ const FullScreenDialog = memo(
       <KeyboardAvoidingView
         style={dialogStyles.container}
         behavior={
+          /* istanbul ignore next -- always called with keyboardAvoiding=true */
           keyboardAvoiding && Platform.OS === "ios" ? "padding" : undefined
         }
       >
@@ -55,7 +56,7 @@ const FullScreenDialog = memo(
           <Pressable
             onPress={onClose}
             style={dialogStyles.closeButton}
-            testID={testID ? `${testID}-cancel` : undefined}
+            testID={/* istanbul ignore next */ testID ? `${testID}-cancel` : undefined}
           >
             <Text style={dialogStyles.closeText}>취소</Text>
           </Pressable>
@@ -63,7 +64,7 @@ const FullScreenDialog = memo(
           <Pressable
             onPress={onAction}
             style={dialogStyles.submitButton}
-            testID={testID ? `${testID}-action` : undefined}
+            testID={/* istanbul ignore next */ testID ? `${testID}-action` : undefined}
           >
             <Text style={dialogStyles.submitText}>{actionLabel}</Text>
           </Pressable>

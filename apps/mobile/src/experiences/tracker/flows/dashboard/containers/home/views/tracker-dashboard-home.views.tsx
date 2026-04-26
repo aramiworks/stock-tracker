@@ -128,7 +128,7 @@ export const TrackerDashboardHomeViews = memo(
           contentContainerStyle={styles.scrollContent}
           fab={fab}
         >
-          {content[screenState ?? "default"]}
+          {content[screenState ?? /* istanbul ignore next -- default prop always provides a value */ "default"]}
         </DashboardTemplate>
         {onCreateAccount && (
           <TrackerAccountFormModalView

@@ -10,7 +10,9 @@ interface MinimalLogger {
   error(obj: Record<string, unknown>, msg: string): void;
 }
 
+/* istanbul ignore next -- defensive fallback, replaced by setLogger() at startup */
 const noop = () => {};
+/* istanbul ignore next -- defensive fallback, replaced by setLogger() at startup */
 const noopLogger: MinimalLogger = {
   child: () => noopLogger,
   info: noop,
@@ -59,6 +61,9 @@ type Context = Awaited<ReturnType<typeof createContext>>;
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
+  // Error formatter only runs during HTTP serialization, not via callers.
+  // Covered by e2e tests (requestId.e2e.test.ts).
+  /* istanbul ignore next */
   errorFormatter({ shape, ctx }) {
     return {
       ...shape,

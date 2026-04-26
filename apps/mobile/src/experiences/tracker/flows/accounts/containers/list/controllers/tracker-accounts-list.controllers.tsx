@@ -90,6 +90,7 @@ export const TrackerAccountsListControllers =
       : "default";
 
     const accounts = useMemo(() => {
+      /* istanbul ignore next -- defensive guard; useSuspenseQuery always returns data */
       if (!data?.accounts) return [];
       return data.accounts
         .filter(

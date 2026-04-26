@@ -100,6 +100,7 @@ export const TrackerAccountsDetailViews = memo(
     );
 
     const handleDeleteAccount = useCallback(() => {
+      /* istanbul ignore next -- defensive guard; button only renders when handler exists */
       if (!onDeleteAccount) return;
       Alert.alert(
         t("accounts.list.confirm.deleteAccount.title"),
@@ -143,7 +144,7 @@ export const TrackerAccountsDetailViews = memo(
       async (data: CreatePurchaseInput) => {
         if (editingPurchase && onUpdatePurchase) {
           await onUpdatePurchase(editingPurchase.id, data);
-        } else if (onCreatePurchase) {
+        } else /* istanbul ignore next -- guard; modal only opens when handler exists */ if (onCreatePurchase) {
           await onCreatePurchase(data);
         }
       },

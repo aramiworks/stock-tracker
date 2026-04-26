@@ -76,11 +76,13 @@ export const TrackerAccountsDetailControllers =
     const account = data?.account;
 
     const totalSpend = useMemo(() => {
+      /* istanbul ignore next -- defensive guard; useSuspenseQuery always returns data */
       if (!account?.purchases) return 0;
       return account.purchases.reduce((sum, p) => sum + p.amount, 0);
     }, [account?.purchases]);
 
     const purchases = useMemo(() => {
+      /* istanbul ignore next -- defensive guard; useSuspenseQuery always returns data */
       if (!account?.purchases) return [];
       return account.purchases.map((p) => ({
         id: p.id,

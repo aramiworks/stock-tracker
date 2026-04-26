@@ -65,7 +65,12 @@ export const SERVICES: ServiceDef[] = [
     port: 4020,
     healthcheckPath: "/health",
     startCommand: "npm run start",
-    envVars: ["DATABASE_URL"],
+    envVars: [
+      "DATABASE_URL",
+      "SUPABASE_URL",
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ],
   },
   {
     name: "subgraph-tracker",
@@ -73,7 +78,11 @@ export const SERVICES: ServiceDef[] = [
     port: 4001,
     // No healthcheckPath — Apollo Server startStandaloneServer has no /health endpoint
     startCommand: "npm run start",
-    envVars: ["DATABASE_URL", "TRPC_SERVICE_URL"],
+    envVars: [
+      "DATABASE_URL",
+      "TRPC_AUTH_SERVICE_URL",
+      "TRPC_TRACKER_SERVICE_URL",
+    ],
   },
   {
     name: "router",

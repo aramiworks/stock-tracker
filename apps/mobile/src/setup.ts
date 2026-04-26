@@ -141,6 +141,8 @@ jest.mock("@aramiworks/ui", () => {
         props.topBar ?? null,
         props.children ?? null,
       ),
+    TopAppBar: (props: Record<string, unknown>) =>
+      React.createElement(View, { testID: props.testID }),
   };
 });
 

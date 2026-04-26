@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000001";
 
 let server: ApolloServer;
-let apiUrl: string;
+let authUrl: string;
 let trackerUrl: string;
 let closeServers: () => Promise<void>;
 
@@ -20,7 +20,7 @@ let seededPurchaseId: string;
 
 beforeAll(async () => {
   const handles = await startTrpcServers();
-  apiUrl = handles.apiUrl;
+  authUrl = handles.authUrl;
   trackerUrl = handles.trackerUrl;
   closeServers = handles.close;
 
@@ -108,7 +108,7 @@ function exec(
     server,
     query,
     variables,
-    apiUrl,
+    authUrl,
     trackerUrl,
     userId: userId ?? TEST_USER_ID,
   });
@@ -119,7 +119,7 @@ function execUnauth(query: string, variables?: Record<string, unknown>) {
     server,
     query,
     variables,
-    apiUrl,
+    authUrl,
     trackerUrl,
     userId: undefined,
   });

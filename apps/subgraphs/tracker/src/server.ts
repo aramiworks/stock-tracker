@@ -6,7 +6,7 @@ import { authResolvers } from "./auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "./tracker/views/tracker.views.js";
 import { trackerResolvers } from "./tracker/controllers/tracker.controllers.js";
 import {
-  createApiTrpcClient,
+  createAuthTrpcClient,
   createTrackerTrpcClient,
 } from "./clients/trpc.js";
 import { logger, loggingPlugin } from "./middleware/logging.js";
@@ -43,7 +43,7 @@ const { url } = await startStandaloneServer(server, {
       ...headers,
       userId: headers["x-user-id"],
       userRole: headers["x-user-role"],
-      apiTrpc: createApiTrpcClient(headers),
+      authTrpc: createAuthTrpcClient(headers),
       trackerTrpc: createTrackerTrpcClient(headers),
     };
   },

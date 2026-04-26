@@ -14,14 +14,14 @@ import { authResolvers } from "../auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "../tracker/views/tracker.views.js";
 import { trackerResolvers } from "../tracker/controllers/tracker.controllers.js";
 import {
-  createApiTrpcClient,
+  createAuthTrpcClient,
   createTrackerTrpcClient,
 } from "../clients/trpc.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 interface TrpcServersHandle {
-  apiUrl: string;
+  authUrl: string;
   trackerUrl: string;
   close: () => Promise<void>;
 }
@@ -95,12 +95,15 @@ function spawnTrackerTestServer(): Promise<{
 
 /**
  * Starts two tRPC servers:
- * - Auth server: standalone tRPC HTTP server from apps/api (auth procedures)
+ * - Auth server: standalone tRPC HTTP server from apps/api (auth procedures).
+ *   apps/api remains the test-only auth backend; the production subgraph
+ *   talks to apps/services/auth at /trpc, but the auth procedures are
+ *   structurally identical so the typed client works against either.
  * - Tracker server: child process running tracker-service via tsx
  */
 export async function startTrpcServers(): Promise<TrpcServersHandle> {
   // Auth server — standalone tRPC HTTP server from apps/api
-  const apiHandle = await new Promise<{
+  const authHandle = await new Promise<{
     url: string;
     close: () => Promise<void>;
   }>((resolve) => {
@@ -129,12 +132,12 @@ export async function startTrpcServers(): Promise<TrpcServersHandle> {
   try {
     trackerHandle = await spawnTrackerTestServer();
   } catch (err) {
-    await apiHandle.close();
+    await authHandle.close();
     throw err;
   }
 
   return {
-    apiUrl: apiHandle.url,
+    authUrl: authHandle.url,
     trackerUrl: trackerHandle.url,
     close: async () => {
       await new Promise<void>((res) => {
@@ -145,7 +148,7 @@ export async function startTrpcServers(): Promise<TrpcServersHandle> {
         trackerHandle.child.once("exit", () => res());
         trackerHandle.child.kill("SIGTERM");
       });
-      await apiHandle.close();
+      await authHandle.close();
     },
   };
 }
@@ -178,21 +181,21 @@ interface ExecuteOptions {
   server: ApolloServer;
   query: string;
   variables?: Record<string, unknown>;
-  apiUrl: string;
+  authUrl: string;
   trackerUrl: string;
   userId?: string;
 }
 
 /**
  * Execute a GraphQL operation against the test Apollo server with real
- * tRPC clients. The API client points at the auth server (apps/api)
+ * tRPC clients. The auth client points at the auth server (apps/api)
  * and the tracker client points at the tracker-service.
  */
 export async function executeAs({
   server,
   query,
   variables,
-  apiUrl,
+  authUrl,
   trackerUrl,
   userId,
 }: ExecuteOptions) {
@@ -202,18 +205,18 @@ export async function executeAs({
     "x-request-id": "test-request-id",
   };
 
-  const prevApi = process.env["TRPC_API_URL"];
+  const prevAuth = process.env["TRPC_AUTH_SERVICE_URL"];
   const prevTracker = process.env["TRPC_TRACKER_SERVICE_URL"];
-  process.env["TRPC_API_URL"] = apiUrl;
+  process.env["TRPC_AUTH_SERVICE_URL"] = authUrl;
   process.env["TRPC_TRACKER_SERVICE_URL"] = trackerUrl;
 
-  const apiTrpc = createApiTrpcClient(headers);
+  const authTrpc = createAuthTrpcClient(headers);
   const trackerTrpc = createTrackerTrpcClient(headers);
 
-  if (prevApi !== undefined) {
-    process.env["TRPC_API_URL"] = prevApi;
+  if (prevAuth !== undefined) {
+    process.env["TRPC_AUTH_SERVICE_URL"] = prevAuth;
   } else {
-    delete process.env["TRPC_API_URL"];
+    delete process.env["TRPC_AUTH_SERVICE_URL"];
   }
   if (prevTracker !== undefined) {
     process.env["TRPC_TRACKER_SERVICE_URL"] = prevTracker;
@@ -233,7 +236,7 @@ export async function executeAs({
         "x-request-id": "test-request-id",
         userId,
         userRole: undefined,
-        apiTrpc,
+        authTrpc,
         trackerTrpc,
       },
     },

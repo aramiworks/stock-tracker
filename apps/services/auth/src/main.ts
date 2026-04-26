@@ -23,7 +23,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env["PORT"] ?? 4010;
+  const port = process.env["PORT"] ?? 4030;
   await app.listen(port);
   logger.log(`auth-service listening on port ${port}`);
 }

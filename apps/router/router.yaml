@@ -6,11 +6,15 @@ authentication:
       jwks:
         - url: ${env.SUPABASE_JWKS_URL}
 
+# Rhai script extracts JWT claims (sub → x-user-id, role → x-user-role) and
+# sets them as headers on every outgoing subgraph request.
+# from_context only supports top-level context keys (no nested field access),
+# so a Rhai script is required to extract individual claims.
 rhai:
-  scripts: /dist/config/rhai
-  main: main.rhai
+  scripts: "./rhai"
+  main: "./rhai/main.rhai"
 
-# Propagate client headers; JWT claims → x-user-id/x-user-role is handled by the Rhai plugin.
+# Propagate non-JWT headers to all subgraphs
 headers:
   all:
     request:

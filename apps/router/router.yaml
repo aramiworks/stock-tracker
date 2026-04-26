@@ -6,16 +6,14 @@ authentication:
       jwks:
         - url: ${env.SUPABASE_JWKS_URL}
 
-# Map JWT claims to headers for subgraphs
+rhai:
+  scripts: /dist/config/rhai
+  main: main.rhai
+
+# Propagate client headers; JWT claims → x-user-id/x-user-role is handled by the Rhai plugin.
 headers:
   all:
     request:
-      - insert:
-          name: x-user-id
-          from_context: "apollo_authentication::JWT::claims.sub"
-      - insert:
-          name: x-user-role
-          from_context: "apollo_authentication::JWT::claims.role"
       - propagate:
           named: x-request-id
       - propagate:

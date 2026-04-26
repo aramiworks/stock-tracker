@@ -9,10 +9,10 @@ fn subgraph_service(service, subgraph) {
         // only ever receive router-controlled values.
         request.headers.remove("x-user-id");
         request.headers.remove("x-user-role");
-        let has_claims = request.context.contains("apollo::authentication::jwt_claims");
+        let has_claims = request.context.contains("apollo_authentication::JWT::claims");
         log_info(`[rhai] subgraph=${subgraph} has_jwt_claims=${has_claims}`);
         if has_claims {
-            let claims = request.context["apollo::authentication::jwt_claims"];
+            let claims = request.context["apollo_authentication::JWT::claims"];
             if claims != () {
                 let sub = claims["sub"];
                 log_info(`[rhai] jwt sub=${sub}`);

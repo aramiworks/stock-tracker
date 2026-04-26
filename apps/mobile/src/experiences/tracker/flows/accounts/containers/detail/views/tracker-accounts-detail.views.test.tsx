@@ -300,6 +300,20 @@ describe("TrackerAccountsDetailViews", () => {
     expect(queryByTestId("purchase-form-modal-edit-Product u1")).toBeNull();
   });
 
+  it("purchase submit is a no-op when neither editing nor onCreatePurchase is provided", async () => {
+    const onUpdatePurchase = jest.fn();
+    const { getByTestId } = render(
+      <TrackerAccountsDetailViews
+        screenState="default"
+        onUpdatePurchase={onUpdatePurchase}
+      />,
+    );
+    fireEvent.press(getByTestId("accounts-detail-add-purchase"));
+    fireEvent(getByTestId("purchase-form-modal-create"), "longPress");
+    await Promise.resolve();
+    expect(onUpdatePurchase).not.toHaveBeenCalled();
+  });
+
   it("submits new purchases via onCreatePurchase when no row is being edited", async () => {
     const onCreatePurchase = jest.fn().mockResolvedValue(undefined);
     const { getByTestId } = render(

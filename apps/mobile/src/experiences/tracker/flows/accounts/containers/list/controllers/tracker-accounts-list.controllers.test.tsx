@@ -70,14 +70,12 @@ function setQueryData(
     saName: string | null;
     notes: string | null;
     createdAt: string;
-    purchases:
-      | Array<{
-          id: string;
-          itemName: string;
-          amount: number;
-          purchaseDate: string;
-        }>
-      | null;
+    purchases: Array<{
+      id: string;
+      itemName: string;
+      amount: number;
+      purchaseDate: string;
+    }> | null;
   }> = MOCK_ACCOUNTS,
 ) {
   (useSuspenseQuery as unknown as jest.Mock).mockReturnValue({

@@ -145,9 +145,7 @@ export const TrackerAccountsDetailViews = memo(
         if (editingPurchase && onUpdatePurchase) {
           await onUpdatePurchase(editingPurchase.id, data);
         } else if (onCreatePurchase) {
-          /* istanbul ignore next -- guard; modal only opens when handler exists */ await onCreatePurchase(
-            data,
-          );
+          await onCreatePurchase(data);
         }
       },
       [editingPurchase, onUpdatePurchase, onCreatePurchase],

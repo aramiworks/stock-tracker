@@ -47,6 +47,27 @@ export const SERVICES: ServiceDef[] = [
     envVars: ["DATABASE_URL"],
   },
   {
+    name: "auth-service",
+    image: "ghcr.io/aramiworks/stock-tracker-auth-service",
+    port: 4030,
+    healthcheckPath: "/health",
+    startCommand: "npm run start",
+    envVars: [
+      "DATABASE_URL",
+      "SUPABASE_URL",
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ],
+  },
+  {
+    name: "tracker-service",
+    image: "ghcr.io/aramiworks/stock-tracker-tracker-service",
+    port: 4020,
+    healthcheckPath: "/health",
+    startCommand: "npm run start",
+    envVars: ["DATABASE_URL"],
+  },
+  {
     name: "subgraph-tracker",
     image: "ghcr.io/aramiworks/stock-tracker-subgraph-tracker",
     port: 4001,

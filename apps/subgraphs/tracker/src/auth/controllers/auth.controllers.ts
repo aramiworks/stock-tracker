@@ -3,7 +3,7 @@ import type { SubgraphContext } from "../../context.js";
 export const authResolvers = {
   Query: {
     me: async (_: unknown, __: unknown, context: SubgraphContext) => {
-      return context.apiTrpc.auth.me.query();
+      return context.authTrpc.auth.me.query();
     },
   },
   User: {

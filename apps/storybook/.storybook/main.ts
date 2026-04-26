@@ -49,9 +49,7 @@ const config: StorybookConfig = {
       name: "mock-react-native-codegenNativeComponent",
       enforce: "pre" as const,
       resolveId(id: string) {
-        if (
-          id === "react-native/Libraries/Utilities/codegenNativeComponent"
-        ) {
+        if (id === "react-native/Libraries/Utilities/codegenNativeComponent") {
           return "\0react-native-codegenNativeComponent-mock";
         }
       },

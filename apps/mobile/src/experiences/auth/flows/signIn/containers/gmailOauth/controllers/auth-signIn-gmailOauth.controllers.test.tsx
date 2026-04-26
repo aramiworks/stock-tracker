@@ -94,6 +94,25 @@ describe("AuthSignInGmailOauthControllers", () => {
     });
   });
 
+  it("native signInWithGoogle skips signInWithIdToken when response is not success", async () => {
+    const {
+      isSuccessResponse,
+    } = require("@react-native-google-signin/google-signin");
+    (isSuccessResponse as jest.Mock).mockReturnValueOnce(false);
+
+    const ref = React.createRef<ConsumerHandle>();
+    render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer ref={ref} />
+      </AuthSignInGmailOauthControllers>,
+    );
+    await act(async () => {
+      ref.current!.signInWithGoogle();
+    });
+    expect(GoogleSignin.signIn).toHaveBeenCalled();
+    expect(supabase.auth.signInWithIdToken).not.toHaveBeenCalled();
+  });
+
   it("web signInWithGoogle calls webPromptAsync", async () => {
     jest.replaceProperty(Platform, "OS", "web" as typeof Platform.OS);
     const ref = React.createRef<ConsumerHandle>();
@@ -107,6 +126,85 @@ describe("AuthSignInGmailOauthControllers", () => {
     });
     expect(mockWebPromptAsync).toHaveBeenCalled();
     expect(GoogleSignin.signIn).not.toHaveBeenCalled();
+  });
+
+  it("web response useEffect triggers signInWithIdToken", async () => {
+    jest.replaceProperty(Platform, "OS", "web" as typeof Platform.OS);
+
+    const Google = require("expo-auth-session/providers/google");
+    Google.useIdTokenAuthRequest.mockReturnValue([
+      { nonce: "mock-nonce" },
+      { type: "success", params: { id_token: "web-id-token" } },
+      mockWebPromptAsync,
+    ]);
+
+    (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValueOnce({
+      error: null,
+    });
+
+    render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer />
+      </AuthSignInGmailOauthControllers>,
+    );
+
+    // Wait for the async IIFE in useEffect to resolve
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    expect(supabase.auth.signInWithIdToken).toHaveBeenCalledWith({
+      provider: "google",
+      token: "web-id-token",
+      nonce: "mock-nonce",
+    });
+  });
+
+  it("web response useEffect handles signIn error gracefully", async () => {
+    jest.replaceProperty(Platform, "OS", "web" as typeof Platform.OS);
+
+    const Google = require("expo-auth-session/providers/google");
+    Google.useIdTokenAuthRequest.mockReturnValue([
+      { nonce: "mock-nonce" },
+      { type: "success", params: { id_token: "web-id-token" } },
+      mockWebPromptAsync,
+    ]);
+
+    (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValueOnce({
+      error: new Error("auth error"),
+    });
+
+    render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer />
+      </AuthSignInGmailOauthControllers>,
+    );
+
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    // Should not throw — error is caught silently
+    expect(supabase.auth.signInWithIdToken).toHaveBeenCalled();
+  });
+
+  it("web response useEffect skips when no id_token", () => {
+    jest.replaceProperty(Platform, "OS", "web" as typeof Platform.OS);
+
+    const Google = require("expo-auth-session/providers/google");
+    Google.useIdTokenAuthRequest.mockReturnValue([
+      { nonce: "mock-nonce" },
+      { type: "success", params: {} },
+      mockWebPromptAsync,
+    ]);
+
+    render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer />
+      </AuthSignInGmailOauthControllers>,
+    );
+
+    expect(supabase.auth.signInWithIdToken).not.toHaveBeenCalled();
   });
 
   it("resets isSigningIn to false after native sign-in completes", async () => {

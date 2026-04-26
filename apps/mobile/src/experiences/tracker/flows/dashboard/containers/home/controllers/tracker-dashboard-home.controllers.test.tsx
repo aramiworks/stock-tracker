@@ -138,6 +138,27 @@ describe("TrackerDashboardHomeControllers", () => {
     });
   });
 
+  it("maps saAccounts with notEligible state when spend is between 0 and goal", () => {
+    setQueryData({
+      accounts: [
+        {
+          id: "acc-mid",
+          storeName: "Cartier Mid",
+          saName: "Park",
+          purchases: [{ id: "p1", amount: 5000000 }],
+        },
+      ],
+    });
+    const { getByTestId } = render(
+      <TrackerDashboardHomeControllers>
+        <Consumer />
+      </TrackerDashboardHomeControllers>,
+    );
+    const accounts = JSON.parse(getByTestId("accounts").props.children);
+    expect(accounts[0].state).toBe("notEligible");
+    expect(accounts[0].totalSpend).toBe(5000000);
+  });
+
   it("computes eligibilityStatus based on totalSpend vs GOAL_AMOUNT", () => {
     const { getByTestId } = render(
       <TrackerDashboardHomeControllers>

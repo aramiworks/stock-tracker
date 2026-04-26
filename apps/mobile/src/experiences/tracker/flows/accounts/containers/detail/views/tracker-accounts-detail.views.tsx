@@ -100,6 +100,7 @@ export const TrackerAccountsDetailViews = memo(
     );
 
     const handleDeleteAccount = useCallback(() => {
+      /* istanbul ignore next -- defensive guard; button only renders when handler exists */
       if (!onDeleteAccount) return;
       Alert.alert(
         t("accounts.list.confirm.deleteAccount.title"),

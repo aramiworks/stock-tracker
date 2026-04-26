@@ -56,7 +56,26 @@ const MOCK_ACCOUNT = {
   ],
 };
 
-function setupMocks(account = MOCK_ACCOUNT) {
+function setupMocks(
+  account: {
+    id: string;
+    storeName: string | null;
+    saName: string | null;
+    notes: string | null;
+    createdAt: string;
+    purchases: Array<{
+      id: string;
+      itemName: string;
+      itemCategory?: string | null;
+      amount: number;
+      currency: string;
+      purchaseDate: string;
+      storeLocation?: string | null;
+      notes?: string | null;
+      createdAt: string;
+    }>;
+  } = MOCK_ACCOUNT,
+) {
   (useSuspenseQuery as unknown as jest.Mock).mockReturnValue({
     data: { account },
     refetch: mockRefetch,
@@ -171,6 +190,44 @@ describe("TrackerAccountsDetailControllers", () => {
       </TrackerAccountsDetailControllers>,
     );
     expect(getByTestId("tank-state").props.children).toBe("notEligible");
+  });
+
+  it("falls back to storeName when saName is null", () => {
+    setupMocks({ ...MOCK_ACCOUNT, saName: null as unknown as string });
+    const { getByTestId } = render(
+      <TrackerAccountsDetailControllers accountId="acc-1">
+        <Consumer />
+      </TrackerAccountsDetailControllers>,
+    );
+    expect(getByTestId("name").props.children).toBe("Cartier Gangnam");
+    expect(getByTestId("initial").props.children).toBe("C");
+    expect(getByTestId("sa-name").props.children).toBe("");
+  });
+
+  it("falls back to empty string when both saName and storeName are null", () => {
+    setupMocks({
+      ...MOCK_ACCOUNT,
+      saName: null as unknown as string,
+      storeName: null as unknown as string,
+    });
+    const { getByTestId } = render(
+      <TrackerAccountsDetailControllers accountId="acc-1">
+        <Consumer />
+      </TrackerAccountsDetailControllers>,
+    );
+    expect(getByTestId("name").props.children).toBe("");
+    expect(getByTestId("initial").props.children).toBe("");
+    expect(getByTestId("boutique").props.children).toBe("");
+  });
+
+  it("falls back to empty string when notes is null", () => {
+    setupMocks({ ...MOCK_ACCOUNT, notes: null as unknown as string });
+    const { getByTestId } = render(
+      <TrackerAccountsDetailControllers accountId="acc-1">
+        <Consumer />
+      </TrackerAccountsDetailControllers>,
+    );
+    expect(getByTestId("notes").props.children).toBe("");
   });
 
   it("computes tankState as eligible when at goal", () => {

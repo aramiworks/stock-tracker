@@ -20,6 +20,11 @@ describe("TrackerErrorStateView", () => {
     fireEvent.press(getByTestId("error-state-retry"));
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
+
+  it("renders without testID prop", () => {
+    const { getByText } = render(<TrackerErrorStateView />);
+    expect(getByText("dashboard.errorState.title")).toBeTruthy();
+  });
 });
 
 void React;

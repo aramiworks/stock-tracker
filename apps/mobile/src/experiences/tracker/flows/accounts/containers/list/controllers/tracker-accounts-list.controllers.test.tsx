@@ -25,7 +25,19 @@ import {
   useTrackerAccountsListControllers,
 } from "./tracker-accounts-list.controllers";
 
-const MOCK_ACCOUNTS = [
+const MOCK_ACCOUNTS: {
+  id: string;
+  storeName: string;
+  saName: string | null;
+  notes: string | null;
+  createdAt: string;
+  purchases: {
+    id: string;
+    itemName: string;
+    amount: number;
+    purchaseDate: string;
+  }[];
+}[] = [
   {
     id: "acc-1",
     storeName: "Cartier Gangnam",
@@ -51,7 +63,21 @@ const MOCK_ACCOUNTS = [
   },
 ];
 
-function setQueryData(accounts = MOCK_ACCOUNTS) {
+function setQueryData(
+  accounts: Array<{
+    id: string | null;
+    storeName: string | null;
+    saName: string | null;
+    notes: string | null;
+    createdAt: string;
+    purchases: Array<{
+      id: string;
+      itemName: string;
+      amount: number;
+      purchaseDate: string;
+    }> | null;
+  }> = MOCK_ACCOUNTS,
+) {
   (useSuspenseQuery as unknown as jest.Mock).mockReturnValue({
     data: { accounts },
     refetch: mockRefetch,
@@ -138,6 +164,111 @@ describe("TrackerAccountsListControllers", () => {
     expect(accounts[1].state).toBe("noPurchases");
   });
 
+  it("maps account with notEligible state when spend is between 0 and goal", () => {
+    setQueryData([
+      {
+        id: "acc-mid",
+        storeName: "Cartier Apgujeong",
+        saName: "Lee",
+        notes: null,
+        createdAt: "2024-03-01",
+        purchases: [
+          {
+            id: "p-mid",
+            itemName: "Ring",
+            amount: 5000000,
+            purchaseDate: "2024-03-15",
+          },
+        ],
+      },
+    ]);
+    const { getByTestId } = render(
+      <TrackerAccountsListControllers>
+        <Consumer />
+      </TrackerAccountsListControllers>,
+    );
+    const accounts = JSON.parse(getByTestId("accounts").props.children);
+    expect(accounts[0].state).toBe("notEligible");
+    expect(accounts[0].totalSpend).toBe(5000000);
+  });
+
+  it("handles accounts with null purchases array", () => {
+    setQueryData([
+      {
+        id: "acc-null",
+        storeName: "Cartier Test",
+        saName: null,
+        notes: null,
+        createdAt: "2024-01-01",
+        purchases: null as unknown as (typeof MOCK_ACCOUNTS)[0]["purchases"],
+      },
+    ]);
+    const { getByTestId } = render(
+      <TrackerAccountsListControllers>
+        <Consumer />
+      </TrackerAccountsListControllers>,
+    );
+    const accounts = JSON.parse(getByTestId("accounts").props.children);
+    expect(accounts[0].totalSpend).toBe(0);
+    expect(accounts[0].state).toBe("noPurchases");
+  });
+
+  it("handles purchases with null amount", () => {
+    setQueryData([
+      {
+        id: "acc-na",
+        storeName: "Cartier Test",
+        saName: null,
+        notes: null,
+        createdAt: "2024-01-01",
+        purchases: [
+          {
+            id: "p-na",
+            itemName: "Ring",
+            amount: null as unknown as number,
+            purchaseDate: "2024-03-15",
+          },
+        ],
+      },
+    ]);
+    const { getByTestId } = render(
+      <TrackerAccountsListControllers>
+        <Consumer />
+      </TrackerAccountsListControllers>,
+    );
+    const accounts = JSON.parse(getByTestId("accounts").props.children);
+    expect(accounts[0].totalSpend).toBe(0);
+  });
+
+  it("filters out accounts with null id or storeName", () => {
+    setQueryData([
+      ...MOCK_ACCOUNTS,
+      {
+        id: null as unknown as string,
+        storeName: "No ID",
+        saName: null,
+        notes: null,
+        createdAt: "2024-01-01",
+        purchases: [],
+      },
+      {
+        id: "acc-no-store",
+        storeName: null as unknown as string,
+        saName: null,
+        notes: null,
+        createdAt: "2024-01-01",
+        purchases: [],
+      },
+    ]);
+    const { getByTestId } = render(
+      <TrackerAccountsListControllers>
+        <Consumer />
+      </TrackerAccountsListControllers>,
+    );
+    const accounts = JSON.parse(getByTestId("accounts").props.children);
+    expect(accounts).toHaveLength(2);
+  });
+
   it("onSaPress navigates to account detail", () => {
     const { getByTestId } = render(
       <TrackerAccountsListControllers>
@@ -198,6 +329,10 @@ describe("TrackerAccountsListControllers", () => {
       ref.current!.onSortByToggle();
     });
     expect(getByTestId("sort-by").props.children).toBe("store_name");
+    act(() => {
+      ref.current!.onSortByToggle();
+    });
+    expect(getByTestId("sort-by").props.children).toBe("created_at");
   });
 
   it("onRefresh calls refetch", async () => {
@@ -212,6 +347,19 @@ describe("TrackerAccountsListControllers", () => {
       await Promise.resolve();
     });
     expect(mockRefetch).toHaveBeenCalled();
+  });
+
+  it("onSearchChange updates search query", () => {
+    const ref = React.createRef<ConsumerHandle>();
+    const { getByTestId } = render(
+      <TrackerAccountsListControllers>
+        <Consumer ref={ref} />
+      </TrackerAccountsListControllers>,
+    );
+    act(() => {
+      ref.current!.onSearchChange("Cartier");
+    });
+    expect(getByTestId("search-query").props.children).toBe("Cartier");
   });
 
   it("useTrackerAccountsListControllers throws outside provider", () => {

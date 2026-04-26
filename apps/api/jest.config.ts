@@ -42,10 +42,9 @@ const config: Config = {
     // Thin config wrapper (delegates to @stock-tracker/config)
     "!src/common/logger.ts",
   ],
-  // TODO: enforce 100% once all coverage gaps are filled
-  // coverageThreshold: {
-  //   global: { branches: 100, functions: 100, lines: 100, statements: 100 },
-  // },
+  coverageThreshold: {
+    global: { branches: 100, functions: 100, lines: 100, statements: 100 },
+  },
 };
 
 export default config;

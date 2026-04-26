@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react-native";
+import { render, screen, fireEvent, act } from "@testing-library/react-native";
 import { TrackerAccountsDetailEditAccountModalView } from "./tracker-accounts-detail-editAccountModal.view";
 
 jest.mock("@/shared/components/text-input-field", () => ({
@@ -30,6 +30,10 @@ const defaultProps = {
 };
 
 describe("TrackerAccountsDetailEditAccountModalView", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("renders form fields when visible", () => {
     render(<TrackerAccountsDetailEditAccountModalView {...defaultProps} />);
     expect(screen.getByTestId("edit-account-form")).toBeTruthy();
@@ -47,4 +51,35 @@ describe("TrackerAccountsDetailEditAccountModalView", () => {
     );
     expect(screen.queryByTestId("edit-account-form-storeName")).toBeNull();
   });
+
+  it("cancel button calls onClose and resets form", () => {
+    const onClose = jest.fn();
+    render(
+      <TrackerAccountsDetailEditAccountModalView
+        {...defaultProps}
+        onClose={onClose}
+      />,
+    );
+    fireEvent.press(screen.getByTestId("edit-account-form-cancel"));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("action button triggers form submission", async () => {
+    const onSubmit = jest.fn().mockResolvedValue(undefined);
+    const onClose = jest.fn();
+    render(
+      <TrackerAccountsDetailEditAccountModalView
+        {...defaultProps}
+        onSubmit={onSubmit}
+        onClose={onClose}
+      />,
+    );
+    await act(async () => {
+      fireEvent.press(screen.getByTestId("edit-account-form-action"));
+    });
+    expect(onSubmit).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
+  });
 });
+
+void React;

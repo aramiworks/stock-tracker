@@ -41,7 +41,31 @@ const config: StorybookConfig = {
         }
       },
     };
-    config.plugins = [...(config.plugins ?? []), reactFabricMockPlugin];
+    // Virtual module plugin: stubs react-native-safe-area-context's
+    // codegenNativeComponent import (used in NativeSafeAreaView.js). Must run
+    // before Vite's alias plugin rewrites it to react-native-web/... (which
+    // doesn't exist).
+    const codegenNativeComponentMockPlugin = {
+      name: "mock-react-native-codegenNativeComponent",
+      enforce: "pre" as const,
+      resolveId(id: string) {
+        if (
+          id === "react-native/Libraries/Utilities/codegenNativeComponent"
+        ) {
+          return "\0react-native-codegenNativeComponent-mock";
+        }
+      },
+      load(id: string) {
+        if (id === "\0react-native-codegenNativeComponent-mock") {
+          return "export default function codegenNativeComponent() { return function NativeComponent() { return null; }; }";
+        }
+      },
+    };
+    config.plugins = [
+      ...(config.plugins ?? []),
+      reactFabricMockPlugin,
+      codegenNativeComponentMockPlugin,
+    ];
 
     config.resolve.alias = [
       // Specific sub-path aliases must come before prefix aliases

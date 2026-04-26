@@ -7,7 +7,7 @@ import {
   Pressable,
   Alert,
 } from "react-native";
-import { DetailTemplate } from "@aramiworks/ui";
+import { DetailTemplate, TopAppBar } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsDetailScreenState,
@@ -222,44 +222,42 @@ export const TrackerAccountsDetailViews = memo(
         <DetailTemplate
           testID="accounts-detail-screen"
           topBar={
-            <>
-              <View style={styles.statusBar} />
-              <View style={styles.appBar}>
-                <Pressable
-                  onPress={onBack}
-                  style={styles.backButton}
-                  testID="accounts-detail-back"
-                >
-                  <Text style={styles.backArrow}>←</Text>
-                </Pressable>
-                <Text style={styles.appBarTitle}>
-                  {t("accounts.detail.title")}
-                </Text>
-                <View style={styles.appBarSpacer} />
-                {screenState === "default" && onUpdateAccount && (
-                  <Pressable
-                    onPress={() => setEditAccountVisible(true)}
-                    style={styles.appBarAction}
-                    testID="accounts-detail-edit"
-                  >
-                    <Text style={styles.appBarActionText}>
-                      {t("accounts.detail.editAction")}
-                    </Text>
-                  </Pressable>
-                )}
-                {screenState === "default" && onDeleteAccount && (
-                  <Pressable
-                    onPress={handleDeleteAccount}
-                    style={styles.appBarAction}
-                    testID="accounts-detail-delete"
-                  >
-                    <Text style={styles.appBarDeleteText}>
-                      {t("accounts.detail.deleteAction")}
-                    </Text>
-                  </Pressable>
-                )}
-              </View>
-            </>
+            <TopAppBar
+              type="small"
+              title={t("accounts.detail.title")}
+              navigationIcon="arrow-back"
+              onNavigationPress={onBack}
+              testID="accounts-detail"
+              trailingContent={
+                screenState === "default" &&
+                (onUpdateAccount || onDeleteAccount) ? (
+                  <View style={styles.trailingActions}>
+                    {onUpdateAccount && (
+                      <Pressable
+                        onPress={() => setEditAccountVisible(true)}
+                        style={styles.appBarAction}
+                        testID="accounts-detail-edit"
+                      >
+                        <Text style={styles.appBarActionText}>
+                          {t("accounts.detail.editAction")}
+                        </Text>
+                      </Pressable>
+                    )}
+                    {onDeleteAccount && (
+                      <Pressable
+                        onPress={handleDeleteAccount}
+                        style={styles.appBarAction}
+                        testID="accounts-detail-delete"
+                      >
+                        <Text style={styles.appBarDeleteText}>
+                          {t("accounts.detail.deleteAction")}
+                        </Text>
+                      </Pressable>
+                    )}
+                  </View>
+                ) : undefined
+              }
+            />
           }
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
@@ -307,30 +305,9 @@ export const TrackerAccountsDetailViews = memo(
 TrackerAccountsDetailViews.displayName = "TrackerAccountsDetailViews";
 
 const styles = StyleSheet.create({
-  statusBar: {
-    height: 54,
-  },
-  appBar: {
-    height: 56,
+  trailingActions: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  backButton: {
-    marginRight: 8,
-  },
-  backArrow: {
-    fontSize: 20,
-    color: "#1A1A1A",
-  },
-  appBarTitle: {
-    fontFamily: "Inter",
-    fontWeight: "700",
-    fontSize: 20,
-    color: "#1A1A1A",
-  },
-  appBarSpacer: {
-    flex: 1,
   },
   appBarAction: {
     paddingHorizontal: 8,

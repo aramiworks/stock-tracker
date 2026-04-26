@@ -142,7 +142,17 @@ jest.mock("@aramiworks/ui", () => {
         props.children ?? null,
       ),
     TopAppBar: (props: Record<string, unknown>) =>
-      React.createElement(View, { testID: props.testID }),
+      React.createElement(
+        View,
+        { testID: props.testID },
+        props.navigationIcon
+          ? React.createElement(View, {
+              testID: `${props.testID}-back`,
+              onPress: props.onNavigationPress,
+            })
+          : null,
+        props.trailingContent ?? null,
+      ),
   };
 });
 

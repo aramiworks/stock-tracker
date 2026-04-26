@@ -60,7 +60,7 @@ describe("TrackerAccountFormModalView", () => {
     const { getByTestId } = render(
       <TrackerAccountFormModalView {...defaultProps} onClose={onClose} />,
     );
-    fireEvent.press(getByTestId("account-form-cancel"));
+    fireEvent.press(getByTestId("account-form-close"));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 

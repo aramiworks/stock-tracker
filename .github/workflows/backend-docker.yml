@@ -13,6 +13,7 @@ on:
     branches: [main]
     paths:
       - "apps/api/**"
+      - "apps/services/**"
       - "apps/subgraphs/**"
       - "apps/router/**"
       - "packages/**"
@@ -38,14 +39,27 @@ jobs:
             package: "@stock-tracker/api"
             dir: apps/api
             dockerfile: infra/docker/node-service.Dockerfile
+            entrypoint: dist/server.js
+          - service: auth-service
+            package: "@stock-tracker/auth-service"
+            dir: apps/services/auth
+            dockerfile: infra/docker/node-service.Dockerfile
+            entrypoint: dist/main.js
+          - service: tracker-service
+            package: "@stock-tracker/tracker-service"
+            dir: apps/services/tracker
+            dockerfile: infra/docker/node-service.Dockerfile
+            entrypoint: dist/main.js
           - service: subgraph-tracker
             package: "@stock-tracker/subgraph-tracker"
             dir: apps/subgraphs/tracker
             dockerfile: infra/docker/node-service.Dockerfile
+            entrypoint: dist/server.js
           - service: router
             package: ""
             dir: ""
             dockerfile: apps/router/Dockerfile
+            entrypoint: ""
     steps:
       - uses: actions/checkout@v4
 
@@ -81,6 +95,7 @@ jobs:
           echo "args<<$EOF" >> "$GITHUB_OUTPUT"
           echo "PACKAGE_NAME=${{ matrix.package }}" >> "$GITHUB_OUTPUT"
           echo "APP_DIR=${{ matrix.dir }}" >> "$GITHUB_OUTPUT"
+          echo "ENTRYPOINT_FILE=${{ matrix.entrypoint }}" >> "$GITHUB_OUTPUT"
           echo "$EOF" >> "$GITHUB_OUTPUT"
 
       - uses: docker/build-push-action@v6

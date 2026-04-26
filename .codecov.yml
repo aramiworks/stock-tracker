@@ -33,6 +33,8 @@ flags:
   unit:
     paths:
       - apps/api/src/
+      - apps/services/auth/src/
+      - apps/services/tracker/src/
       - apps/mobile/src/
       - packages/validation/src/
       - packages/config/src/
@@ -40,4 +42,6 @@ flags:
   e2e:
     paths:
       - apps/api/
+      - apps/services/auth/
+      - apps/services/tracker/
     carryforward: true

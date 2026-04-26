@@ -3,7 +3,11 @@
 #   docker build \
 #     --build-arg PACKAGE_NAME=@stock-tracker/api \
 #     --build-arg APP_DIR=apps/api \
+#     --build-arg ENTRYPOINT_FILE=dist/server.js \
 #     -f infra/docker/node-service.Dockerfile .
+#
+# ENTRYPOINT_FILE defaults to dist/server.js (Express services). NestJS services
+# (auth-service, tracker-service) build to dist/main.js and must override it.
 
 ARG NODE_VERSION=20
 
@@ -41,6 +45,8 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 appuser
 
 ARG APP_DIR
+ARG ENTRYPOINT_FILE=dist/server.js
+ENV ENTRYPOINT_FILE=${ENTRYPOINT_FILE}
 
 # Copy the full pruned monorepo (preserves workspace package symlinks)
 COPY --from=builder /app /app
@@ -50,4 +56,6 @@ USER appuser
 
 EXPOSE 4000
 
-CMD ["node", "dist/server.js"]
+# Shell-form CMD with exec so $ENTRYPOINT_FILE expands at runtime and node
+# becomes PID 1 (receives SIGTERM directly for graceful shutdown).
+CMD exec node $ENTRYPOINT_FILE

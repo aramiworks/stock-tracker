@@ -24,8 +24,7 @@ export const createAuthTrpcClient = (
     links: [
       httpBatchLink({
         url:
-          process.env["TRPC_AUTH_SERVICE_URL"] ||
-          "http://localhost:4030/trpc",
+          process.env["TRPC_AUTH_SERVICE_URL"] || "http://localhost:4030/trpc",
         transformer: superjson,
         headers: forwardHeaders(headers),
       }),

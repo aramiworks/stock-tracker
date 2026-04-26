@@ -1,6 +1,6 @@
 import { memo, useState, type ReactNode } from "react";
 import { View, RefreshControl, StyleSheet } from "react-native";
-import { Text, FAB, DashboardTemplate } from "@aramiworks/ui";
+import { FAB, DashboardTemplate, TopAppBar } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerDashboardHomeScreenState,
@@ -113,14 +113,11 @@ export const TrackerDashboardHomeViews = memo(
         <DashboardTemplate
           testID="dashboard-home-screen"
           topBar={
-            <>
-              <View style={styles.statusBar} />
-              <View style={styles.appBar}>
-                <Text role="title" size="large" testID="dashboard-home-title">
-                  {t("dashboard.title")}
-                </Text>
-              </View>
-            </>
+            <TopAppBar
+              type="small"
+              title={t("dashboard.title")}
+              testID="dashboard-home-title"
+            />
           }
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
@@ -150,14 +147,6 @@ export const TrackerDashboardHomeViews = memo(
 TrackerDashboardHomeViews.displayName = "TrackerDashboardHomeViews";
 
 const styles = StyleSheet.create({
-  statusBar: {
-    height: 54,
-  },
-  appBar: {
-    height: 56,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
   scrollContent: {
     alignItems: "center",
     paddingBottom: 64,

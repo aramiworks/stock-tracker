@@ -1,6 +1,6 @@
 import { memo, type ReactNode } from "react";
 import { View, RefreshControl, StyleSheet, Alert } from "react-native";
-import { Text, ListTemplate, SearchBar } from "@aramiworks/ui";
+import { ListTemplate, SearchBar, TopAppBar } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerHistoryBrowseScreenState,
@@ -158,14 +158,11 @@ export const TrackerHistoryBrowseViews = memo(
       <ListTemplate
         testID="history-browse-screen"
         topBar={
-          <>
-            <View style={styles.statusBar} />
-            <View style={styles.appBar}>
-              <Text role="title" size="large" testID="history-browse-title">
-                {t("history.browse.title")}
-              </Text>
-            </View>
-          </>
+          <TopAppBar
+            type="small"
+            title={t("history.browse.title")}
+            testID="history-browse-title"
+          />
         }
         headerContent={headerContent}
         refreshControl={
@@ -182,14 +179,6 @@ export const TrackerHistoryBrowseViews = memo(
 TrackerHistoryBrowseViews.displayName = "TrackerHistoryBrowseViews";
 
 const styles = StyleSheet.create({
-  statusBar: {
-    height: 54,
-  },
-  appBar: {
-    height: 56,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
   filterBar: {
     paddingHorizontal: 20,
     paddingBottom: 8,

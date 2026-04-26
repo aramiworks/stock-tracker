@@ -86,6 +86,16 @@ const config: StorybookConfig = {
           "./mocks/react-native-reanimated.js",
         ),
       },
+      // Mock react-native-safe-area-context — its native specs import
+      // react-native/Libraries/Utilities/codegenNativeComponent which has no
+      // react-native-web equivalent. Components render with zero insets.
+      {
+        find: "react-native-safe-area-context",
+        replacement: path.resolve(
+          __dirname,
+          "./mocks/react-native-safe-area-context.js",
+        ),
+      },
       { find: "react-native", replacement: "react-native-web" },
       { find: "@", replacement: path.resolve(__dirname, "../../mobile/src") },
       {
@@ -99,6 +109,7 @@ const config: StorybookConfig = {
         (a) =>
           (a as { find: string }).find !== "react-native" &&
           (a as { find: string }).find !== "react-native-reanimated" &&
+          (a as { find: string }).find !== "react-native-safe-area-context" &&
           (a as { find: string }).find !== "@" &&
           (a as { find: string }).find !== "@expo/vector-icons" &&
           (a as { find: string }).find !== "@expo/vector-icons/MaterialIcons" &&

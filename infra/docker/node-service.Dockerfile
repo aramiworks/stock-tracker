@@ -56,6 +56,6 @@ USER appuser
 
 EXPOSE 4000
 
-# Shell-form CMD so $ENTRYPOINT_FILE expands at runtime. ARG values do not
-# expand inside exec-form CMD.
-CMD node $ENTRYPOINT_FILE
+# Shell-form CMD with exec so $ENTRYPOINT_FILE expands at runtime and node
+# becomes PID 1 (receives SIGTERM directly for graceful shutdown).
+CMD exec node $ENTRYPOINT_FILE

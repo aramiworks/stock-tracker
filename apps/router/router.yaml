@@ -12,7 +12,7 @@ authentication:
 # so a Rhai script is required to extract individual claims.
 rhai:
   scripts: "./rhai"
-  main: "./rhai/main.rhai"
+  main: "main.rhai"
 
 # Propagate non-JWT headers to all subgraphs
 headers:

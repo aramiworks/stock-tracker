@@ -95,7 +95,9 @@ describe("AuthSignInGmailOauthControllers", () => {
   });
 
   it("native signInWithGoogle skips signInWithIdToken when response is not success", async () => {
-    const { isSuccessResponse } = require("@react-native-google-signin/google-signin");
+    const {
+      isSuccessResponse,
+    } = require("@react-native-google-signin/google-signin");
     (isSuccessResponse as jest.Mock).mockReturnValueOnce(false);
 
     const ref = React.createRef<ConsumerHandle>();

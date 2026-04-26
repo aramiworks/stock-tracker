@@ -56,7 +56,9 @@ const FullScreenDialog = memo(
           <Pressable
             onPress={onClose}
             style={dialogStyles.closeButton}
-            testID={/* istanbul ignore next */ testID ? `${testID}-cancel` : undefined}
+            testID={
+              /* istanbul ignore next */ testID ? `${testID}-cancel` : undefined
+            }
           >
             <Text style={dialogStyles.closeText}>취소</Text>
           </Pressable>
@@ -64,7 +66,9 @@ const FullScreenDialog = memo(
           <Pressable
             onPress={onAction}
             style={dialogStyles.submitButton}
-            testID={/* istanbul ignore next */ testID ? `${testID}-action` : undefined}
+            testID={
+              /* istanbul ignore next */ testID ? `${testID}-action` : undefined
+            }
           >
             <Text style={dialogStyles.submitText}>{actionLabel}</Text>
           </Pressable>
@@ -161,21 +165,25 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
       if (visible && defaultValues) {
         reset({
           itemName: defaultValues.itemName ?? /* istanbul ignore next */ "",
-          amount: defaultValues.amount ?? /* istanbul ignore next */ (undefined as unknown as number),
+          amount:
+            defaultValues.amount ??
+            /* istanbul ignore next */ (undefined as unknown as number),
           purchaseDate: defaultValues.purchaseDate ?? "",
           itemCategory: defaultValues.itemCategory ?? undefined,
           storeLocation: defaultValues.storeLocation ?? "",
           notes: defaultValues.notes ?? "",
         });
-      } else /* istanbul ignore next -- reset to blank form when opening without defaults */ if (visible) {
-        reset({
-          itemName: "",
-          amount: undefined as unknown as number,
-          purchaseDate: "",
-          itemCategory: undefined,
-          storeLocation: "",
-          notes: "",
-        });
+      } else if (visible) {
+        /* istanbul ignore next -- reset to blank form when opening without defaults */ reset(
+          {
+            itemName: "",
+            amount: undefined as unknown as number,
+            purchaseDate: "",
+            itemCategory: undefined,
+            storeLocation: "",
+            notes: "",
+          },
+        );
       }
     }, [visible, defaultValues, reset]);
 

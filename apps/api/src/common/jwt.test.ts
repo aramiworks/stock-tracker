@@ -19,7 +19,11 @@ describe("verifySupabaseJwt", () => {
 
   it("returns claims when token is valid", async () => {
     mockJwtVerify.mockResolvedValue({
-      payload: { sub: "user-123", email: "test@example.com", role: "authenticated" },
+      payload: {
+        sub: "user-123",
+        email: "test@example.com",
+        role: "authenticated",
+      },
       protectedHeader: { alg: "RS256" },
     } as any);
 

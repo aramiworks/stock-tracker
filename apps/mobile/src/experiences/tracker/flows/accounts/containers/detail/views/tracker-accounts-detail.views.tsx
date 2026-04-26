@@ -144,8 +144,10 @@ export const TrackerAccountsDetailViews = memo(
       async (data: CreatePurchaseInput) => {
         if (editingPurchase && onUpdatePurchase) {
           await onUpdatePurchase(editingPurchase.id, data);
-        } else /* istanbul ignore next -- guard; modal only opens when handler exists */ if (onCreatePurchase) {
-          await onCreatePurchase(data);
+        } else if (onCreatePurchase) {
+          /* istanbul ignore next -- guard; modal only opens when handler exists */ await onCreatePurchase(
+            data,
+          );
         }
       },
       [editingPurchase, onUpdatePurchase, onCreatePurchase],

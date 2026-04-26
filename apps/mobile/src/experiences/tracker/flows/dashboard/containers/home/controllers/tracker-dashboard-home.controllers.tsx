@@ -56,7 +56,8 @@ export const TrackerDashboardHomeControllers =
       ? "empty"
       : "default";
 
-    const totalSpend = data?.dashboard?.totalSpent ?? /* istanbul ignore next */ 0;
+    const totalSpend =
+      data?.dashboard?.totalSpent ?? /* istanbul ignore next */ 0;
 
     const saAccounts = useMemo(() => {
       /* istanbul ignore next -- defensive guard, query always returns accounts array */

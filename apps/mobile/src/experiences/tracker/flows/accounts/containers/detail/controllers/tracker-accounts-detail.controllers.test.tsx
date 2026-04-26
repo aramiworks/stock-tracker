@@ -193,7 +193,7 @@ describe("TrackerAccountsDetailControllers", () => {
   });
 
   it("falls back to storeName when saName is null", () => {
-    setupMocks({ ...MOCK_ACCOUNT, saName: null });
+    setupMocks({ ...MOCK_ACCOUNT, saName: null as unknown as string });
     const { getByTestId } = render(
       <TrackerAccountsDetailControllers accountId="acc-1">
         <Consumer />
@@ -205,7 +205,11 @@ describe("TrackerAccountsDetailControllers", () => {
   });
 
   it("falls back to empty string when both saName and storeName are null", () => {
-    setupMocks({ ...MOCK_ACCOUNT, saName: null, storeName: null });
+    setupMocks({
+      ...MOCK_ACCOUNT,
+      saName: null as unknown as string,
+      storeName: null as unknown as string,
+    });
     const { getByTestId } = render(
       <TrackerAccountsDetailControllers accountId="acc-1">
         <Consumer />
@@ -217,7 +221,7 @@ describe("TrackerAccountsDetailControllers", () => {
   });
 
   it("falls back to empty string when notes is null", () => {
-    setupMocks({ ...MOCK_ACCOUNT, notes: null });
+    setupMocks({ ...MOCK_ACCOUNT, notes: null as unknown as string });
     const { getByTestId } = render(
       <TrackerAccountsDetailControllers accountId="acc-1">
         <Consumer />

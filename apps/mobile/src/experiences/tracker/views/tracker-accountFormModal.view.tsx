@@ -55,7 +55,9 @@ const FullScreenDialog = memo(
           <Pressable
             onPress={onClose}
             style={dialogStyles.closeButton}
-            testID={/* istanbul ignore next */ testID ? `${testID}-cancel` : undefined}
+            testID={
+              /* istanbul ignore next */ testID ? `${testID}-cancel` : undefined
+            }
           >
             <Text style={dialogStyles.closeText}>취소</Text>
           </Pressable>
@@ -63,7 +65,9 @@ const FullScreenDialog = memo(
           <Pressable
             onPress={onAction}
             style={dialogStyles.submitButton}
-            testID={/* istanbul ignore next */ testID ? `${testID}-action` : undefined}
+            testID={
+              /* istanbul ignore next */ testID ? `${testID}-action` : undefined
+            }
           >
             <Text style={dialogStyles.submitText}>{actionLabel}</Text>
           </Pressable>

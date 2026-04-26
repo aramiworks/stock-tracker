@@ -25,7 +25,19 @@ import {
   useTrackerAccountsListControllers,
 } from "./tracker-accounts-list.controllers";
 
-const MOCK_ACCOUNTS = [
+const MOCK_ACCOUNTS: {
+  id: string;
+  storeName: string;
+  saName: string | null;
+  notes: string | null;
+  createdAt: string;
+  purchases: {
+    id: string;
+    itemName: string;
+    amount: number;
+    purchaseDate: string;
+  }[];
+}[] = [
   {
     id: "acc-1",
     storeName: "Cartier Gangnam",
@@ -190,7 +202,7 @@ describe("TrackerAccountsListControllers", () => {
         saName: null,
         notes: null,
         createdAt: "2024-01-01",
-        purchases: null as unknown as typeof MOCK_ACCOUNTS[0]["purchases"],
+        purchases: null as unknown as (typeof MOCK_ACCOUNTS)[0]["purchases"],
       },
     ]);
     const { getByTestId } = render(

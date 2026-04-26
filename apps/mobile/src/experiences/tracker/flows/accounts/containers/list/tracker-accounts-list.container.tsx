@@ -31,11 +31,17 @@ ConnectedViews.displayName = "TrackerAccountsListConnectedViews";
 export const TrackerAccountsListContainer = memo(() => {
   return (
     <QueryErrorBoundary
-      fallback={/* istanbul ignore next -- error boundary fallback */ ({ retry }) => (
-        <TrackerAccountsListViews screenState="error" onRetry={retry} />
-      )}
+      fallback={
+        /* istanbul ignore next -- error boundary fallback */ ({ retry }) => (
+          <TrackerAccountsListViews screenState="error" onRetry={retry} />
+        )
+      }
     >
-      <Suspense fallback={/* istanbul ignore next -- Suspense fallback */ <TrackerAccountsListViews screenState="loading" />}>
+      <Suspense
+        fallback={
+          /* istanbul ignore next -- Suspense fallback */ <TrackerAccountsListViews screenState="loading" />
+        }
+      >
         <TrackerAccountsListModels>
           <TrackerAccountsListControllers>
             <ConnectedViews />

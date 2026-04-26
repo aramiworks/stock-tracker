@@ -43,12 +43,16 @@ export const TrackerAccountsDetailContainer = memo(
   ({ accountId }: TrackerAccountsDetailContainerProps) => {
     return (
       <QueryErrorBoundary
-        fallback={/* istanbul ignore next -- error boundary fallback */ ({ retry }) => (
-          <TrackerAccountsDetailViews screenState="error" onRetry={retry} />
-        )}
+        fallback={
+          /* istanbul ignore next -- error boundary fallback */ ({ retry }) => (
+            <TrackerAccountsDetailViews screenState="error" onRetry={retry} />
+          )
+        }
       >
         <Suspense
-          fallback={/* istanbul ignore next -- Suspense fallback */ <TrackerAccountsDetailViews screenState="loading" />}
+          fallback={
+            /* istanbul ignore next -- Suspense fallback */ <TrackerAccountsDetailViews screenState="loading" />
+          }
         >
           <TrackerAccountsDetailModels>
             <TrackerAccountsDetailControllers accountId={accountId}>

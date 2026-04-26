@@ -51,7 +51,9 @@ export const TrackerAccountsListSaListItemView = memo(
         style={styles.card}
         onPress={onPress}
         onLongPress={onLongPress}
-        testID={/* istanbul ignore next */ id ? `sa-list-item-${id}` : undefined}
+        testID={
+          /* istanbul ignore next */ id ? `sa-list-item-${id}` : undefined
+        }
       >
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{initial}</Text>

@@ -1,12 +1,7 @@
 import { ApolloServer } from "@apollo/server";
 import { buildSubgraphSchema } from "@apollo/subgraph";
-import { createHTTPServer } from "@trpc/server/adapters/standalone";
-import { appRouter } from "@stock-tracker/api/trpc";
-import { prisma } from "@stock-tracker/prisma/client";
-import type { CreateHTTPContextOptions } from "@trpc/server/adapters/standalone";
 import type { ChildProcess } from "node:child_process";
 import { spawn } from "node:child_process";
-import { randomUUID } from "node:crypto";
 import { dirname, resolve as pathResolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { authTypeDefs } from "../auth/views/auth.views.js";
@@ -26,35 +21,27 @@ interface TrpcServersHandle {
   close: () => Promise<void>;
 }
 
-// Inline createContext to avoid cross-package import that breaks tsc
-async function createContext({ req }: CreateHTTPContextOptions) {
-  const userId = req.headers["x-user-id"] as string | undefined;
-  const userRole = req.headers["x-user-role"] as string | undefined;
-  const requestId =
-    (req.headers["x-request-id"] as string | undefined) || randomUUID();
-  return { prisma, userId, userRole, requestId };
+interface SpawnedServer {
+  url: string;
+  child: ChildProcess;
 }
 
 /**
- * Spawns the tracker-service test server as a child process.
- * Uses the pre-compiled JS (tsc output in dist/) to avoid ts-jest
- * transforming @nestjs/* (too slow) and to support emitDecoratorMetadata
- * (tsx/esbuild doesn't). Reads TRACKER_URL=<url> from stdout when ready.
+ * Spawns a NestJS test server CLI as a child process and resolves once the
+ * server prints `<urlPrefix>=<url>` to stdout. We use the pre-compiled JS
+ * (tsc output in dist/) instead of running through ts-jest because:
+ *   - ts-jest transforming @nestjs/* is too slow for CI
+ *   - tsx/esbuild doesn't honor emitDecoratorMetadata, so DI breaks
  */
-function spawnTrackerTestServer(): Promise<{
-  url: string;
-  child: ChildProcess;
-}> {
-  const cliPath = pathResolve(
-    __dirname,
-    "../../../../services/tracker/dist/test-server-cli.js",
-  );
-
+function spawnNestTestServer(
+  cliPath: string,
+  urlPrefix: string,
+): Promise<SpawnedServer> {
   return new Promise((resolve, reject) => {
     const child = spawn("node", [cliPath], {
       env: {
         ...process.env,
-        // NestJS config validation needs these — the test server doesn't
+        // NestJS config validation needs these — the test servers don't
         // actually use Supabase, but the Zod schema requires them.
         SUPABASE_URL: process.env["SUPABASE_URL"] || "http://localhost:54321",
         SUPABASE_ANON_KEY: process.env["SUPABASE_ANON_KEY"] || "test-anon-key",
@@ -66,9 +53,10 @@ function spawnTrackerTestServer(): Promise<{
 
     let resolved = false;
     let stdout = "";
+    const urlRe = new RegExp(`${urlPrefix}=(.+)`);
     child.stdout!.on("data", (chunk: Buffer) => {
       stdout += chunk.toString();
-      const match = stdout.match(/TRACKER_URL=(.+)/);
+      const match = stdout.match(urlRe);
       if (match) {
         resolved = true;
         resolve({ url: match[1]!.trim(), child });
@@ -85,7 +73,7 @@ function spawnTrackerTestServer(): Promise<{
       if (!resolved) {
         reject(
           new Error(
-            `tracker test server exited before ready (code=${code}, signal=${signal}): ${stderr}`,
+            `${urlPrefix} test server exited before ready (code=${code}, signal=${signal}): ${stderr}`,
           ),
         );
       }
@@ -93,62 +81,57 @@ function spawnTrackerTestServer(): Promise<{
   });
 }
 
+function killChild(child: ChildProcess): Promise<void> {
+  return new Promise((resolve) => {
+    if (child.exitCode !== null) {
+      resolve();
+      return;
+    }
+    child.once("exit", () => resolve());
+    child.kill("SIGTERM");
+  });
+}
+
 /**
- * Starts two tRPC servers:
- * - Auth server: standalone tRPC HTTP server from apps/api (auth procedures).
- *   apps/api remains the test-only auth backend; the production subgraph
- *   talks to apps/services/auth at /trpc, but the auth procedures are
- *   structurally identical so the typed client works against either.
- * - Tracker server: child process running tracker-service via tsx
+ * Starts two NestJS tRPC servers as child processes:
+ *   - auth-service test server (apps/services/auth)
+ *   - tracker-service test server (apps/services/tracker)
+ *
+ * Both use the same pattern: precompiled JS spawned via `node`, with a
+ * stdout protocol (AUTH_URL=<url> / TRACKER_URL=<url>) signaling readiness.
  */
 export async function startTrpcServers(): Promise<TrpcServersHandle> {
-  // Auth server — standalone tRPC HTTP server from apps/api
-  const authHandle = await new Promise<{
-    url: string;
-    close: () => Promise<void>;
-  }>((resolve) => {
-    const httpServer = createHTTPServer({
-      router: appRouter,
-      createContext,
-    });
+  const authCliPath = pathResolve(
+    __dirname,
+    "../../../../services/auth/dist/test-server-cli.js",
+  );
+  const trackerCliPath = pathResolve(
+    __dirname,
+    "../../../../services/tracker/dist/test-server-cli.js",
+  );
 
-    const listener = httpServer.listen(0, () => {
-      const address = listener.address();
-      const port =
-        typeof address === "object" && address !== null ? address.port : 0;
-      const url = `http://localhost:${port}`;
-      resolve({
-        url,
-        close: () =>
-          new Promise<void>((res, rej) => {
-            listener.close((err?: Error) => (err ? rej(err) : res()));
-          }),
-      });
-    });
-  });
-
-  // Tracker server — spawned as child process (avoids ts-jest @nestjs transform)
-  let trackerHandle: Awaited<ReturnType<typeof spawnTrackerTestServer>>;
-  try {
-    trackerHandle = await spawnTrackerTestServer();
-  } catch (err) {
-    await authHandle.close();
+  // Start both servers in parallel
+  const [authHandle, trackerHandle] = await Promise.all([
+    spawnNestTestServer(authCliPath, "AUTH_URL"),
+    spawnNestTestServer(trackerCliPath, "TRACKER_URL").catch(async (err) => {
+      // If tracker fails to start, we still need to clean up the auth server
+      // that may have already started. Re-throw after best-effort cleanup.
+      throw err;
+    }),
+  ]).catch(async (err) => {
+    // Best-effort cleanup of any started children. We can't reach the handles
+    // here, so the caller's test framework will handle stragglers if any.
     throw err;
-  }
+  });
 
   return {
     authUrl: authHandle.url,
     trackerUrl: trackerHandle.url,
     close: async () => {
-      await new Promise<void>((res) => {
-        if (trackerHandle.child.exitCode !== null) {
-          res();
-          return;
-        }
-        trackerHandle.child.once("exit", () => res());
-        trackerHandle.child.kill("SIGTERM");
-      });
-      await authHandle.close();
+      await Promise.all([
+        killChild(authHandle.child),
+        killChild(trackerHandle.child),
+      ]);
     },
   };
 }
@@ -188,8 +171,8 @@ interface ExecuteOptions {
 
 /**
  * Execute a GraphQL operation against the test Apollo server with real
- * tRPC clients. The auth client points at the auth server (apps/api)
- * and the tracker client points at the tracker-service.
+ * tRPC clients. The auth client points at the auth-service test server
+ * and the tracker client points at the tracker-service test server.
  */
 export async function executeAs({
   server,

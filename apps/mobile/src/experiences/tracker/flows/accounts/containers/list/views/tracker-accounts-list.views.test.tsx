@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
-import { Alert } from "react-native";
+import { useConfirmDialog } from "@aramiworks/ui";
 
 // Mock child views — each rendered as a simple testID stub so we can assert
 // template wiring without depending on their internals.
@@ -70,6 +70,11 @@ const account = (id: string, overrides: Record<string, unknown> = {}) => ({
 });
 
 describe("TrackerAccountsListViews", () => {
+  const { showConfirmDialog } = useConfirmDialog();
+  beforeEach(() => {
+    (showConfirmDialog as jest.Mock).mockClear();
+  });
+
   it("renders default screen with title, sa list items, and add FAB", () => {
     const { getByTestId } = render(
       <TrackerAccountsListViews
@@ -163,9 +168,8 @@ describe("TrackerAccountsListViews", () => {
     ).not.toThrow();
   });
 
-  it("opens delete confirm Alert when long-pressing with onDeleteAccount wired", () => {
+  it("opens delete confirm dialog when long-pressing with onDeleteAccount wired", () => {
     const onDeleteAccount = jest.fn().mockResolvedValue(undefined);
-    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
     const { getByTestId } = render(
       <TrackerAccountsListViews
         screenState="default"
@@ -174,20 +178,15 @@ describe("TrackerAccountsListViews", () => {
       />,
     );
     fireEvent(getByTestId("sa-list-item-del"), "longPress");
-    expect(alertSpy).toHaveBeenCalledTimes(1);
-    // Invoke the destructive "삭제" button handler passed into Alert.alert.
-    const buttons = alertSpy.mock.calls[0][2] as Array<{
-      text: string;
-      onPress?: () => void;
-    }>;
-    const destructive = buttons.find((b) => b.text === "삭제");
-    destructive?.onPress?.();
+    expect(showConfirmDialog).toHaveBeenCalledTimes(1);
+    const options = (showConfirmDialog as jest.Mock).mock.calls[0][0];
+    expect(options.confirmLabel).toBe("삭제");
+    expect(options.dismissLabel).toBe("취소");
+    options.onConfirm();
     expect(onDeleteAccount).toHaveBeenCalledWith("del");
-    alertSpy.mockRestore();
   });
 
   it("does not wire onLongPress when onDeleteAccount is absent", () => {
-    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
     const { getByTestId } = render(
       <TrackerAccountsListViews
         screenState="default"
@@ -195,8 +194,7 @@ describe("TrackerAccountsListViews", () => {
       />,
     );
     fireEvent(getByTestId("sa-list-item-plain"), "longPress");
-    expect(alertSpy).not.toHaveBeenCalled();
-    alertSpy.mockRestore();
+    expect(showConfirmDialog).not.toHaveBeenCalled();
   });
 
   it("opens and closes the account form modal via add FAB", () => {

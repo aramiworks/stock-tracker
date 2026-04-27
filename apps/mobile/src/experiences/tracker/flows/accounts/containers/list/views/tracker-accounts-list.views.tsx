@@ -1,6 +1,12 @@
 import { memo, useState, type ReactNode } from "react";
-import { View, RefreshControl, StyleSheet, Alert } from "react-native";
-import { FAB, ListTemplate, SearchBar, TopAppBar } from "@aramiworks/ui";
+import { View, RefreshControl, StyleSheet } from "react-native";
+import {
+  FAB,
+  ListTemplate,
+  SearchBar,
+  TopAppBar,
+  useConfirmDialog,
+} from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsListScreenState,
@@ -93,6 +99,7 @@ export const TrackerAccountsListViews = memo(
   }: TrackerAccountsListViewsProps) => {
     const { t } = useTranslation("tracker");
     const [showAccountModal, setShowAccountModal] = useState(false);
+    const { showConfirmDialog, ConfirmDialogPortal } = useConfirmDialog();
     const content: Record<TrackerAccountsListScreenState, ReactNode> = {
       default: (
         <>
@@ -110,21 +117,16 @@ export const TrackerAccountsListViews = memo(
                 onLongPress={
                   onDeleteAccount
                     ? () =>
-                        Alert.alert(
-                          t("accounts.list.confirm.deleteAccount.title"),
-                          t("accounts.list.confirm.deleteAccount.message", {
-                            name: sa.name,
-                            boutique: sa.boutique,
-                          }),
-                          [
-                            { text: "취소", style: "cancel" },
-                            {
-                              text: "삭제",
-                              style: "destructive",
-                              onPress: () => onDeleteAccount(sa.id),
-                            },
-                          ],
-                        )
+                        showConfirmDialog({
+                          title: t("accounts.list.confirm.deleteAccount.title"),
+                          message: t(
+                            "accounts.list.confirm.deleteAccount.message",
+                            { name: sa.name, boutique: sa.boutique },
+                          ),
+                          confirmLabel: "삭제",
+                          dismissLabel: "취소",
+                          onConfirm: () => onDeleteAccount(sa.id),
+                        })
                     : undefined
                 }
               />
@@ -212,6 +214,7 @@ export const TrackerAccountsListViews = memo(
             onSubmit={onCreateAccount}
           />
         )}
+        <ConfirmDialogPortal />
       </>
     );
   },

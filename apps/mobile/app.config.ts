@@ -56,6 +56,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-updates",
     "expo-secure-store",
     "expo-web-browser",
+    [
+      "@sentry/react-native/expo",
+      {
+        organization: "aramiworks",
+        project: "stock-tracker-app",
+      },
+    ],
     // Only apply the Google Sign-In plugin when the iOS URL scheme is available
     // (requires EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID — always set in EAS + Doppler builds).
     ...(iosOAuthScheme

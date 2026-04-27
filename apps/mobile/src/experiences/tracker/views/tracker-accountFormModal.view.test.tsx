@@ -1,5 +1,4 @@
 import React from "react";
-import { Alert } from "react-native";
 import { render, fireEvent, act } from "@testing-library/react-native";
 
 jest.mock("@/shared/components/text-input-field", () => ({
@@ -82,8 +81,7 @@ describe("TrackerAccountFormModalView", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it("shows Alert when onSubmit throws and does not close modal", async () => {
-    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+  it("shows inline error when onSubmit throws and does not close modal", async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error("network error"));
     const onClose = jest.fn();
     const { getByTestId } = render(
@@ -96,12 +94,8 @@ describe("TrackerAccountFormModalView", () => {
     await act(async () => {
       fireEvent.press(getByTestId("account-form-action"));
     });
-    expect(alertSpy).toHaveBeenCalledWith(
-      "오류",
-      "계좌를 추가하는 중 오류가 발생했습니다.",
-    );
+    expect(getByTestId("account-form-error")).toBeTruthy();
     expect(onClose).not.toHaveBeenCalled();
-    alertSpy.mockRestore();
   });
 });
 

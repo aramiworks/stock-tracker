@@ -1,13 +1,13 @@
 # Reusable multi-stage Dockerfile for Turborepo Node.js services.
 # Usage:
 #   docker build \
-#     --build-arg PACKAGE_NAME=@stock-tracker/api \
-#     --build-arg APP_DIR=apps/api \
-#     --build-arg ENTRYPOINT_FILE=dist/server.js \
+#     --build-arg PACKAGE_NAME=@stock-tracker/auth-service \
+#     --build-arg APP_DIR=apps/services/auth \
+#     --build-arg ENTRYPOINT_FILE=dist/main.js \
 #     -f infra/docker/node-service.Dockerfile .
 #
-# ENTRYPOINT_FILE defaults to dist/server.js (Express services). NestJS services
-# (auth-service, tracker-service) build to dist/main.js and must override it.
+# ENTRYPOINT_FILE defaults to dist/server.js. NestJS services (auth-service,
+# tracker-service) build to dist/main.js and must override it.
 
 ARG NODE_VERSION=20
 

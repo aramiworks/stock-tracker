@@ -15,19 +15,6 @@ procs:
     stop: "SIGTERM"
     autostart: true
 
-  api:
-    cmd:
-      [
-        "sh",
-        "-c",
-        "lsof -ti :${API_PORT:-4010} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
-      ]
-    cwd: apps/api
-    env:
-      PORT: "4010"
-    stop: "SIGTERM"
-    autostart: true
-
   tracker-service:
     cmd:
       [

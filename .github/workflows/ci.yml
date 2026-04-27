@@ -51,7 +51,6 @@ jobs:
               - 'apps/subgraphs/**'
             dockerfiles:
               - 'apps/subgraphs/*/Dockerfile'
-              - 'apps/api/Dockerfile'
               - 'apps/router/Dockerfile'
             stories:
               - 'apps/mobile/src/**/*.story.tsx'

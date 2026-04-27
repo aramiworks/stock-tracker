@@ -6,17 +6,18 @@ set -euo pipefail
 # and pipes output to logs/*.log so the dashboard can tail them.
 #
 # Usage:
-#   ./scripts/start.sh api            # tRPC service (:4010)
-#   ./scripts/start.sh subgraph       # Apollo subgraph (:4011)
-#   ./scripts/start.sh router         # Apollo Router (:4012)
-#   ./scripts/start.sh ios            # Expo iOS (:8092)
-#   ./scripts/start.sh android        # Expo Android (:8093)
-#   ./scripts/start.sh web            # Expo Web (:8094)
-#   ./scripts/start.sh supabase       # Local Supabase (Docker)
-#   ./scripts/start.sh storybook      # Storybook web (:6006)
-#   ./scripts/start.sh backend        # supabase + api + subgraph + router
-#   ./scripts/start.sh all            # Everything
-#   ./scripts/start.sh stop           # Kill all managed services
+#   ./scripts/start.sh auth-service     # NestJS auth service (:4030)
+#   ./scripts/start.sh tracker-service  # NestJS tracker service (:4020)
+#   ./scripts/start.sh subgraph         # Apollo subgraph (:4011)
+#   ./scripts/start.sh router           # Apollo Router (:4012)
+#   ./scripts/start.sh ios              # Expo iOS (:8092)
+#   ./scripts/start.sh android          # Expo Android (:8093)
+#   ./scripts/start.sh web              # Expo Web (:8094)
+#   ./scripts/start.sh supabase         # Local Supabase (Docker)
+#   ./scripts/start.sh storybook        # Storybook web (:6006)
+#   ./scripts/start.sh backend          # supabase + auth + tracker + subgraph + router
+#   ./scripts/start.sh all              # Everything
+#   ./scripts/start.sh stop             # Kill all managed services
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -81,13 +82,14 @@ stop_service() {
   rm -f "$pidfile"
 }
 
-API_DIR="$REPO_ROOT/apps/api"
+AUTH_SERVICE_DIR="$REPO_ROOT/apps/services/auth"
+TRACKER_SERVICE_DIR="$REPO_ROOT/apps/services/tracker"
 SUBGRAPH_DIR="$REPO_ROOT/apps/subgraphs/tracker"
 ROUTER_DIR="$REPO_ROOT/apps/router"
 MOBILE_DIR="$REPO_ROOT/apps/mobile"
 STORYBOOK_DIR="$REPO_ROOT/apps/storybook"
 PRISMA_DIR="$REPO_ROOT/packages/prisma"
-ALL_SERVICES="supabase api subgraph router ios android web storybook"
+ALL_SERVICES="supabase auth-service tracker-service subgraph router ios android web storybook"
 
 cmd="${1:-all}"
 
@@ -95,8 +97,11 @@ case "$cmd" in
   supabase)
     start_service "supabase" "$DOPPLER bash '$REPO_ROOT/scripts/supabase-local.sh'"
     ;;
-  api)
-    start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
+  auth-service)
+    start_service "auth-service" "cd '$AUTH_SERVICE_DIR' && PORT=4030 $DOPPLER node --watch --loader ts-node/esm src/main.ts"
+    ;;
+  tracker-service)
+    start_service "tracker-service" "cd '$TRACKER_SERVICE_DIR' && PORT=4020 $DOPPLER node --watch --loader ts-node/esm src/main.ts"
     ;;
   subgraph)
     start_service "subgraph" "cd '$SUBGRAPH_DIR' && PORT=4011 $DOPPLER npx tsx watch src/server.ts"
@@ -118,13 +123,15 @@ case "$cmd" in
     ;;
   backend)
     start_service "supabase" "$DOPPLER bash '$REPO_ROOT/scripts/supabase-local.sh'"
-    start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
+    start_service "auth-service" "cd '$AUTH_SERVICE_DIR' && PORT=4030 $DOPPLER node --watch --loader ts-node/esm src/main.ts"
+    start_service "tracker-service" "cd '$TRACKER_SERVICE_DIR' && PORT=4020 $DOPPLER node --watch --loader ts-node/esm src/main.ts"
     start_service "subgraph" "cd '$SUBGRAPH_DIR' && PORT=4011 $DOPPLER npx tsx watch src/server.ts"
     start_service "router" "cd '$ROUTER_DIR' && $DOPPLER rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012"
     ;;
   all)
     start_service "supabase" "$DOPPLER bash '$REPO_ROOT/scripts/supabase-local.sh'"
-    start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
+    start_service "auth-service" "cd '$AUTH_SERVICE_DIR' && PORT=4030 $DOPPLER node --watch --loader ts-node/esm src/main.ts"
+    start_service "tracker-service" "cd '$TRACKER_SERVICE_DIR' && PORT=4020 $DOPPLER node --watch --loader ts-node/esm src/main.ts"
     start_service "subgraph" "cd '$SUBGRAPH_DIR' && PORT=4011 $DOPPLER npx tsx watch src/server.ts"
     start_service "router" "cd '$ROUTER_DIR' && $DOPPLER rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012"
     start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo run:ios --port 8092"
@@ -142,7 +149,7 @@ case "$cmd" in
     ;;
   *)
     err "Unknown command: $cmd"
-    echo "Usage: $0 [api|subgraph|router|ios|android|web|storybook|backend|all|stop]"
+    echo "Usage: $0 [auth-service|tracker-service|subgraph|router|ios|android|web|storybook|backend|all|stop]"
     exit 1
     ;;
 esac

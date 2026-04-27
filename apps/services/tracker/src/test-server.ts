@@ -33,7 +33,7 @@ export async function startTrackerTestServer(): Promise<{
 
   const trpcRouter = appContext.get(TrpcRouter);
 
-  // Use standalone tRPC HTTP server (same pattern as apps/api tests)
+  // Use standalone tRPC HTTP server
   return new Promise((resolve) => {
     const httpServer = createHTTPServer({
       router: trpcRouter.appRouter,

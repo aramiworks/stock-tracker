@@ -4,15 +4,15 @@ Integration tests for the Apollo Router that run the **real `apollo-router` bina
 
 ## What's covered
 
-| Concern | Test |
-|---------|------|
-| Unauthenticated requests pass through without `x-user-id` (auth deferred to subgraph) | `passes unauthenticated requests through without x-user-id` |
-| JWKS validation rejects untrusted-key JWTs | `rejects JWTs signed by an untrusted key` |
-| Rhai script maps JWT `sub` → `x-user-id` | `maps JWT 'sub' claim to x-user-id on the subgraph request` |
-| Rhai script maps JWT `role` → `x-user-role` | `maps JWT 'role' claim to x-user-role on the subgraph request` |
-| Rhai omits `x-user-role` when claim is absent | `omits x-user-role when JWT has no 'role' claim` |
-| `x-request-id` propagation to subgraph | `propagates x-request-id from client to subgraph` |
-| Supergraph composition + routing | `composes the supergraph and routes a query to the subgraph` |
+| Concern                                                                               | Test                                                           |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Unauthenticated requests pass through without `x-user-id` (auth deferred to subgraph) | `passes unauthenticated requests through without x-user-id`    |
+| JWKS validation rejects untrusted-key JWTs                                            | `rejects JWTs signed by an untrusted key`                      |
+| Rhai script maps JWT `sub` → `x-user-id`                                              | `maps JWT 'sub' claim to x-user-id on the subgraph request`    |
+| Rhai script maps JWT `role` → `x-user-role`                                           | `maps JWT 'role' claim to x-user-role on the subgraph request` |
+| Rhai omits `x-user-role` when claim is absent                                         | `omits x-user-role when JWT has no 'role' claim`               |
+| `x-request-id` propagation to subgraph                                                | `propagates x-request-id from client to subgraph`              |
+| Supergraph composition + routing                                                      | `composes the supergraph and routes a query to the subgraph`   |
 
 These all exercise behavior in `apps/router/router.yaml`, `apps/router/rhai/main.rhai`, and `apps/router/supergraph.yaml` that has zero coverage in the existing `subgraph.e2e.test.ts` (which uses a bare `ApolloServer` and bypasses the router).
 
@@ -38,8 +38,8 @@ The mock subgraph implements two queries:
 
 ```graphql
 type Query {
-  testHeaders: TestHeaders!     # echoes inbound HTTP headers — used to assert what the router forwarded
-  testEcho(input: String!): String!  # federation routing sanity check
+  testHeaders: TestHeaders! # echoes inbound HTTP headers — used to assert what the router forwarded
+  testEcho(input: String!): String! # federation routing sanity check
 }
 ```
 

@@ -1,5 +1,5 @@
-import { memo, useCallback } from "react";
-import { Alert } from "react-native";
+import { memo, useCallback, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FullScreenDialog } from "@aramiworks/ui";
@@ -21,6 +21,8 @@ type TrackerAccountFormModalViewProps = {
 
 export const TrackerAccountFormModalView = memo(
   ({ visible, onClose, onSubmit }: TrackerAccountFormModalViewProps) => {
+    const [submitError, setSubmitError] = useState<string | null>(null);
+
     const {
       control,
       handleSubmit,
@@ -36,12 +38,14 @@ export const TrackerAccountFormModalView = memo(
     });
 
     const handleClose = useCallback(() => {
+      setSubmitError(null);
       reset();
       onClose();
     }, [reset, onClose]);
 
     const handleFormSubmit = useCallback(
       async (data: AccountFormData) => {
+        setSubmitError(null);
         try {
           await onSubmit({
             storeName: data.storeName,
@@ -50,8 +54,10 @@ export const TrackerAccountFormModalView = memo(
           });
           reset();
           onClose();
-        } catch {
-          Alert.alert("오류", "계좌를 추가하는 중 오류가 발생했습니다.");
+        } catch (err) {
+          setSubmitError(
+            err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.",
+          );
         }
       },
       [onSubmit, reset, onClose],
@@ -67,6 +73,11 @@ export const TrackerAccountFormModalView = memo(
         keyboardAvoiding
         testID="account-form"
       >
+        {submitError ? (
+          <View style={styles.errorBanner} testID="account-form-error">
+            <Text style={styles.errorText}>{submitError}</Text>
+          </View>
+        ) : null}
         <TextInputField
           control={control}
           name="storeName"
@@ -96,5 +107,18 @@ export const TrackerAccountFormModalView = memo(
     );
   },
 );
+
+const styles = StyleSheet.create({
+  errorBanner: {
+    backgroundColor: "#FDECEA",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: "#B00020",
+    fontSize: 14,
+  },
+});
 
 TrackerAccountFormModalView.displayName = "TrackerAccountFormModalView";

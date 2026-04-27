@@ -1,5 +1,6 @@
 # Apollo Router configuration
 # JWT validation via Supabase JWKS
+# (smoke test for INF-1148 changeset-fix autofix — safe to revert)
 authentication:
   router:
     jwt:

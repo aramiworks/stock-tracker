@@ -158,6 +158,7 @@ jest.mock("@aramiworks/ui", () => {
         ? React.createElement(
             View,
             { testID: props.testID },
+            props.title ? React.createElement(RNText, null, props.title) : null,
             React.createElement(View, {
               testID: props.testID ? `${props.testID}-close` : undefined,
               onPress: props.onClose,

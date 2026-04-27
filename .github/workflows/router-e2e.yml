@@ -1,0 +1,65 @@
+name: Router E2E
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "apps/router/**"
+      - "apps/integration-tests/router/**"
+      - ".github/workflows/router-e2e.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/router/**"
+      - "apps/integration-tests/router/**"
+      - ".github/workflows/router-e2e.yml"
+
+env:
+  NODE_VERSION: 20
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  router-e2e:
+    if: github.event_name == 'push' || github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-deps
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Apollo Router
+        # Pin to the version used in production (apps/router/Dockerfile FROM tag).
+        # v2.13+ requires GraphOS-licensed JWT plugin and migrated CORS schema —
+        # tests must run the same binary as prod to be a real signal.
+        run: |
+          curl -sSL "https://router.apollo.dev/download/nix/v2.10.0" | sh
+          mkdir -p "$HOME/.local/bin"
+          mv ./router "$HOME/.local/bin/apollo-router"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install rover
+        run: |
+          curl -sSL https://rover.apollo.dev/nix/latest | sh
+          echo "$HOME/.rover/bin" >> "$GITHUB_PATH"
+
+      - name: Verify binaries
+        run: |
+          which apollo-router || ls -la "$HOME/.rover/bin"
+          rover --version
+          apollo-router --version
+
+      - name: Run router E2E tests
+        working-directory: apps/integration-tests/router
+        env:
+          # The router's authentication.router.jwt plugin is a GraphOS-licensed
+          # feature. Same credentials production uses (see
+          # infra/railway/src/config.ts); APOLLO_GRAPH_REF is a repo *variable*,
+          # APOLLO_KEY is a secret.
+          APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+          APOLLO_GRAPH_REF: ${{ vars.APOLLO_GRAPH_REF }}
+        run: NODE_OPTIONS='--experimental-vm-modules' npx jest --config jest.e2e.config.ts

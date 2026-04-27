@@ -45,6 +45,7 @@
     "apps/*",
     "apps/services/*",
     "apps/subgraphs/*",
+    "apps/integration-tests/*",
     "packages/*"
   ],
   "overrides": {

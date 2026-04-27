@@ -1,6 +1,5 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
-import { useConfirmDialog } from "@aramiworks/ui";
 
 // Mock child views. jest.mock factories run before imports — RN must be
 // required inline to avoid out-of-scope reference errors (INF-1058).
@@ -95,9 +94,11 @@ const purchase = (id: string, overrides: Record<string, unknown> = {}) => ({
 });
 
 describe("TrackerAccountsDetailViews", () => {
-  const { showConfirmDialog } = useConfirmDialog();
+  let showConfirmDialog: jest.Mock;
   beforeEach(() => {
-    (showConfirmDialog as jest.Mock).mockClear();
+    const ui = jest.requireMock<typeof import("@aramiworks/ui")>("@aramiworks/ui");
+    showConfirmDialog = ui.useConfirmDialog().showConfirmDialog as jest.Mock;
+    showConfirmDialog.mockClear();
   });
 
   it("renders default screen with back button, title, header, tank status, and purchase rows", () => {

@@ -107,7 +107,7 @@ export const TrackerAccountsDetailViews = memo(
         message: t("common:confirm.deleteAccount.message"),
         confirmLabel: "삭제",
         dismissLabel: "취소",
-        onConfirm: () => onDeleteAccount(),
+        onConfirm: () => void onDeleteAccount(),
       });
     }, [onDeleteAccount, showConfirmDialog, t]);
 
@@ -119,7 +119,7 @@ export const TrackerAccountsDetailViews = memo(
           message: t("common:confirm.deletePurchase.message"),
           confirmLabel: "삭제",
           dismissLabel: "취소",
-          onConfirm: () => onDeletePurchase(id),
+          onConfirm: () => void onDeletePurchase(id),
         });
       },
       [onDeletePurchase, showConfirmDialog, t],

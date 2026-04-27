@@ -16,7 +16,10 @@ jest.mock("@stock-tracker/validation", () => ({
 }));
 
 jest.mock("@hookform/resolvers/zod", () => ({
-  zodResolver: () => () => ({ values: {}, errors: {} }),
+  zodResolver: () => async () => ({
+    values: { storeName: "테스트 부티크", saName: "김서연", notes: "테스트 메모" },
+    errors: {},
+  }),
 }));
 
 import { TrackerAccountFormModalView } from "./tracker-accountFormModal.view";

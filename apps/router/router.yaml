@@ -20,14 +20,15 @@ headers:
           named: authorization
 
 cors:
-  origins:
-    - http://localhost:8081
-    - http://localhost:8092
-    - http://localhost:8093
-    - http://localhost:8094
-    - http://localhost:4012
-    - http://localhost:19006
-    - ${env.ALLOWED_ORIGINS}
+  policies:
+    - origins:
+        - http://localhost:8081
+        - http://localhost:8092
+        - http://localhost:8093
+        - http://localhost:8094
+        - http://localhost:4012
+        - http://localhost:19006
+        - ${env.ALLOWED_ORIGINS}
   allow_headers:
     - authorization
     - content-type
@@ -37,7 +38,7 @@ cors:
 
 supergraph:
   introspection: true
-  listen: 0.0.0.0:${env.ROUTER_PORT}
+  listen: 0.0.0.0:${env.PORT}
 
 homepage:
   enabled: false

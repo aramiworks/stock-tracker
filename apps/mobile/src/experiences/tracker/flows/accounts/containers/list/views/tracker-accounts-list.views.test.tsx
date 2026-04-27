@@ -70,6 +70,11 @@ const account = (id: string, overrides: Record<string, unknown> = {}) => ({
 });
 
 describe("TrackerAccountsListViews", () => {
+  const { showConfirmDialog } = useConfirmDialog();
+  beforeEach(() => {
+    (showConfirmDialog as jest.Mock).mockClear();
+  });
+
   it("renders default screen with title, sa list items, and add FAB", () => {
     const { getByTestId } = render(
       <TrackerAccountsListViews
@@ -165,8 +170,6 @@ describe("TrackerAccountsListViews", () => {
 
   it("opens delete confirm dialog when long-pressing with onDeleteAccount wired", () => {
     const onDeleteAccount = jest.fn().mockResolvedValue(undefined);
-    const { showConfirmDialog } = useConfirmDialog();
-    (showConfirmDialog as jest.Mock).mockClear();
     const { getByTestId } = render(
       <TrackerAccountsListViews
         screenState="default"
@@ -184,8 +187,6 @@ describe("TrackerAccountsListViews", () => {
   });
 
   it("does not wire onLongPress when onDeleteAccount is absent", () => {
-    const { showConfirmDialog } = useConfirmDialog();
-    (showConfirmDialog as jest.Mock).mockClear();
     const { getByTestId } = render(
       <TrackerAccountsListViews
         screenState="default"

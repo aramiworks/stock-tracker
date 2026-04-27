@@ -96,7 +96,8 @@ const purchase = (id: string, overrides: Record<string, unknown> = {}) => ({
 describe("TrackerAccountsDetailViews", () => {
   let showConfirmDialog: jest.Mock;
   beforeEach(() => {
-    const ui = jest.requireMock<typeof import("@aramiworks/ui")>("@aramiworks/ui");
+    const ui =
+      jest.requireMock<typeof import("@aramiworks/ui")>("@aramiworks/ui");
     showConfirmDialog = ui.useConfirmDialog().showConfirmDialog as jest.Mock;
     showConfirmDialog.mockClear();
   });

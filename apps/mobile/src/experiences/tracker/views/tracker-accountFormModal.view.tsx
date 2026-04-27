@@ -1,4 +1,5 @@
 import { memo, useCallback } from "react";
+import { Alert } from "react-native";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FullScreenDialog } from "@aramiworks/ui";
@@ -41,13 +42,17 @@ export const TrackerAccountFormModalView = memo(
 
     const handleFormSubmit = useCallback(
       async (data: AccountFormData) => {
-        await onSubmit({
-          storeName: data.storeName,
-          saName: data.saName || undefined,
-          notes: data.notes || undefined,
-        });
-        reset();
-        onClose();
+        try {
+          await onSubmit({
+            storeName: data.storeName,
+            saName: data.saName || undefined,
+            notes: data.notes || undefined,
+          });
+          reset();
+          onClose();
+        } catch {
+          Alert.alert("오류", "계좌를 추가하는 중 오류가 발생했습니다.");
+        }
       },
       [onSubmit, reset, onClose],
     );

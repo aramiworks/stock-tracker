@@ -5,110 +5,365 @@
   "common.retry": { "ns": "common", "key": "retry" },
   "common.add": { "ns": "common", "key": "add" },
   "common.edit": { "ns": "common", "key": "edit" },
-  "common.confirm.deleteAccount.title": { "ns": "common", "key": "confirm.deleteAccount.title" },
-  "common.confirm.deleteAccount.message": { "ns": "common", "key": "confirm.deleteAccount.message" },
-  "common.confirm.deletePurchase.title": { "ns": "common", "key": "confirm.deletePurchase.title" },
-  "common.confirm.deletePurchase.message": { "ns": "common", "key": "confirm.deletePurchase.message" },
-  "common.confirm.deletePurchase.messageWithName": { "ns": "common", "key": "confirm.deletePurchase.messageWithName" },
+  "common.confirm.deleteAccount.title": {
+    "ns": "common",
+    "key": "confirm.deleteAccount.title"
+  },
+  "common.confirm.deleteAccount.message": {
+    "ns": "common",
+    "key": "confirm.deleteAccount.message"
+  },
+  "common.confirm.deletePurchase.title": {
+    "ns": "common",
+    "key": "confirm.deletePurchase.title"
+  },
+  "common.confirm.deletePurchase.message": {
+    "ns": "common",
+    "key": "confirm.deletePurchase.message"
+  },
+  "common.confirm.deletePurchase.messageWithName": {
+    "ns": "common",
+    "key": "confirm.deletePurchase.messageWithName"
+  },
   "common.error.network": { "ns": "common", "key": "error.network" },
-  "common.error.networkSubtitle": { "ns": "common", "key": "error.networkSubtitle" },
+  "common.error.networkSubtitle": {
+    "ns": "common",
+    "key": "error.networkSubtitle"
+  },
 
   "auth-signIn-gmailOauth.title": { "ns": "auth", "key": "signIn.title" },
   "auth-signIn-gmailOauth.subtitle": { "ns": "auth", "key": "signIn.subtitle" },
-  "auth-signIn-gmailOauth.googleButton": { "ns": "auth", "key": "signIn.googleButton" },
+  "auth-signIn-gmailOauth.googleButton": {
+    "ns": "auth",
+    "key": "signIn.googleButton"
+  },
 
   "tracker-nav.dashboard": { "ns": "tracker", "key": "nav.dashboard" },
   "tracker-nav.accounts": { "ns": "tracker", "key": "nav.accounts" },
   "tracker-nav.history": { "ns": "tracker", "key": "nav.history" },
 
-  "tracker-dashboard-home-eligibilityBadge.eligible": { "ns": "tracker", "key": "eligibility.eligible" },
-  "tracker-dashboard-home-eligibilityBadge.notEligible": { "ns": "tracker", "key": "eligibility.notEligible" },
+  "tracker-dashboard-home-eligibilityBadge.eligible": {
+    "ns": "tracker",
+    "key": "eligibility.eligible"
+  },
+  "tracker-dashboard-home-eligibilityBadge.notEligible": {
+    "ns": "tracker",
+    "key": "eligibility.notEligible"
+  },
 
   "tracker-dashboard-home.title": { "ns": "tracker", "key": "dashboard.title" },
-  "tracker-dashboard-home.addAccountFab": { "ns": "tracker", "key": "dashboard.addAccountFab" },
-  "tracker-dashboard-home-refreshFab.label": { "ns": "tracker", "key": "dashboard.refreshFab" },
+  "tracker-dashboard-home.addAccountFab": {
+    "ns": "tracker",
+    "key": "dashboard.addAccountFab"
+  },
+  "tracker-dashboard-home-refreshFab.label": {
+    "ns": "tracker",
+    "key": "dashboard.refreshFab"
+  },
 
-  "tracker-dashboard-home-spendSummaryCard.label": { "ns": "tracker", "key": "dashboard.spendSummary.label" },
-  "tracker-dashboard-home-spendSummaryCard.goal": { "ns": "tracker", "key": "dashboard.spendSummary.goal" },
+  "tracker-dashboard-home-spendSummaryCard.label": {
+    "ns": "tracker",
+    "key": "dashboard.spendSummary.label"
+  },
+  "tracker-dashboard-home-spendSummaryCard.goal": {
+    "ns": "tracker",
+    "key": "dashboard.spendSummary.goal"
+  },
 
-  "tracker-dashboard-home-saCard.statusEligible": { "ns": "tracker", "key": "dashboard.saCard.statusEligible" },
-  "tracker-dashboard-home-saCard.statusNotEligible": { "ns": "tracker", "key": "dashboard.saCard.statusNotEligible" },
-  "tracker-dashboard-home-saCard.statusNoPurchases": { "ns": "tracker", "key": "dashboard.saCard.statusNoPurchases" },
-  "tracker-dashboard-home-saCard.noPurchases": { "ns": "tracker", "key": "dashboard.saCard.noPurchases" },
-  "tracker-dashboard-home-saCard.spend": { "ns": "tracker", "key": "dashboard.saCard.spend" },
+  "tracker-dashboard-home-saCard.statusEligible": {
+    "ns": "tracker",
+    "key": "dashboard.saCard.statusEligible"
+  },
+  "tracker-dashboard-home-saCard.statusNotEligible": {
+    "ns": "tracker",
+    "key": "dashboard.saCard.statusNotEligible"
+  },
+  "tracker-dashboard-home-saCard.statusNoPurchases": {
+    "ns": "tracker",
+    "key": "dashboard.saCard.statusNoPurchases"
+  },
+  "tracker-dashboard-home-saCard.noPurchases": {
+    "ns": "tracker",
+    "key": "dashboard.saCard.noPurchases"
+  },
+  "tracker-dashboard-home-saCard.spend": {
+    "ns": "tracker",
+    "key": "dashboard.saCard.spend"
+  },
 
-  "tracker-dashboard-home-emptyState.title": { "ns": "tracker", "key": "dashboard.emptyState.title" },
-  "tracker-dashboard-home-emptyState.subtitle": { "ns": "tracker", "key": "dashboard.emptyState.subtitle" },
-  "tracker-dashboard-home-emptyState.cta": { "ns": "tracker", "key": "dashboard.emptyState.cta" },
+  "tracker-dashboard-home-emptyState.title": {
+    "ns": "tracker",
+    "key": "dashboard.emptyState.title"
+  },
+  "tracker-dashboard-home-emptyState.subtitle": {
+    "ns": "tracker",
+    "key": "dashboard.emptyState.subtitle"
+  },
+  "tracker-dashboard-home-emptyState.cta": {
+    "ns": "tracker",
+    "key": "dashboard.emptyState.cta"
+  },
 
-  "tracker-dashboard-home-errorState.title": { "ns": "tracker", "key": "dashboard.errorState.title" },
-  "tracker-dashboard-home-errorState.subtitle": { "ns": "tracker", "key": "dashboard.errorState.subtitle" },
-  "tracker-dashboard-home-errorState.retry": { "ns": "tracker", "key": "dashboard.errorState.retry" },
+  "tracker-dashboard-home-errorState.title": {
+    "ns": "tracker",
+    "key": "dashboard.errorState.title"
+  },
+  "tracker-dashboard-home-errorState.subtitle": {
+    "ns": "tracker",
+    "key": "dashboard.errorState.subtitle"
+  },
+  "tracker-dashboard-home-errorState.retry": {
+    "ns": "tracker",
+    "key": "dashboard.errorState.retry"
+  },
 
-  "tracker-accounts-list.title": { "ns": "tracker", "key": "accounts.list.title" },
-  "tracker-accounts-list-saListItem.statusEligible": { "ns": "tracker", "key": "accounts.list.saListItem.statusEligible" },
-  "tracker-accounts-list-saListItem.statusNotEligible": { "ns": "tracker", "key": "accounts.list.saListItem.statusNotEligible" },
-  "tracker-accounts-list-saListItem.statusNoPurchases": { "ns": "tracker", "key": "accounts.list.saListItem.statusNoPurchases" },
-  "tracker-accounts-list-emptyState.title": { "ns": "tracker", "key": "accounts.list.emptyState.title" },
-  "tracker-accounts-list-emptyState.subtitle": { "ns": "tracker", "key": "accounts.list.emptyState.subtitle" },
-  "tracker-accounts-list-emptyState.cta": { "ns": "tracker", "key": "accounts.list.emptyState.cta" },
-  "tracker-accounts-list-errorState.title": { "ns": "tracker", "key": "accounts.list.errorState.title" },
-  "tracker-accounts-list-errorState.subtitle": { "ns": "tracker", "key": "accounts.list.errorState.subtitle" },
-  "tracker-accounts-list-errorState.retry": { "ns": "tracker", "key": "accounts.list.errorState.retry" },
-  "tracker-accounts-list.confirm.deleteAccount.title": { "ns": "tracker", "key": "accounts.list.confirm.deleteAccount.title" },
-  "tracker-accounts-list.confirm.deleteAccount.message": { "ns": "tracker", "key": "accounts.list.confirm.deleteAccount.message" },
+  "tracker-accounts-list.title": {
+    "ns": "tracker",
+    "key": "accounts.list.title"
+  },
+  "tracker-accounts-list-saListItem.statusEligible": {
+    "ns": "tracker",
+    "key": "accounts.list.saListItem.statusEligible"
+  },
+  "tracker-accounts-list-saListItem.statusNotEligible": {
+    "ns": "tracker",
+    "key": "accounts.list.saListItem.statusNotEligible"
+  },
+  "tracker-accounts-list-saListItem.statusNoPurchases": {
+    "ns": "tracker",
+    "key": "accounts.list.saListItem.statusNoPurchases"
+  },
+  "tracker-accounts-list-emptyState.title": {
+    "ns": "tracker",
+    "key": "accounts.list.emptyState.title"
+  },
+  "tracker-accounts-list-emptyState.subtitle": {
+    "ns": "tracker",
+    "key": "accounts.list.emptyState.subtitle"
+  },
+  "tracker-accounts-list-emptyState.cta": {
+    "ns": "tracker",
+    "key": "accounts.list.emptyState.cta"
+  },
+  "tracker-accounts-list-errorState.title": {
+    "ns": "tracker",
+    "key": "accounts.list.errorState.title"
+  },
+  "tracker-accounts-list-errorState.subtitle": {
+    "ns": "tracker",
+    "key": "accounts.list.errorState.subtitle"
+  },
+  "tracker-accounts-list-errorState.retry": {
+    "ns": "tracker",
+    "key": "accounts.list.errorState.retry"
+  },
+  "tracker-accounts-list.confirm.deleteAccount.title": {
+    "ns": "tracker",
+    "key": "accounts.list.confirm.deleteAccount.title"
+  },
+  "tracker-accounts-list.confirm.deleteAccount.message": {
+    "ns": "tracker",
+    "key": "accounts.list.confirm.deleteAccount.message"
+  },
 
-  "tracker-accounts-detail.title": { "ns": "tracker", "key": "accounts.detail.title" },
-  "tracker-accounts-detail.back": { "ns": "tracker", "key": "accounts.detail.back" },
-  "tracker-accounts-detail.editAction": { "ns": "tracker", "key": "accounts.detail.editAction" },
-  "tracker-accounts-detail.deleteAction": { "ns": "tracker", "key": "accounts.detail.deleteAction" },
-  "tracker-accounts-detail.recentPurchases": { "ns": "tracker", "key": "accounts.detail.recentPurchases" },
-  "tracker-accounts-detail.addPurchase": { "ns": "tracker", "key": "accounts.detail.addPurchase" },
-  "tracker-accounts-detail-errorState.title": { "ns": "tracker", "key": "accounts.detail.errorState.title" },
-  "tracker-accounts-detail-errorState.subtitle": { "ns": "tracker", "key": "accounts.detail.errorState.subtitle" },
-  "tracker-accounts-detail-errorState.retry": { "ns": "tracker", "key": "accounts.detail.errorState.retry" },
+  "tracker-accounts-detail.title": {
+    "ns": "tracker",
+    "key": "accounts.detail.title"
+  },
+  "tracker-accounts-detail.back": {
+    "ns": "tracker",
+    "key": "accounts.detail.back"
+  },
+  "tracker-accounts-detail.editAction": {
+    "ns": "tracker",
+    "key": "accounts.detail.editAction"
+  },
+  "tracker-accounts-detail.deleteAction": {
+    "ns": "tracker",
+    "key": "accounts.detail.deleteAction"
+  },
+  "tracker-accounts-detail.recentPurchases": {
+    "ns": "tracker",
+    "key": "accounts.detail.recentPurchases"
+  },
+  "tracker-accounts-detail.addPurchase": {
+    "ns": "tracker",
+    "key": "accounts.detail.addPurchase"
+  },
+  "tracker-accounts-detail-errorState.title": {
+    "ns": "tracker",
+    "key": "accounts.detail.errorState.title"
+  },
+  "tracker-accounts-detail-errorState.subtitle": {
+    "ns": "tracker",
+    "key": "accounts.detail.errorState.subtitle"
+  },
+  "tracker-accounts-detail-errorState.retry": {
+    "ns": "tracker",
+    "key": "accounts.detail.errorState.retry"
+  },
 
-  "tracker-accounts-form.add.title": { "ns": "tracker", "key": "accounts.form.add.title" },
-  "tracker-accounts-form.add.submit": { "ns": "tracker", "key": "accounts.form.add.submit" },
-  "tracker-accounts-form.edit.title": { "ns": "tracker", "key": "accounts.form.edit.title" },
-  "tracker-accounts-form.edit.submit": { "ns": "tracker", "key": "accounts.form.edit.submit" },
-  "tracker-accounts-form.boutiqueName.label": { "ns": "tracker", "key": "accounts.form.fields.boutiqueName.label" },
-  "tracker-accounts-form.boutiqueName.placeholder": { "ns": "tracker", "key": "accounts.form.fields.boutiqueName.placeholder" },
-  "tracker-accounts-form.saName.label": { "ns": "tracker", "key": "accounts.form.fields.saName.label" },
-  "tracker-accounts-form.saName.placeholder": { "ns": "tracker", "key": "accounts.form.fields.saName.placeholder" },
-  "tracker-accounts-form.notes.label": { "ns": "tracker", "key": "accounts.form.fields.notes.label" },
-  "tracker-accounts-form.notes.placeholder": { "ns": "tracker", "key": "accounts.form.fields.notes.placeholder" },
+  "tracker-accounts-form.add.title": {
+    "ns": "tracker",
+    "key": "accounts.form.add.title"
+  },
+  "tracker-accounts-form.add.submit": {
+    "ns": "tracker",
+    "key": "accounts.form.add.submit"
+  },
+  "tracker-accounts-form.edit.title": {
+    "ns": "tracker",
+    "key": "accounts.form.edit.title"
+  },
+  "tracker-accounts-form.edit.submit": {
+    "ns": "tracker",
+    "key": "accounts.form.edit.submit"
+  },
+  "tracker-accounts-form.boutiqueName.label": {
+    "ns": "tracker",
+    "key": "accounts.form.fields.boutiqueName.label"
+  },
+  "tracker-accounts-form.boutiqueName.placeholder": {
+    "ns": "tracker",
+    "key": "accounts.form.fields.boutiqueName.placeholder"
+  },
+  "tracker-accounts-form.saName.label": {
+    "ns": "tracker",
+    "key": "accounts.form.fields.saName.label"
+  },
+  "tracker-accounts-form.saName.placeholder": {
+    "ns": "tracker",
+    "key": "accounts.form.fields.saName.placeholder"
+  },
+  "tracker-accounts-form.notes.label": {
+    "ns": "tracker",
+    "key": "accounts.form.fields.notes.label"
+  },
+  "tracker-accounts-form.notes.placeholder": {
+    "ns": "tracker",
+    "key": "accounts.form.fields.notes.placeholder"
+  },
 
-  "tracker-purchases-form.add.title": { "ns": "tracker", "key": "purchases.form.add.title" },
-  "tracker-purchases-form.add.submit": { "ns": "tracker", "key": "purchases.form.add.submit" },
-  "tracker-purchases-form.edit.title": { "ns": "tracker", "key": "purchases.form.edit.title" },
-  "tracker-purchases-form.edit.submit": { "ns": "tracker", "key": "purchases.form.edit.submit" },
-  "tracker-purchases-form.itemName.label": { "ns": "tracker", "key": "purchases.form.fields.itemName.label" },
-  "tracker-purchases-form.itemName.placeholder": { "ns": "tracker", "key": "purchases.form.fields.itemName.placeholder" },
-  "tracker-purchases-form.amount.label": { "ns": "tracker", "key": "purchases.form.fields.amount.label" },
-  "tracker-purchases-form.amount.placeholder": { "ns": "tracker", "key": "purchases.form.fields.amount.placeholder" },
-  "tracker-purchases-form.purchaseDate.label": { "ns": "tracker", "key": "purchases.form.fields.purchaseDate.label" },
-  "tracker-purchases-form.purchaseDate.placeholder": { "ns": "tracker", "key": "purchases.form.fields.purchaseDate.placeholder" },
-  "tracker-purchases-form.itemCategory.label": { "ns": "tracker", "key": "purchases.form.fields.itemCategory.label" },
-  "tracker-purchases-form.itemCategory.placeholder": { "ns": "tracker", "key": "purchases.form.fields.itemCategory.placeholder" },
-  "tracker-purchases-form.storeLocation.label": { "ns": "tracker", "key": "purchases.form.fields.storeLocation.label" },
-  "tracker-purchases-form.storeLocation.placeholder": { "ns": "tracker", "key": "purchases.form.fields.storeLocation.placeholder" },
-  "tracker-purchases-form.notes.label": { "ns": "tracker", "key": "purchases.form.fields.notes.label" },
-  "tracker-purchases-form.notes.placeholder": { "ns": "tracker", "key": "purchases.form.fields.notes.placeholder" },
-  "tracker-purchases-modal.save": { "ns": "tracker", "key": "purchases.modal.save" },
+  "tracker-purchases-form.add.title": {
+    "ns": "tracker",
+    "key": "purchases.form.add.title"
+  },
+  "tracker-purchases-form.add.submit": {
+    "ns": "tracker",
+    "key": "purchases.form.add.submit"
+  },
+  "tracker-purchases-form.edit.title": {
+    "ns": "tracker",
+    "key": "purchases.form.edit.title"
+  },
+  "tracker-purchases-form.edit.submit": {
+    "ns": "tracker",
+    "key": "purchases.form.edit.submit"
+  },
+  "tracker-purchases-form.itemName.label": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.itemName.label"
+  },
+  "tracker-purchases-form.itemName.placeholder": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.itemName.placeholder"
+  },
+  "tracker-purchases-form.amount.label": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.amount.label"
+  },
+  "tracker-purchases-form.amount.placeholder": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.amount.placeholder"
+  },
+  "tracker-purchases-form.purchaseDate.label": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.purchaseDate.label"
+  },
+  "tracker-purchases-form.purchaseDate.placeholder": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.purchaseDate.placeholder"
+  },
+  "tracker-purchases-form.itemCategory.label": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.itemCategory.label"
+  },
+  "tracker-purchases-form.itemCategory.placeholder": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.itemCategory.placeholder"
+  },
+  "tracker-purchases-form.storeLocation.label": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.storeLocation.label"
+  },
+  "tracker-purchases-form.storeLocation.placeholder": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.storeLocation.placeholder"
+  },
+  "tracker-purchases-form.notes.label": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.notes.label"
+  },
+  "tracker-purchases-form.notes.placeholder": {
+    "ns": "tracker",
+    "key": "purchases.form.fields.notes.placeholder"
+  },
+  "tracker-purchases-modal.save": {
+    "ns": "tracker",
+    "key": "purchases.modal.save"
+  },
   "tracker-purchases.cancel": { "ns": "tracker", "key": "purchases.cancel" },
 
-  "tracker-history-browse.title": { "ns": "tracker", "key": "history.browse.title" },
-  "tracker-history-browse-dateFilterChips.thisMonth": { "ns": "tracker", "key": "history.browse.filters.thisMonth" },
-  "tracker-history-browse-dateFilterChips.threeMonths": { "ns": "tracker", "key": "history.browse.filters.threeMonths" },
-  "tracker-history-browse-dateFilterChips.thisYear": { "ns": "tracker", "key": "history.browse.filters.thisYear" },
-  "tracker-history-browse-dateFilterChips.all": { "ns": "tracker", "key": "history.browse.filters.all" },
-  "tracker-history-browse.confirmDelete.title": { "ns": "tracker", "key": "history.browse.confirmDelete.title" },
-  "tracker-history-browse.confirmDelete.message": { "ns": "tracker", "key": "history.browse.confirmDelete.message" },
-  "tracker-history-browse-emptyState.title": { "ns": "tracker", "key": "history.browse.emptyState.title" },
-  "tracker-history-browse-emptyState.subtitle": { "ns": "tracker", "key": "history.browse.emptyState.subtitle" },
-  "tracker-history-browse-emptyState.cta": { "ns": "tracker", "key": "history.browse.emptyState.cta" },
-  "tracker-history-browse-errorState.title": { "ns": "tracker", "key": "history.browse.errorState.title" },
-  "tracker-history-browse-errorState.subtitle": { "ns": "tracker", "key": "history.browse.errorState.subtitle" },
-  "tracker-history-browse-errorState.retry": { "ns": "tracker", "key": "history.browse.errorState.retry" }
+  "tracker-history-browse.title": {
+    "ns": "tracker",
+    "key": "history.browse.title"
+  },
+  "tracker-history-browse-dateFilterChips.thisMonth": {
+    "ns": "tracker",
+    "key": "history.browse.filters.thisMonth"
+  },
+  "tracker-history-browse-dateFilterChips.threeMonths": {
+    "ns": "tracker",
+    "key": "history.browse.filters.threeMonths"
+  },
+  "tracker-history-browse-dateFilterChips.thisYear": {
+    "ns": "tracker",
+    "key": "history.browse.filters.thisYear"
+  },
+  "tracker-history-browse-dateFilterChips.all": {
+    "ns": "tracker",
+    "key": "history.browse.filters.all"
+  },
+  "tracker-history-browse.confirmDelete.title": {
+    "ns": "tracker",
+    "key": "history.browse.confirmDelete.title"
+  },
+  "tracker-history-browse.confirmDelete.message": {
+    "ns": "tracker",
+    "key": "history.browse.confirmDelete.message"
+  },
+  "tracker-history-browse-emptyState.title": {
+    "ns": "tracker",
+    "key": "history.browse.emptyState.title"
+  },
+  "tracker-history-browse-emptyState.subtitle": {
+    "ns": "tracker",
+    "key": "history.browse.emptyState.subtitle"
+  },
+  "tracker-history-browse-emptyState.cta": {
+    "ns": "tracker",
+    "key": "history.browse.emptyState.cta"
+  },
+  "tracker-history-browse-errorState.title": {
+    "ns": "tracker",
+    "key": "history.browse.errorState.title"
+  },
+  "tracker-history-browse-errorState.subtitle": {
+    "ns": "tracker",
+    "key": "history.browse.errorState.subtitle"
+  },
+  "tracker-history-browse-errorState.retry": {
+    "ns": "tracker",
+    "key": "history.browse.errorState.retry"
+  }
 }

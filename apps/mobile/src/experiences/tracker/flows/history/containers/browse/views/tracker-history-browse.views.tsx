@@ -1,6 +1,11 @@
 import { memo, type ReactNode } from "react";
-import { View, RefreshControl, StyleSheet, Alert } from "react-native";
-import { ListTemplate, SearchBar, TopAppBar } from "@aramiworks/ui";
+import { View, RefreshControl, StyleSheet } from "react-native";
+import {
+  ListTemplate,
+  SearchBar,
+  TopAppBar,
+  useConfirmDialog,
+} from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerHistoryBrowseScreenState,
@@ -77,6 +82,7 @@ export const TrackerHistoryBrowseViews = memo(
     onRefresh,
   }: TrackerHistoryBrowseViewsProps) => {
     const { t } = useTranslation("tracker");
+    const { showConfirmDialog, ConfirmDialogPortal } = useConfirmDialog();
     const scrollContent: Record<TrackerHistoryBrowseScreenState, ReactNode> = {
       default: (
         <>
@@ -91,20 +97,18 @@ export const TrackerHistoryBrowseViews = memo(
                 onLongPress={
                   onDeletePurchase
                     ? () =>
-                        Alert.alert(
-                          t("history.browse.confirmDelete.title", "구매 삭제"),
-                          t("history.browse.confirmDelete.message", {
+                        showConfirmDialog({
+                          title: t(
+                            "history.browse.confirmDelete.title",
+                            "구매 삭제",
+                          ),
+                          message: t("history.browse.confirmDelete.message", {
                             name: p.productName,
                           }),
-                          [
-                            { text: "취소", style: "cancel" },
-                            {
-                              text: "삭제",
-                              style: "destructive",
-                              onPress: () => onDeletePurchase(p.id),
-                            },
-                          ],
-                        )
+                          confirmLabel: "삭제",
+                          dismissLabel: "취소",
+                          onConfirm: () => onDeletePurchase(p.id),
+                        })
                     : undefined
                 }
               />
@@ -155,23 +159,26 @@ export const TrackerHistoryBrowseViews = memo(
       ) : undefined;
 
     return (
-      <ListTemplate
-        testID="history-browse-screen"
-        topBar={
-          <TopAppBar
-            type="small"
-            title={t("history.browse.title")}
-            testID="history-browse-title"
-          />
-        }
-        headerContent={headerContent}
-        refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
-        }
-        contentContainerStyle={styles.scrollContent}
-      >
-        {scrollContent[screenState]}
-      </ListTemplate>
+      <>
+        <ListTemplate
+          testID="history-browse-screen"
+          topBar={
+            <TopAppBar
+              type="small"
+              title={t("history.browse.title")}
+              testID="history-browse-title"
+            />
+          }
+          headerContent={headerContent}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
+          contentContainerStyle={styles.scrollContent}
+        >
+          {scrollContent[screenState]}
+        </ListTemplate>
+        <ConfirmDialogPortal />
+      </>
     );
   },
 );

@@ -118,9 +118,7 @@ export const TrackerAccountsListViews = memo(
                   onDeleteAccount
                     ? () =>
                         showConfirmDialog({
-                          title: t(
-                            "accounts.list.confirm.deleteAccount.title",
-                          ),
+                          title: t("accounts.list.confirm.deleteAccount.title"),
                           message: t(
                             "accounts.list.confirm.deleteAccount.message",
                             { name: sa.name, boutique: sa.boutique },

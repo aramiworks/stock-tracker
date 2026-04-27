@@ -175,6 +175,18 @@ jest.mock("@aramiworks/ui", () => {
             props.children,
           )
         : null,
+    Snackbar: (props: Record<string, unknown>) =>
+      props.visible
+        ? React.createElement(
+            View,
+            { testID: props.testID },
+            React.createElement(RNText, null, props.message),
+            React.createElement(View, {
+              testID: props.testID ? `${props.testID}-dismiss` : undefined,
+              onPress: props.onDismiss,
+            }),
+          )
+        : null,
   };
 });
 

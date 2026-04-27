@@ -72,7 +72,7 @@ describe("TrackerAccountsDetailPurchaseFormModalView", () => {
         onClose={onClose}
       />,
     );
-    fireEvent.press(screen.getByTestId("purchase-form-cancel"));
+    fireEvent.press(screen.getByTestId("purchase-form-close"));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 

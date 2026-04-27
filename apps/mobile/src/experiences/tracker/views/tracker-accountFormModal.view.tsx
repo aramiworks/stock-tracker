@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +37,12 @@ export const TrackerAccountFormModalView = memo(
       },
     });
 
+    useEffect(() => {
+      if (!visible) {
+        setSubmitError(null);
+      }
+    }, [visible]);
+
     const handleClose = useCallback(() => {
       setSubmitError(null);
       reset();
@@ -54,10 +60,8 @@ export const TrackerAccountFormModalView = memo(
           });
           reset();
           onClose();
-        } catch (err) {
-          setSubmitError(
-            err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.",
-          );
+        } catch {
+          setSubmitError("계좌를 추가하는 중 오류가 발생했습니다.");
         }
       },
       [onSubmit, reset, onClose],

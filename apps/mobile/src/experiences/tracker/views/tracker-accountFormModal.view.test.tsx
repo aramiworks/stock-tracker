@@ -84,7 +84,7 @@ describe("TrackerAccountFormModalView", () => {
   it("shows inline error when onSubmit throws and does not close modal", async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error("network error"));
     const onClose = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <TrackerAccountFormModalView
         {...defaultProps}
         onSubmit={onSubmit}
@@ -95,6 +95,7 @@ describe("TrackerAccountFormModalView", () => {
       fireEvent.press(getByTestId("account-form-action"));
     });
     expect(getByTestId("account-form-error")).toBeTruthy();
+    expect(getByText("계좌를 추가하는 중 오류가 발생했습니다.")).toBeTruthy();
     expect(onClose).not.toHaveBeenCalled();
   });
 });

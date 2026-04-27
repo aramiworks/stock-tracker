@@ -1,6 +1,5 @@
 ---
-"@stock-tracker/subgraph-tracker": patch
-"@stock-tracker/router": patch
+"@stock-tracker/mobile": patch
 ---
 
-Fix apiHandle leak in subgraph test helpers; activate Rhai plugin in router config with corrected JWT claims context key and remove duplicate YAML header injection.
+Fix stale error banner on modal re-open, sanitize error message to prevent internal detail leakage, and strengthen error test assertion.

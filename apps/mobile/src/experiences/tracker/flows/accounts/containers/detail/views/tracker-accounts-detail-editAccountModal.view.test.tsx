@@ -60,7 +60,7 @@ describe("TrackerAccountsDetailEditAccountModalView", () => {
         onClose={onClose}
       />,
     );
-    fireEvent.press(screen.getByTestId("edit-account-form-cancel"));
+    fireEvent.press(screen.getByTestId("edit-account-form-close"));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 

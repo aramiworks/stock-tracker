@@ -5,8 +5,9 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "apps/subgraphs/tracker/**"
-      - "apps/api/**"
+      - "apps/services/auth/**"
       - "apps/services/tracker/**"
+      - "packages/nestjs-common/**"
       - "packages/prisma/**"
       - "packages/validation/**"
       - "packages/types/**"
@@ -14,8 +15,9 @@ on:
     branches: [main]
     paths:
       - "apps/subgraphs/tracker/**"
-      - "apps/api/**"
+      - "apps/services/auth/**"
       - "apps/services/tracker/**"
+      - "packages/nestjs-common/**"
       - "packages/prisma/**"
       - "packages/validation/**"
       - "packages/types/**"
@@ -58,6 +60,8 @@ jobs:
         run: npx turbo run db:generate
       - name: Push schema to test DB
         run: npx prisma db push --schema packages/prisma/prisma/schema --skip-generate
+      - name: Build auth-service
+        run: npx tsc -p apps/services/auth/tsconfig.json
       - name: Build tracker-service
         run: npx tsc -p apps/services/tracker/tsconfig.json
       - name: Run subgraph E2E tests

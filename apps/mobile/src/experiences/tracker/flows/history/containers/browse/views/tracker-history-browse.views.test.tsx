@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
-import { Alert } from "react-native";
+import { useConfirmDialog } from "@aramiworks/ui";
 
 // Mock child views. jest.mock factories run before imports — RN must be
 // required inline to avoid out-of-scope reference errors (INF-1058).
@@ -64,6 +64,11 @@ const purchase = (id: string, overrides: Record<string, unknown> = {}) => ({
 });
 
 describe("TrackerHistoryBrowseViews", () => {
+  const { showConfirmDialog } = useConfirmDialog();
+  beforeEach(() => {
+    (showConfirmDialog as jest.Mock).mockClear();
+  });
+
   it("renders default screen with title and purchase rows", () => {
     const { getByTestId } = render(
       <TrackerHistoryBrowseViews
@@ -149,9 +154,8 @@ describe("TrackerHistoryBrowseViews", () => {
     expect(onCategorySelect).toHaveBeenCalledWith(null);
   });
 
-  it("opens delete confirm Alert when long-pressing with onDeletePurchase wired", () => {
+  it("opens delete confirm dialog when long-pressing with onDeletePurchase wired", () => {
     const onDeletePurchase = jest.fn().mockResolvedValue(undefined);
-    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
     const { getByTestId } = render(
       <TrackerHistoryBrowseViews
         screenState="default"
@@ -160,19 +164,15 @@ describe("TrackerHistoryBrowseViews", () => {
       />,
     );
     fireEvent(getByTestId("purchase-row-Product del"), "longPress");
-    expect(alertSpy).toHaveBeenCalledTimes(1);
-    const buttons = alertSpy.mock.calls[0][2] as Array<{
-      text: string;
-      onPress?: () => void;
-    }>;
-    const destructive = buttons.find((b) => b.text === "삭제");
-    destructive?.onPress?.();
+    expect(showConfirmDialog).toHaveBeenCalledTimes(1);
+    const options = (showConfirmDialog as jest.Mock).mock.calls[0][0];
+    expect(options.confirmLabel).toBe("삭제");
+    expect(options.dismissLabel).toBe("취소");
+    options.onConfirm();
     expect(onDeletePurchase).toHaveBeenCalledWith("del");
-    alertSpy.mockRestore();
   });
 
   it("does not wire onLongPress when onDeletePurchase is absent", () => {
-    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
     const { getByTestId } = render(
       <TrackerHistoryBrowseViews
         screenState="default"
@@ -180,8 +180,7 @@ describe("TrackerHistoryBrowseViews", () => {
       />,
     );
     fireEvent(getByTestId("purchase-row-Product plain"), "longPress");
-    expect(alertSpy).not.toHaveBeenCalled();
-    alertSpy.mockRestore();
+    expect(showConfirmDialog).not.toHaveBeenCalled();
   });
 });
 

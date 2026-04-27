@@ -153,6 +153,22 @@ jest.mock("@aramiworks/ui", () => {
           : null,
         props.trailingContent ?? null,
       ),
+    FullScreenDialog: (props: Record<string, unknown>) =>
+      props.visible
+        ? React.createElement(
+            View,
+            { testID: props.testID },
+            React.createElement(View, {
+              testID: props.testID ? `${props.testID}-close` : undefined,
+              onPress: props.onClose,
+            }),
+            React.createElement(View, {
+              testID: props.testID ? `${props.testID}-action` : undefined,
+              onPress: props.actionDisabled ? undefined : props.onAction,
+            }),
+            props.children,
+          )
+        : null,
   };
 });
 

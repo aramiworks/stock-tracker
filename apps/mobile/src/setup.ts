@@ -76,8 +76,13 @@ jest.mock("@aramiworks/ui", () => {
   const React = require("react");
   const passthrough = (props: Record<string, unknown>) =>
     React.createElement(View, { testID: props.testID }, props.children);
+  const showConfirmDialog = jest.fn();
   return {
     config: {},
+    useConfirmDialog: () => ({
+      showConfirmDialog,
+      ConfirmDialogPortal: () => null,
+    }),
     XStack: passthrough,
     YStack: passthrough,
     Skeleton: (props: Record<string, unknown>) =>

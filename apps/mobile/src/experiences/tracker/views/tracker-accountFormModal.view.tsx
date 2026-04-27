@@ -1,8 +1,7 @@
-import { memo, useCallback } from "react";
-import { Alert } from "react-native";
+import { memo, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FullScreenDialog } from "@aramiworks/ui";
+import { FullScreenDialog, Snackbar } from "@aramiworks/ui";
 import { accountCreateInputSchema } from "@stock-tracker/validation";
 import { TextInputField } from "@/shared/components/text-input-field";
 import type { z } from "zod";
@@ -35,6 +34,8 @@ export const TrackerAccountFormModalView = memo(
       },
     });
 
+    const [errorVisible, setErrorVisible] = useState(false);
+
     const handleClose = useCallback(() => {
       reset();
       onClose();
@@ -51,48 +52,56 @@ export const TrackerAccountFormModalView = memo(
           reset();
           onClose();
         } catch {
-          Alert.alert("오류", "계좌를 추가하는 중 오류가 발생했습니다.");
+          setErrorVisible(true);
         }
       },
       [onSubmit, reset, onClose],
     );
 
     return (
-      <FullScreenDialog
-        visible={visible}
-        title="SA 계좌 추가"
-        actionLabel="추가"
-        onAction={handleSubmit(handleFormSubmit)}
-        onClose={handleClose}
-        keyboardAvoiding
-        testID="account-form"
-      >
-        <TextInputField
-          control={control}
-          name="storeName"
-          label="부티크 이름"
-          placeholder="청담 부티크"
-          error={errors.storeName?.message}
-          testID="account-form-storeName"
+      <>
+        <FullScreenDialog
+          visible={visible}
+          title="SA 계좌 추가"
+          actionLabel="추가"
+          onAction={handleSubmit(handleFormSubmit)}
+          onClose={handleClose}
+          keyboardAvoiding
+          testID="account-form"
+        >
+          <TextInputField
+            control={control}
+            name="storeName"
+            label="부티크 이름"
+            placeholder="청담 부티크"
+            error={errors.storeName?.message}
+            testID="account-form-storeName"
+          />
+          <TextInputField
+            control={control}
+            name="saName"
+            label="SA 이름 (선택)"
+            placeholder="김서연 SA"
+            error={errors.saName?.message}
+            testID="account-form-saName"
+          />
+          <TextInputField
+            control={control}
+            name="notes"
+            label="메모 (선택)"
+            placeholder="메모를 입력하세요"
+            multiline
+            error={errors.notes?.message}
+            testID="account-form-notes"
+          />
+        </FullScreenDialog>
+        <Snackbar
+          visible={errorVisible}
+          message="계좌를 추가하는 중 오류가 발생했습니다."
+          onDismiss={() => setErrorVisible(false)}
+          testID="account-form-error"
         />
-        <TextInputField
-          control={control}
-          name="saName"
-          label="SA 이름 (선택)"
-          placeholder="김서연 SA"
-          error={errors.saName?.message}
-          testID="account-form-saName"
-        />
-        <TextInputField
-          control={control}
-          name="notes"
-          label="메모 (선택)"
-          placeholder="메모를 입력하세요"
-          multiline
-          error={errors.notes?.message}
-          testID="account-form-notes"
-        />
-      </FullScreenDialog>
+      </>
     );
   },
 );

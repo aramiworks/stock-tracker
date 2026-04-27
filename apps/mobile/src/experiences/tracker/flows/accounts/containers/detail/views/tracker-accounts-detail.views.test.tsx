@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
-import { Alert } from "react-native";
+import { useConfirmDialog } from "@aramiworks/ui";
 
 // Mock child views. jest.mock factories run before imports — RN must be
 // required inline to avoid out-of-scope reference errors (INF-1058).
@@ -95,6 +95,11 @@ const purchase = (id: string, overrides: Record<string, unknown> = {}) => ({
 });
 
 describe("TrackerAccountsDetailViews", () => {
+  const { showConfirmDialog } = useConfirmDialog();
+  beforeEach(() => {
+    (showConfirmDialog as jest.Mock).mockClear();
+  });
+
   it("renders default screen with back button, title, header, tank status, and purchase rows", () => {
     const { getByTestId } = render(
       <TrackerAccountsDetailViews
@@ -185,9 +190,8 @@ describe("TrackerAccountsDetailViews", () => {
     expect(onBack).toHaveBeenCalled();
   });
 
-  it("opens delete-account Alert when delete action pressed and fires onDeleteAccount on confirm", () => {
+  it("opens delete-account confirm dialog when delete action pressed and fires onDeleteAccount on confirm", () => {
     const onDeleteAccount = jest.fn().mockResolvedValue(undefined);
-    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
     const { getByTestId } = render(
       <TrackerAccountsDetailViews
         screenState="default"
@@ -195,20 +199,16 @@ describe("TrackerAccountsDetailViews", () => {
       />,
     );
     fireEvent.press(getByTestId("accounts-detail-delete"));
-    expect(alertSpy).toHaveBeenCalledTimes(1);
-    const buttons = alertSpy.mock.calls[0][2] as Array<{
-      text: string;
-      onPress?: () => void;
-    }>;
-    const destructive = buttons.find((b) => b.text === "삭제");
-    destructive?.onPress?.();
+    expect(showConfirmDialog).toHaveBeenCalledTimes(1);
+    const options = (showConfirmDialog as jest.Mock).mock.calls[0][0];
+    expect(options.confirmLabel).toBe("삭제");
+    expect(options.dismissLabel).toBe("취소");
+    options.onConfirm();
     expect(onDeleteAccount).toHaveBeenCalled();
-    alertSpy.mockRestore();
   });
 
-  it("opens purchase delete Alert on purchase row long-press and fires onDeletePurchase on confirm", () => {
+  it("opens purchase delete confirm dialog on purchase row long-press and fires onDeletePurchase on confirm", () => {
     const onDeletePurchase = jest.fn().mockResolvedValue(undefined);
-    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
     const { getByTestId } = render(
       <TrackerAccountsDetailViews
         screenState="default"
@@ -217,19 +217,15 @@ describe("TrackerAccountsDetailViews", () => {
       />,
     );
     fireEvent(getByTestId("purchase-row-del"), "longPress");
-    expect(alertSpy).toHaveBeenCalledTimes(1);
-    const buttons = alertSpy.mock.calls[0][2] as Array<{
-      text: string;
-      onPress?: () => void;
-    }>;
-    const destructive = buttons.find((b) => b.text === "삭제");
-    destructive?.onPress?.();
+    expect(showConfirmDialog).toHaveBeenCalledTimes(1);
+    const options = (showConfirmDialog as jest.Mock).mock.calls[0][0];
+    expect(options.confirmLabel).toBe("삭제");
+    expect(options.dismissLabel).toBe("취소");
+    options.onConfirm();
     expect(onDeletePurchase).toHaveBeenCalledWith("del");
-    alertSpy.mockRestore();
   });
 
-  it("does not open Alert when onDeletePurchase is absent", () => {
-    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+  it("does not open confirm dialog when onDeletePurchase is absent", () => {
     const { getByTestId } = render(
       <TrackerAccountsDetailViews
         screenState="default"
@@ -237,8 +233,7 @@ describe("TrackerAccountsDetailViews", () => {
       />,
     );
     fireEvent(getByTestId("purchase-row-plain"), "longPress");
-    expect(alertSpy).not.toHaveBeenCalled();
-    alertSpy.mockRestore();
+    expect(showConfirmDialog).not.toHaveBeenCalled();
   });
 
   it("opens and closes the edit-account modal", () => {

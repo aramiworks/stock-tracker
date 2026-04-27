@@ -5,9 +5,8 @@ import {
   RefreshControl,
   StyleSheet,
   Pressable,
-  Alert,
 } from "react-native";
-import { DetailTemplate, TopAppBar } from "@aramiworks/ui";
+import { DetailTemplate, TopAppBar, useConfirmDialog } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsDetailScreenState,
@@ -93,6 +92,7 @@ export const TrackerAccountsDetailViews = memo(
     onRefresh,
   }: TrackerAccountsDetailViewsProps) => {
     const { t } = useTranslation("tracker");
+    const { showConfirmDialog, ConfirmDialogPortal } = useConfirmDialog();
     const [editAccountVisible, setEditAccountVisible] = useState(false);
     const [purchaseModalVisible, setPurchaseModalVisible] = useState(false);
     const [editingPurchase, setEditingPurchase] = useState<PurchaseItem | null>(
@@ -102,37 +102,27 @@ export const TrackerAccountsDetailViews = memo(
     const handleDeleteAccount = useCallback(() => {
       /* istanbul ignore next -- defensive guard; button only renders when handler exists */
       if (!onDeleteAccount) return;
-      Alert.alert(
-        t("accounts.list.confirm.deleteAccount.title"),
-        t("common:confirm.deleteAccount.message"),
-        [
-          { text: "취소", style: "cancel" },
-          {
-            text: "삭제",
-            style: "destructive",
-            onPress: () => void onDeleteAccount(),
-          },
-        ],
-      );
-    }, [onDeleteAccount]);
+      showConfirmDialog({
+        title: t("accounts.list.confirm.deleteAccount.title"),
+        message: t("common:confirm.deleteAccount.message"),
+        confirmLabel: "삭제",
+        dismissLabel: "취소",
+        onConfirm: () => onDeleteAccount(),
+      });
+    }, [onDeleteAccount, showConfirmDialog, t]);
 
     const handleDeletePurchase = useCallback(
       (id: string) => {
         if (!onDeletePurchase) return;
-        Alert.alert(
-          t("common:confirm.deletePurchase.title"),
-          t("common:confirm.deletePurchase.message"),
-          [
-            { text: "취소", style: "cancel" },
-            {
-              text: "삭제",
-              style: "destructive",
-              onPress: () => void onDeletePurchase(id),
-            },
-          ],
-        );
+        showConfirmDialog({
+          title: t("common:confirm.deletePurchase.title"),
+          message: t("common:confirm.deletePurchase.message"),
+          confirmLabel: "삭제",
+          dismissLabel: "취소",
+          onConfirm: () => onDeletePurchase(id),
+        });
       },
-      [onDeletePurchase],
+      [onDeletePurchase, showConfirmDialog, t],
     );
 
     const handleEditPurchase = useCallback((purchase: PurchaseItem) => {
@@ -297,6 +287,8 @@ export const TrackerAccountsDetailViews = memo(
             }
           />
         )}
+
+        <ConfirmDialogPortal />
       </>
     );
   },

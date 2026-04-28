@@ -13,8 +13,12 @@ import { SentryEfcvTracker } from "./sentry-efcv-tracker";
 
 describe("SentryEfcvTracker", () => {
   it("renders null and syncs efcv tags on mount", () => {
-    const { setCurrentEfcv } = jest.requireMock("./efcv-cache") as { setCurrentEfcv: jest.Mock };
-    const { getEfcvFromSegments } = jest.requireMock("./get-efcv-from-route") as { getEfcvFromSegments: jest.Mock };
+    const { setCurrentEfcv } = jest.requireMock("./efcv-cache") as {
+      setCurrentEfcv: jest.Mock;
+    };
+    const { getEfcvFromSegments } = jest.requireMock(
+      "./get-efcv-from-route",
+    ) as { getEfcvFromSegments: jest.Mock };
     const { toJSON } = render(<SentryEfcvTracker />);
     expect(toJSON()).toBeNull();
     expect(getEfcvFromSegments).toHaveBeenCalledWith([]);

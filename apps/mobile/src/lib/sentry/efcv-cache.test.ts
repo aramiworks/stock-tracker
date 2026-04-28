@@ -10,7 +10,11 @@ describe("efcv-cache", () => {
   });
 
   it("returns value set by setCurrentEfcv", () => {
-    setCurrentEfcv({ experience: "tracker", flow: "dashboard", container: "home" });
+    setCurrentEfcv({
+      experience: "tracker",
+      flow: "dashboard",
+      container: "home",
+    });
     expect(getCurrentEfcv()).toEqual({
       experience: "tracker",
       flow: "dashboard",
@@ -21,7 +25,10 @@ describe("efcv-cache", () => {
   it("overwrites previous value on subsequent set", () => {
     setCurrentEfcv({ experience: "auth" });
     setCurrentEfcv({ experience: "tracker", flow: "accounts" });
-    expect(getCurrentEfcv()).toEqual({ experience: "tracker", flow: "accounts" });
+    expect(getCurrentEfcv()).toEqual({
+      experience: "tracker",
+      flow: "accounts",
+    });
   });
 
   it("returns empty object after reset", () => {

@@ -12,8 +12,12 @@ import { initSentry } from "./sentry";
 const TEST_DSN = "https://key@sentry.io/123";
 
 describe("initSentry", () => {
-  const sentryMock = jest.requireMock("@sentry/react-native") as { init: jest.Mock };
-  const efcvMock = jest.requireMock("./efcv-cache") as { getCurrentEfcv: jest.Mock };
+  const sentryMock = jest.requireMock("@sentry/react-native") as {
+    init: jest.Mock;
+  };
+  const efcvMock = jest.requireMock("./efcv-cache") as {
+    getCurrentEfcv: jest.Mock;
+  };
 
   afterEach(() => {
     delete process.env.EXPO_PUBLIC_SENTRY_DSN;
@@ -29,7 +33,7 @@ describe("initSentry", () => {
     process.env.EXPO_PUBLIC_SENTRY_DSN = TEST_DSN;
     initSentry();
     expect(sentryMock.init).toHaveBeenCalledWith(
-      expect.objectContaining({ dsn: TEST_DSN })
+      expect.objectContaining({ dsn: TEST_DSN }),
     );
   });
 
@@ -46,7 +50,9 @@ describe("initSentry", () => {
 
   it("beforeSend returns event even when getCurrentEfcv throws", () => {
     process.env.EXPO_PUBLIC_SENTRY_DSN = TEST_DSN;
-    efcvMock.getCurrentEfcv.mockImplementationOnce(() => { throw new Error("oops"); });
+    efcvMock.getCurrentEfcv.mockImplementationOnce(() => {
+      throw new Error("oops");
+    });
     initSentry();
     const { beforeSend } = sentryMock.init.mock.calls[0][0];
     const event = { tags: {} };

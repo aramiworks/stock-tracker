@@ -12,7 +12,6 @@ on:
   push:
     branches: [main]
     paths:
-      - "apps/api/**"
       - "apps/services/**"
       - "apps/subgraphs/**"
       - "apps/router/**"
@@ -35,11 +34,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - service: api
-            package: "@stock-tracker/api"
-            dir: apps/api
-            dockerfile: infra/docker/node-service.Dockerfile
-            entrypoint: dist/server.js
           - service: auth-service
             package: "@stock-tracker/auth-service"
             dir: apps/services/auth

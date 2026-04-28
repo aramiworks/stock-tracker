@@ -31,9 +31,8 @@ doppler setup --project stock-tracker --config local
 npm run dev:dashboard
 
 # Or individual services
-doppler run -- npm run dev:api
+doppler run -- npm run dev:subgraph
 doppler run -- npm run dev:router
-doppler run -- docker compose up
 ```
 
 ## Required vars (local config)
@@ -50,7 +49,8 @@ doppler run -- docker compose up
 | `SUPABASE_JWKS_URL`             | `http://localhost:54321/auth/v1/.well-known/jwks.json`    |
 | `GOOGLE_OAUTH_CLIENT_ID`        | GCP web client ID (public, for `config.toml` `env()`)     |
 | `GOOGLE_OAUTH_CLIENT_SECRET`    | GCP web client secret (from 1Password)                    |
-| `TRPC_SERVICE_URL`              | `http://localhost:4000`                                   |
+| `TRPC_AUTH_SERVICE_URL`         | `http://localhost:4030/trpc`                              |
+| `TRPC_TRACKER_SERVICE_URL`      | `http://localhost:4020/trpc`                              |
 | `ALLOWED_ORIGINS`               | `http://localhost:19006,...`                              |
 | `NODE_ENV`                      | `development`                                             |
 

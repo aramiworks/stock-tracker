@@ -30,18 +30,15 @@ apps/
 │   │   └── tracker/     # Tracker experience (dashboard, accounts, history)
 │   ├── .ondevice/       # Storybook RN config
 │   └── maestro/         # E2E test flows
-├── api/                 # tRPC service (port 4000)
-│   └── src/
-│       ├── trpc/        # tRPC routers (mirrors EFCV)
-│       ├── auth/        # Auth experience (MCVL)
-│       ├── tracker/     # Tracker experience (MCVL + flows)
-│       └── common/      # Env validation, shared utils
+├── services/
+│   ├── auth/            # NestJS auth service (port 4030, /trpc)
+│   └── tracker/         # NestJS tracker service (port 4020, /trpc)
 ├── subgraphs/
 │   └── tracker/         # Apollo subgraph (port 4001)
 │       └── src/
-│           ├── auth/    # GraphQL auth resolvers → tRPC
-│           ├── tracker/ # GraphQL tracker resolvers → tRPC
-│           └── clients/ # tRPC client to apps/api
+│           ├── auth/    # GraphQL auth resolvers → auth-service
+│           ├── tracker/ # GraphQL tracker resolvers → tracker-service
+│           └── clients/ # tRPC clients to auth-service + tracker-service
 ├── router/              # Apollo Router config (JWT, CORS, composition)
 └── storybook/           # Storybook web build (Vercel)
 
@@ -67,7 +64,7 @@ packages/
 - Views → tRPC input/output DTOs (Zod schemas)
 - Lifecycles → Trigger.dev jobs, events, webhooks
 
-**Data flow:** Mobile → Apollo Router (JWT) → Subgraph (GraphQL) → tRPC service → Prisma → Supabase
+**Data flow:** Mobile → Apollo Router (JWT) → Subgraph (GraphQL) → auth-service / tracker-service (tRPC) → Prisma → Supabase
 
 ## Naming
 
@@ -98,7 +95,8 @@ When adding a new text item: add it in Ditto with a Figma-named Developer ID, th
 ```bash
 npm install                    # Install all dependencies
 npm run dev:mobile             # Start Expo dev server
-npm run dev:api                # Start tRPC service (port 4000)
+npm run dev:auth-service       # Start NestJS auth service (port 4030)
+npm run dev:tracker-service    # Start NestJS tracker service (port 4020)
 npm run dev:subgraph           # Start Apollo subgraph (port 4001)
 npm run dev:router             # Start Apollo Router (rover dev)
 npm run dev:backend            # Start all backend services
@@ -134,9 +132,9 @@ npm run check-types            # Type check all packages
 
 Single trunk (`main`). No `develop` or `stage` branches — see `conventions/git.md`.
 
-| Environment | Trigger          | Mobile         | API (Docker → Railway) | Storybook         |
-| ----------- | ---------------- | -------------- | ---------------------- | ----------------- |
-| local       | `npm run dev:*`  | `expo start`   | `npm run dev:backend`  | `storybook dev`   |
-| develop     | manual (Railway) | EAS Preview    | GHCR → Railway dev     | Vercel Preview    |
-| stage       | manual (Railway) | EAS Preview    | GHCR → Railway staging | Vercel Preview    |
-| production  | push to `main`   | EAS Production | GHCR → Railway prod    | Vercel Production |
+| Environment | Trigger          | Mobile         | Backend (Docker → Railway) | Storybook         |
+| ----------- | ---------------- | -------------- | -------------------------- | ----------------- |
+| local       | `npm run dev:*`  | `expo start`   | `npm run dev:backend`      | `storybook dev`   |
+| develop     | manual (Railway) | EAS Preview    | GHCR → Railway dev         | Vercel Preview    |
+| stage       | manual (Railway) | EAS Preview    | GHCR → Railway staging     | Vercel Preview    |
+| production  | push to `main`   | EAS Production | GHCR → Railway prod        | Vercel Production |

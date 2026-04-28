@@ -39,14 +39,6 @@ export const ENVIRONMENTS: Record<string, EnvironmentConfig> = {
 
 export const SERVICES: ServiceDef[] = [
   {
-    name: "api",
-    image: "ghcr.io/aramiworks/stock-tracker-api",
-    port: 4000,
-    healthcheckPath: "/health",
-    startCommand: "npm run start",
-    envVars: ["DATABASE_URL"],
-  },
-  {
     name: "auth-service",
     image: "ghcr.io/aramiworks/stock-tracker-auth-service",
     port: 4030,

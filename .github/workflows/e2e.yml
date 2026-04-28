@@ -53,7 +53,7 @@ jobs:
     needs: gate
     if: github.event_name != 'workflow_run' || needs.gate.outputs.all-green == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16
@@ -81,6 +81,8 @@ jobs:
         run: npx prisma db push --schema packages/prisma/prisma/schema --skip-generate
         env:
           DATABASE_URL: postgresql://postgres:test@localhost:5432/test
+      - name: Build auth-service
+        run: npx tsc -p apps/services/auth/tsconfig.json
       - name: Build tracker-service
         run: npx tsc -p apps/services/tracker/tsconfig.json
       - name: Run subgraph e2e tests

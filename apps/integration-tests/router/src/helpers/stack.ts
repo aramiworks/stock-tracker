@@ -78,7 +78,7 @@ export async function startStack(): Promise<StackHandle> {
         // router.yaml binds the supergraph listener to ${env.PORT} (Railway
         // convention). Tests pick a free port and pass it through here.
         PORT: String(routerPort),
-        ALLOWED_ORIGINS: "http://localhost:0",
+        CORS_ORIGIN: "http://localhost:0",
         APOLLO_KEY: apolloKey,
         APOLLO_GRAPH_REF: apolloGraphRef,
       },

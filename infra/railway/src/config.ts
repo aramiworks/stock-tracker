@@ -83,7 +83,7 @@ export const SERVICES: ServiceDef[] = [
     // No healthcheckPath or startCommand — uses Dockerfile CMD (Apollo Router binary)
     envVars: [
       "SUPABASE_JWKS_URL",
-      "ALLOWED_ORIGINS",
+      "CORS_ORIGIN",
       "APOLLO_KEY",
       "APOLLO_GRAPH_REF",
     ],

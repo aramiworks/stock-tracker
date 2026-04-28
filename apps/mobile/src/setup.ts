@@ -28,9 +28,6 @@ jest.mock("@supabase/supabase-js", () => ({
       onAuthStateChange: jest.fn(() => ({
         data: { subscription: { unsubscribe: jest.fn() } },
       })),
-      getUser: jest.fn().mockResolvedValue({
-        data: { user: { email: "test@example.com", user_metadata: {} } },
-      }),
       signInWithIdToken: jest.fn(),
       signOut: jest.fn(),
     },

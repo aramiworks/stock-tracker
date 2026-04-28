@@ -86,6 +86,9 @@ describe("AuthSignInGmailOauthControllers", () => {
   });
 
   it("native signInWithGoogle calls GoogleSignin.signIn and supabase.signInWithIdToken", async () => {
+    (supabase.auth.getUser as jest.Mock).mockResolvedValueOnce({
+      data: { user: { email: "test@example.com", user_metadata: {} } },
+    });
     (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValueOnce({
       error: null,
     });
@@ -170,6 +173,9 @@ describe("AuthSignInGmailOauthControllers", () => {
       mockWebPromptAsync,
     ]);
 
+    (supabase.auth.getUser as jest.Mock).mockResolvedValueOnce({
+      data: { user: { email: "test@example.com", user_metadata: {} } },
+    });
     (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValueOnce({
       error: null,
     });

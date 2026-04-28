@@ -24,15 +24,14 @@ headers:
           named: authorization
 
 cors:
-  policies:
-    - origins:
-        - http://localhost:8081
-        - http://localhost:8092
-        - http://localhost:8093
-        - http://localhost:8094
-        - http://localhost:4012
-        - http://localhost:19006
-        - ${env.ALLOWED_ORIGINS:-http://localhost:8081}
+  origins:
+    - http://localhost:8081
+    - http://localhost:8092
+    - http://localhost:8093
+    - http://localhost:8094
+    - http://localhost:4012
+    - http://localhost:19006
+    - ${env.CORS_ORIGIN:-http://localhost:8081}
   allow_headers:
     - authorization
     - content-type

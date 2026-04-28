@@ -23,6 +23,7 @@ export class AuthModels {
     return this.prisma.auth_users.upsert({
       where: { supabase_id: data.supabaseId },
       create: {
+        id: data.supabaseId,
         supabase_id: data.supabaseId,
         email: data.email,
         display_name: data.displayName ?? null,

@@ -14,4 +14,11 @@ export const authTypeDefs = gql`
     """
     me: User
   }
+
+  type Mutation {
+    """
+    Create or update the authenticated user's profile. Call after sign-in.
+    """
+    upsertUser(email: String!, displayName: String): User!
+  }
 `;

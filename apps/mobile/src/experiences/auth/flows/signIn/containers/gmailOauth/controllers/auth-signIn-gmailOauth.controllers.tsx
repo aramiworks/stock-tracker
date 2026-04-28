@@ -16,8 +16,21 @@ import {
   isSuccessResponse,
 } from "@react-native-google-signin/google-signin";
 import { supabase } from "../../../../../../../lib/supabase";
+import { apolloClient } from "../../../../../../../lib/apollo/provider";
+import { UpsertUserDocument } from "@/lib/graphql/generated/graphql";
 
 WebBrowser.maybeCompleteAuthSession();
+
+async function upsertUserProfile() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user?.email) return;
+  await apolloClient.mutate({
+    mutation: UpsertUserDocument,
+    variables: { email: user.email, displayName: user.user_metadata?.name ?? null },
+  });
+}
 
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
@@ -82,6 +95,7 @@ export const AuthSignInGmailOauthControllers =
             nonce: webRequest?.nonce,
           });
           if (error) throw error;
+          await upsertUserProfile();
         } catch {
           // sign-in failed; auth state unchanged, user stays on sign-in screen
         } finally {
@@ -114,6 +128,7 @@ export const AuthSignInGmailOauthControllers =
               token: idToken,
             });
             if (error) throw error;
+            await upsertUserProfile();
           }
         }
       } finally {

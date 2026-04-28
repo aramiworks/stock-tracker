@@ -2,10 +2,8 @@ name: CI Autofix
 
 on:
   workflow_run:
-    workflows: ["CI", "changeset"]
+    workflows: ["CI", "changeset", "Auto-update PR branches"]
     types: [completed]
-    branches-ignore:
-      - main
 
 jobs:
   autofix:

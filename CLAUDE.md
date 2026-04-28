@@ -137,4 +137,4 @@ Single trunk (`main`). No `develop` or `stage` branches — see `conventions/git
 | local       | `npm run dev:*`  | `expo start`   | `npm run dev:backend`      | `storybook dev`   |
 | develop     | manual (Railway) | EAS Preview    | GHCR → Railway dev         | Vercel Preview    |
 | stage       | manual (Railway) | EAS Preview    | GHCR → Railway staging     | Vercel Preview    |
-| production  | push to `main`   | EAS Production | GHCR → Railway prod        | Vercel Production |
+| master      | push to `main`   | EAS Production | GHCR → Railway master      | Vercel Production |

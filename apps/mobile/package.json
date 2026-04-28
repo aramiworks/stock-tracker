@@ -20,6 +20,7 @@
     "@gorhom/bottom-sheet": "^5.2.8",
     "@hookform/resolvers": "^5.2.2",
     "@react-native-google-signin/google-signin": "^16.1.2",
+    "@sentry/react-native": "^8.9.1",
     "@stock-tracker/config": "*",
     "@stock-tracker/types": "*",
     "@stock-tracker/validation": "*",

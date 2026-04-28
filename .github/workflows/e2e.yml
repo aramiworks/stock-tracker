@@ -4,16 +4,54 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Backend Docker"
+      - "Deploy Web"
+      - "Schema Publish"
+      - "EAS Update (OTA)"
+    types: [completed]
 
 permissions:
   contents: read
   packages: read
+  actions: read
 
 env:
   NODE_VERSION: 20
 
 jobs:
+  gate:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      all-green: ${{ steps.check.outputs.all-green }}
+    steps:
+      - name: Check all deploy workflows
+        id: check
+        if: github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          WORKFLOWS=("Backend Docker" "Deploy Web" "Schema Publish" "EAS Update (OTA)")
+          ALL_GREEN=true
+          for wf in "${WORKFLOWS[@]}"; do
+            STATUS=$(gh run list --repo "${{ github.repository }}" --commit "$SHA" --workflow "$wf" --limit 1 --json conclusion -q '.[0].conclusion')
+            echo "$wf: $STATUS"
+            if [ "$STATUS" != "success" ]; then
+              ALL_GREEN=false
+            fi
+          done
+          echo "all-green=$ALL_GREEN" >> "$GITHUB_OUTPUT"
+
+      - name: Skip — not all workflows done
+        if: github.event_name == 'workflow_run' && steps.check.outputs.all-green != 'true'
+        run: echo "Not all deploy workflows have completed successfully yet — skipping e2e"
+
   e2e-backend:
+    needs: gate
+    if: github.event_name != 'workflow_run' || needs.gate.outputs.all-green == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     services:
@@ -59,6 +97,8 @@ jobs:
           retention-days: 7
 
   e2e-frontend:
+    needs: gate
+    if: github.event_name != 'workflow_run' || needs.gate.outputs.all-green == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:

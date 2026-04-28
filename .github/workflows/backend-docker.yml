@@ -8,7 +8,7 @@ on:
         required: true
         default: "develop"
         type: choice
-        options: [develop, staging, production]
+        options: [develop, staging, master]
   push:
     branches: [main]
     paths:
@@ -123,7 +123,7 @@ jobs:
           if [ -n "$DISPATCH_ENV" ]; then
             echo "name=$DISPATCH_ENV" >> "$GITHUB_OUTPUT"
           elif [ "$BRANCH" = "main" ]; then
-            echo "name=production" >> "$GITHUB_OUTPUT"
+            echo "name=master" >> "$GITHUB_OUTPUT"
           else
             echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
           fi

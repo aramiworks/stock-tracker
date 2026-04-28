@@ -38,7 +38,7 @@ export async function listProjects(
 export async function createProject(
   client: GraphQLClient,
   name: string,
-  defaultEnvironmentName = "production",
+  defaultEnvironmentName = "master",
 ): Promise<ProjectNode> {
   const data = await client.request<{ projectCreate: ProjectNode }>(
     gql`

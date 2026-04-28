@@ -8,7 +8,7 @@ on:
         required: true
         default: "develop"
         type: choice
-        options: [develop, staging, production]
+        options: [develop, staging, master]
   push:
     branches: [main]
     paths:
@@ -53,7 +53,7 @@ jobs:
           GRAPH_ID="${BASE_REF%%@*}"
           DISPATCH_ENV="${{ inputs.environment }}"
           BRANCH="${{ github.ref_name }}"
-          if [ -n "$DISPATCH_ENV" ] && [ "$DISPATCH_ENV" != "production" ]; then
+          if [ -n "$DISPATCH_ENV" ] && [ "$DISPATCH_ENV" != "master" ]; then
             echo "ref=${GRAPH_ID}@${DISPATCH_ENV}" >> "$GITHUB_OUTPUT"
           elif [ "$BRANCH" = "main" ]; then
             echo "ref=${GRAPH_ID}@current" >> "$GITHUB_OUTPUT"

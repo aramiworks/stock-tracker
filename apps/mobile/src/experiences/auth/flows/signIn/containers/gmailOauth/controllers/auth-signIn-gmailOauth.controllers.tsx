@@ -28,7 +28,10 @@ async function upsertUserProfile() {
   if (!user?.email) return;
   await apolloClient.mutate({
     mutation: UpsertUserDocument,
-    variables: { email: user.email, displayName: user.user_metadata?.name ?? null },
+    variables: {
+      email: user.email,
+      displayName: user.user_metadata?.name ?? null,
+    },
   });
 }
 

@@ -250,6 +250,8 @@ jobs:
           github-token: ${{ secrets.PKG_READ_TOKEN }}
       - name: Build subgraphs
         run: npx turbo run build --filter='./apps/subgraphs/*'
+      - name: Verify schema.graphql is in sync with source typedefs
+        run: git diff --exit-code -- 'apps/subgraphs/*/schema.graphql'
       - name: Cache Rover CLI
         id: rover-cache
         uses: actions/cache@v4

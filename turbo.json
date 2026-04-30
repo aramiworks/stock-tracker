@@ -5,7 +5,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**", ".expo/**"]
+      "outputs": ["dist/**", ".expo/**", "schema.graphql"]
     },
     "lint": {
       "dependsOn": ["^lint"]

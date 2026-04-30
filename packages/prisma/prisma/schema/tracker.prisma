@@ -7,7 +7,7 @@ model tracker_accounts {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
-  auth_user         auth_users          @relation(fields: [auth_user_id], references: [id])
+  auth_user         auth_users          @relation(fields: [auth_user_id], references: [supabase_id])
   tracker_purchases tracker_purchases[]
 
   @@index([auth_user_id, store_name])

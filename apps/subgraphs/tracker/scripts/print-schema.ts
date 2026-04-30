@@ -27,6 +27,6 @@ const sdl = printSubgraphSchema(schema);
 
 const here = dirname(fileURLToPath(import.meta.url));
 const outPath = resolve(here, "../schema.graphql");
-writeFileSync(outPath, sdl);
+writeFileSync(outPath, sdl.endsWith('\n') ? sdl : sdl + '\n');
 
 console.log(`Wrote ${outPath} (${sdl.length} bytes)`);

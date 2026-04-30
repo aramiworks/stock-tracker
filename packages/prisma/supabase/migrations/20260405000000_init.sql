@@ -50,7 +50,7 @@ CREATE UNIQUE INDEX "auth_users_supabase_id_key" ON "auth_users"("supabase_id");
 CREATE UNIQUE INDEX "auth_users_email_key" ON "auth_users"("email");
 
 -- AddForeignKey
-ALTER TABLE "tracker_accounts" ADD CONSTRAINT "tracker_accounts_auth_user_id_fkey" FOREIGN KEY ("auth_user_id") REFERENCES "auth_users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "tracker_accounts" ADD CONSTRAINT "tracker_accounts_auth_user_id_fkey" FOREIGN KEY ("auth_user_id") REFERENCES "auth_users"("supabase_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "tracker_purchases" ADD CONSTRAINT "tracker_purchases_tracker_account_id_fkey" FOREIGN KEY ("tracker_account_id") REFERENCES "tracker_accounts"("id") ON DELETE CASCADE ON UPDATE CASCADE;

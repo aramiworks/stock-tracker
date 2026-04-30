@@ -13,6 +13,7 @@ jobs:
       issues: write
       actions: read
       id-token: write
+      statuses: read
     uses: aramiworks/.github/.github/workflows/ci-autofix.yml@main
     with:
       format_fix_command: "npx prettier --write '**/*.{ts,tsx,md,json}'"

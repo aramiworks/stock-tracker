@@ -16,3 +16,11 @@ export { HealthController } from "./health/health.controller.js";
 
 // tRPC
 export { TrpcBaseService, type TrpcContext } from "./trpc/trpc-base.service.js";
+
+// Sentry
+export {
+  initSentry,
+  type InitSentryOptions,
+  getEfcvFromTrpcPath,
+  type EfcvTags,
+} from "./sentry/index.js";

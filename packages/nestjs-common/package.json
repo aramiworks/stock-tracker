@@ -19,6 +19,7 @@
   "dependencies": {
     "@nestjs/config": "^4.0.2",
     "@nestjs/terminus": "^11.0.0",
+    "@sentry/node": "^9.4.0",
     "@stock-tracker/config": "*",
     "@stock-tracker/prisma": "*",
     "@trpc/server": "^11.1.2",

@@ -20,14 +20,17 @@ tags:
     id: "accounts-detail-edit"
 - assertVisible:
     id: "edit-account-form-storeName"
+- takeScreenshot: accounts-edit-form
 
 # Edit the notes field (non-destructive to other flows)
 - tapOn:
     id: "edit-account-form-notes"
 - inputText: "E2E 수정 테스트"
+- takeScreenshot: accounts-edit-form-filled
 - tapOn:
     id: "edit-account-form-action"
 
 # Verify back on detail screen
 - assertVisible:
     id: "accounts-detail-screen"
+- takeScreenshot: accounts-edit-final

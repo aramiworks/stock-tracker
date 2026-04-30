@@ -13,14 +13,17 @@ tags:
     id: "add-account-fab"
 - assertVisible:
     id: "account-form-storeName"
+- takeScreenshot: accounts-create-form
 - tapOn:
     id: "account-form-storeName"
 - inputText: "테스트 부티크"
 - tapOn:
     id: "account-form-saName"
 - inputText: "테스트 SA"
+- takeScreenshot: accounts-create-form-filled
 - tapOn:
     id: "account-form-action"
 - assertVisible:
     id: "accounts-list-screen"
 - assertVisible: "테스트 부티크"
+- takeScreenshot: accounts-create-final

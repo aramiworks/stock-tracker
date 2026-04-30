@@ -2,4 +2,6 @@ url: ${MAESTRO_APP_URL}
 name: Sanity Check
 ---
 - launchApp
+- takeScreenshot: sanity-initial
 - assertVisible: "Stock Tracker"
+- takeScreenshot: sanity-final

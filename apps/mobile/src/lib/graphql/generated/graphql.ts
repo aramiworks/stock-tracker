@@ -86,6 +86,8 @@ export type Mutation = {
   deletePurchase: Scalars["Boolean"]["output"];
   updateAccount: Account;
   updatePurchase: Purchase;
+  /** Create or update the authenticated user's profile. Call after sign-in. */
+  upsertUser: User;
 };
 
 export type MutationCreateAccountArgs = {
@@ -110,6 +112,11 @@ export type MutationUpdateAccountArgs = {
 
 export type MutationUpdatePurchaseArgs = {
   input: UpdatePurchaseInput;
+};
+
+export type MutationUpsertUserArgs = {
+  displayName?: InputMaybe<Scalars["String"]["input"]>;
+  email: Scalars["String"]["input"];
 };
 
 export type Purchase = {
@@ -187,6 +194,21 @@ export type User = {
   displayName?: Maybe<Scalars["String"]["output"]>;
   email: Scalars["String"]["output"];
   id: Scalars["ID"]["output"];
+};
+
+export type UpsertUserMutationVariables = Exact<{
+  email: Scalars["String"]["input"];
+  displayName?: InputMaybe<Scalars["String"]["input"]>;
+}>;
+
+export type UpsertUserMutation = {
+  __typename?: "Mutation";
+  upsertUser: {
+    __typename?: "User";
+    id: string;
+    email: string;
+    displayName?: string | null;
+  };
 };
 
 export type UpdateAccountMutationVariables = Exact<{
@@ -375,6 +397,75 @@ export type PurchasesQuery = {
   }>;
 };
 
+export const UpsertUserDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "UpsertUser" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "email" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "displayName" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "upsertUser" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "email" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "email" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "displayName" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "displayName" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "email" } },
+                { kind: "Field", name: { kind: "Name", value: "displayName" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpsertUserMutation, UpsertUserMutationVariables>;
 export const UpdateAccountDocument = {
   kind: "Document",
   definitions: [

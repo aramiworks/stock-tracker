@@ -3,6 +3,11 @@ import { render, fireEvent, act } from "@testing-library/react-native";
 import { Text, Pressable, Platform } from "react-native";
 import { supabase } from "../../../../../../../lib/supabase";
 
+jest.mock("../../../../../../../lib/apollo/provider", () => ({
+  apolloClient: { mutate: jest.fn().mockResolvedValue({}) },
+  AppApolloProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 const mockWebPromptAsync = jest.fn().mockResolvedValue(undefined);
 jest.mock("expo-auth-session/providers/google", () => ({
   useIdTokenAuthRequest: jest.fn(() => [
@@ -42,8 +47,15 @@ const Consumer = forwardRef<ConsumerHandle>((_props, ref) => {
 Consumer.displayName = "Consumer";
 
 describe("AuthSignInGmailOauthControllers", () => {
+  let apolloMutateMock: jest.Mock;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    const { apolloClient } = jest.requireMock(
+      "../../../../../../../lib/apollo/provider",
+    );
+    apolloMutateMock = apolloClient.mutate as jest.Mock;
+    apolloMutateMock.mockResolvedValue({});
     jest.replaceProperty(Platform, "OS", "ios" as typeof Platform.OS);
   });
 
@@ -74,6 +86,9 @@ describe("AuthSignInGmailOauthControllers", () => {
   });
 
   it("native signInWithGoogle calls GoogleSignin.signIn and supabase.signInWithIdToken", async () => {
+    (supabase.auth.getUser as jest.Mock).mockResolvedValueOnce({
+      data: { user: { email: "test@example.com", user_metadata: {} } },
+    });
     (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValueOnce({
       error: null,
     });
@@ -92,6 +107,26 @@ describe("AuthSignInGmailOauthControllers", () => {
       provider: "google",
       token: "native-token",
     });
+    expect(apolloMutateMock).toHaveBeenCalled();
+  });
+
+  it("upsertUserProfile skips mutate when user has no email", async () => {
+    (supabase.auth.getUser as jest.Mock).mockResolvedValueOnce({
+      data: { user: null },
+    });
+    (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValueOnce({
+      error: null,
+    });
+    const ref = React.createRef<ConsumerHandle>();
+    render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer ref={ref} />
+      </AuthSignInGmailOauthControllers>,
+    );
+    await act(async () => {
+      ref.current!.signInWithGoogle();
+    });
+    expect(apolloMutateMock).not.toHaveBeenCalled();
   });
 
   it("native signInWithGoogle skips signInWithIdToken when response is not success", async () => {
@@ -138,6 +173,9 @@ describe("AuthSignInGmailOauthControllers", () => {
       mockWebPromptAsync,
     ]);
 
+    (supabase.auth.getUser as jest.Mock).mockResolvedValueOnce({
+      data: { user: { email: "test@example.com", user_metadata: {} } },
+    });
     (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValueOnce({
       error: null,
     });
@@ -158,6 +196,7 @@ describe("AuthSignInGmailOauthControllers", () => {
       token: "web-id-token",
       nonce: "mock-nonce",
     });
+    expect(apolloMutateMock).toHaveBeenCalled();
   });
 
   it("web response useEffect handles signIn error gracefully", async () => {

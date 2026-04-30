@@ -1,6 +1,4 @@
-type User
-  @key(fields: "id")
-{
+type User @key(fields: "id") {
   id: ID!
   email: String!
   displayName: String
@@ -8,26 +6,49 @@ type User
 }
 
 type Query {
-  """Current authenticated user"""
+  """
+  Current authenticated user
+  """
   me: User
 }
 
 extend type Query {
-  """Dashboard overview for the current user"""
+  """
+  Dashboard overview for the current user
+  """
   dashboard: DashboardSummary!
 
-  """List all accounts for the current user"""
-  accounts(sortBy: AccountSortBy, sortOrder: SortOrder, search: String): [Account!]!
+  """
+  List all accounts for the current user
+  """
+  accounts(
+    sortBy: AccountSortBy
+    sortOrder: SortOrder
+    search: String
+  ): [Account!]!
 
-  """Get a single account by ID"""
+  """
+  Get a single account by ID
+  """
   account(id: ID!): Account
 
-  """Purchase history with optional filtering"""
-  purchases(accountId: ID, sortOrder: SortOrder, dateRange: DateRangeInput, amountRange: AmountRangeInput, itemCategory: String, search: String): [Purchase!]!
+  """
+  Purchase history with optional filtering
+  """
+  purchases(
+    accountId: ID
+    sortOrder: SortOrder
+    dateRange: DateRangeInput
+    amountRange: AmountRangeInput
+    itemCategory: String
+    search: String
+  ): [Purchase!]!
 }
 
 type Mutation {
-  """Create or update the authenticated user's profile. Call after sign-in."""
+  """
+  Create or update the authenticated user's profile. Call after sign-in.
+  """
   upsertUser(email: String!, displayName: String): User!
 }
 
@@ -40,9 +61,7 @@ extend type Mutation {
   deletePurchase(id: ID!): Boolean!
 }
 
-type Account
-  @key(fields: "id")
-{
+type Account @key(fields: "id") {
   id: ID!
   storeName: String!
   saName: String
@@ -51,9 +70,7 @@ type Account
   purchases: [Purchase!]!
 }
 
-type Purchase
-  @key(fields: "id")
-{
+type Purchase @key(fields: "id") {
   id: ID!
   itemName: String!
   itemCategory: String

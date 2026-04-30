@@ -10,8 +10,8 @@
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
     "codegen": "graphql-codegen --config codegen.ts",
-    "print-schema": "tsx scripts/print-schema.ts",
-    "schema:check": "tsx scripts/print-schema.ts && git diff --exit-code -- schema.graphql",
+    "print-schema": "tsx scripts/print-schema.ts && prettier --write schema.graphql",
+    "schema:check": "npm run print-schema && git diff --exit-code -- schema.graphql",
     "test:e2e": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.e2e.config.ts"
   },
   "dependencies": {

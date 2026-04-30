@@ -27,6 +27,7 @@ tags:
 - tapOn: "삭제 테스트 부티크"
 - assertVisible:
     id: "accounts-detail-screen"
+- takeScreenshot: accounts-delete-before
 
 # Delete via detail screen button
 - tapOn:
@@ -37,3 +38,4 @@ tags:
 - assertVisible:
     id: "accounts-list-screen"
 - assertNotVisible: "삭제 테스트 부티크"
+- takeScreenshot: accounts-delete-final

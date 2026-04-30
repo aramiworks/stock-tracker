@@ -41,7 +41,7 @@ cors:
 
 supergraph:
   introspection: true
-  listen: 0.0.0.0:${env.PORT:-4002}
+  listen: 0.0.0.0:${env.ROUTER_PORT:-4002}
 
 homepage:
   enabled: false

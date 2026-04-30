@@ -9,7 +9,6 @@ tags:
 - assertVisible:
     id: "accounts-list-screen"
 - tapOn: "까르띠에 청담"
-- takeScreenshot: accounts-detail-screen
 - assertVisible:
     id: "accounts-detail-screen"
 - assertVisible: "SA 상세"
@@ -20,7 +19,6 @@ tags:
 - assertVisible: "러브 브레이슬릿"
 - assertVisible:
     id: "accounts-detail-add-purchase"
-- takeScreenshot: accounts-detail-final
 - tapOn:
     id: "accounts-detail-back"
 - assertVisible:

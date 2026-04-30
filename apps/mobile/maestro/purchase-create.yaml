@@ -20,7 +20,6 @@ tags:
     id: "accounts-detail-add-purchase"
 - assertVisible:
     id: "purchase-form-itemName"
-- takeScreenshot: purchase-create-form
 
 # Fill in purchase details
 - tapOn:
@@ -32,7 +31,6 @@ tags:
 - tapOn:
     id: "purchase-form-purchaseDate"
 - inputText: "2025-04-01"
-- takeScreenshot: purchase-create-form-filled
 - tapOn:
     id: "purchase-form-action"
 
@@ -40,4 +38,3 @@ tags:
 - assertVisible:
     id: "accounts-detail-screen"
 - assertVisible: "테스트 팔찌"
-- takeScreenshot: purchase-create-final

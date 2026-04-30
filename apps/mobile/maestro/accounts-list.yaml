@@ -6,6 +6,7 @@ tags:
 ---
 - launchApp
 - tapOn: "계좌"
+- takeScreenshot: accounts-list-screen
 - assertVisible:
     id: "accounts-list-screen"
 - assertVisible:
@@ -14,3 +15,4 @@ tags:
 - assertVisible: "까르띠에 청담"
 - assertVisible:
     id: "add-account-fab"
+- takeScreenshot: accounts-list-final

@@ -29,6 +29,7 @@ tags:
 - tapOn: "통합 테스트 부티크"
 - assertVisible:
     id: "accounts-detail-screen"
+- takeScreenshot: cross-flow-account-detail
 
 # Step 4: Create a purchase in the new account
 - tapOn:
@@ -55,6 +56,7 @@ tags:
 - tapOn:
     id: "date-filter-all"
 - assertVisible: "통합 테스트 링"
+- takeScreenshot: cross-flow-purchase-in-history
 
 # Step 6: Go back to accounts tab and navigate into the account
 - tapOn: "계좌"
@@ -80,3 +82,4 @@ tags:
 - assertVisible:
     id: "accounts-list-screen"
 - assertNotVisible: "통합 테스트 부티크"
+- takeScreenshot: cross-flow-final

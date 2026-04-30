@@ -9,9 +9,9 @@ tags:
 - assertVisible:
     id: "accounts-list-screen"
 - tapOn: "까르띠에 청담"
-- takeScreenshot: accounts-detail-screen
 - assertVisible:
     id: "accounts-detail-screen"
+- takeScreenshot: accounts-detail-screen
 - assertVisible: "SA 상세"
 - assertVisible:
     id: "accounts-detail-sa-header"

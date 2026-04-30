@@ -6,9 +6,9 @@ tags:
 ---
 - launchApp
 - tapOn: "계좌"
-- takeScreenshot: accounts-list-screen
 - assertVisible:
     id: "accounts-list-screen"
+- takeScreenshot: accounts-list-screen
 - assertVisible:
     id: "accounts-list-title"
 - assertVisible: "SA 계좌"

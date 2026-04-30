@@ -6,9 +6,9 @@ tags:
 ---
 - launchApp
 - tapOn: "히스토리"
-- takeScreenshot: history-browse-screen
 - assertVisible:
     id: "history-browse-screen"
+- takeScreenshot: history-browse-screen
 - assertVisible:
     id: "history-browse-title"
 - assertVisible: "구매 히스토리"
@@ -24,7 +24,11 @@ tags:
     id: "date-filter-all"
 - tapOn:
     id: "date-filter-threeMonths"
+- assertVisible:
+    id: "history-browse-screen"
 - takeScreenshot: history-browse-three-months
 - tapOn:
     id: "date-filter-all"
+- assertVisible:
+    id: "history-browse-screen"
 - takeScreenshot: history-browse-final

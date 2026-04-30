@@ -5,9 +5,9 @@ tags:
   - authenticated
 ---
 - launchApp
-- takeScreenshot: dashboard-home-initial
 - assertVisible:
     id: "dashboard-home-screen"
+- takeScreenshot: dashboard-home-initial
 - assertVisible:
     id: "dashboard-home-title"
 - assertVisible: "대시보드"

@@ -3,9 +3,9 @@ url: ${MAESTRO_APP_URL}
 name: Auth - Sign In
 ---
 - launchApp
-- takeScreenshot: auth-signIn-initial
 - assertVisible:
     id: "auth-signIn-gmailOauth-screen"
+- takeScreenshot: auth-signIn-initial
 - assertVisible:
     id: "auth-signIn-title"
 - assertVisible: "Stock Tracker"

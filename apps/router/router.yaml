@@ -1,5 +1,5 @@
 # Apollo Router configuration
-# JWT validation via Supabase JWKS
+# JWT validation via Supabase JWKS endpoint
 authentication:
   router:
     jwt:

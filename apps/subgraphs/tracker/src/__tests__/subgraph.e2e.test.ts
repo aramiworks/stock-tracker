@@ -10,7 +10,6 @@ const prisma = new PrismaClient();
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000001";
 
 let server: ApolloServer;
-let authUrl: string;
 let trackerUrl: string;
 let closeServers: () => Promise<void>;
 
@@ -20,21 +19,20 @@ let seededPurchaseId: string;
 
 beforeAll(async () => {
   const handles = await startTrpcServers();
-  authUrl = handles.authUrl;
   trackerUrl = handles.trackerUrl;
   closeServers = handles.close;
 
   server = createTestApolloServer();
   await server.start();
 
-  // Seed test user
+  // Seed test user (FK requirement for tracker_accounts.auth_user_id)
   await prisma.auth_users.upsert({
     where: { id: TEST_USER_ID },
     update: {},
     create: {
       id: TEST_USER_ID,
       supabase_id: TEST_USER_ID,
-      email: "subgraph-e2e@test.local",
+      email: "subgraph-tracker-e2e@test.local",
     },
   });
 
@@ -108,7 +106,6 @@ function exec(
     server,
     query,
     variables,
-    authUrl,
     trackerUrl,
     userId: userId ?? TEST_USER_ID,
   });
@@ -119,45 +116,10 @@ function execUnauth(query: string, variables?: Record<string, unknown>) {
     server,
     query,
     variables,
-    authUrl,
     trackerUrl,
     userId: undefined,
   });
 }
-
-describe("auth queries", () => {
-  it("returns the seeded user from me query", async () => {
-    const res = await exec(`
-      query {
-        me {
-          id
-          email
-          displayName
-        }
-      }
-    `);
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.me.id).toBe(TEST_USER_ID);
-    expect(data?.me.email).toBe("subgraph-e2e@test.local");
-  });
-
-  it("returns error for me query without auth", async () => {
-    const res = await execUnauth(`
-      query {
-        me {
-          id
-          email
-        }
-      }
-    `);
-
-    const { errors } = getData(res);
-    expect(errors).toBeDefined();
-    expect(errors!.length).toBeGreaterThan(0);
-  });
-});
 
 describe("tracker queries", () => {
   it("returns dashboard summary", async () => {

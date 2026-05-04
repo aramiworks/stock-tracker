@@ -1,66 +1,3 @@
-type User @key(fields: "id") {
-  id: ID!
-  email: String!
-  displayName: String
-  createdAt: String!
-}
-
-type Query {
-  """
-  Current authenticated user
-  """
-  me: User
-}
-
-extend type Query {
-  """
-  Dashboard overview for the current user
-  """
-  dashboard: DashboardSummary!
-
-  """
-  List all accounts for the current user
-  """
-  accounts(
-    sortBy: AccountSortBy
-    sortOrder: SortOrder
-    search: String
-  ): [Account!]!
-
-  """
-  Get a single account by ID
-  """
-  account(id: ID!): Account
-
-  """
-  Purchase history with optional filtering
-  """
-  purchases(
-    accountId: ID
-    sortOrder: SortOrder
-    dateRange: DateRangeInput
-    amountRange: AmountRangeInput
-    itemCategory: String
-    search: String
-  ): [Purchase!]!
-}
-
-type Mutation {
-  """
-  Create or update the authenticated user's profile. Call after sign-in.
-  """
-  upsertUser(email: String!, displayName: String): User!
-}
-
-extend type Mutation {
-  createAccount(input: CreateAccountInput!): Account!
-  updateAccount(input: UpdateAccountInput!): Account!
-  deleteAccount(id: ID!): Boolean!
-  createPurchase(input: CreatePurchaseInput!): Purchase!
-  updatePurchase(input: UpdatePurchaseInput!): Purchase!
-  deletePurchase(id: ID!): Boolean!
-}
-
 type Account @key(fields: "id") {
   id: ID!
   storeName: String!
@@ -141,4 +78,48 @@ enum AccountSortBy {
 enum SortOrder {
   asc
   desc
+}
+
+type Query
+
+extend type Query {
+  """
+  Dashboard overview for the current user
+  """
+  dashboard: DashboardSummary!
+
+  """
+  List all accounts for the current user
+  """
+  accounts(
+    sortBy: AccountSortBy
+    sortOrder: SortOrder
+    search: String
+  ): [Account!]!
+
+  """
+  Get a single account by ID
+  """
+  account(id: ID!): Account
+
+  """
+  Purchase history with optional filtering
+  """
+  purchases(
+    accountId: ID
+    sortOrder: SortOrder
+    dateRange: DateRangeInput
+    amountRange: AmountRangeInput
+    itemCategory: String
+    search: String
+  ): [Purchase!]!
+}
+
+extend type Mutation {
+  createAccount(input: CreateAccountInput!): Account!
+  updateAccount(input: UpdateAccountInput!): Account!
+  deleteAccount(id: ID!): Boolean!
+  createPurchase(input: CreatePurchaseInput!): Purchase!
+  updatePurchase(input: UpdatePurchaseInput!): Purchase!
+  deletePurchase(id: ID!): Boolean!
 }

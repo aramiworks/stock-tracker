@@ -1,11 +1,10 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { buildSubgraphSchema } from "@apollo/subgraph";
-import { trackerTypeDefs } from "./tracker/views/tracker.views.js";
-import { trackerResolvers } from "./tracker/controllers/tracker.controllers.js";
-import { createTrackerTrpcClient } from "./clients/trpc.js";
+import { authTypeDefs } from "./auth/views/auth.views.js";
+import { authResolvers } from "./auth/controllers/auth.controllers.js";
+import { createAuthTrpcClient } from "./clients/trpc.js";
 import { logger, loggingPlugin } from "./middleware/logging.js";
-import { sentryPlugin } from "./middleware/sentry.js";
 
 // Decode JWT sub claim from Authorization header without re-validating.
 // The Apollo Router already validates the JWT via JWKS; the subgraph
@@ -28,9 +27,9 @@ function getUserIdFromJwt(
 
 const server = new ApolloServer({
   schema: buildSubgraphSchema([
-    { typeDefs: trackerTypeDefs, resolvers: trackerResolvers },
+    { typeDefs: authTypeDefs, resolvers: authResolvers },
   ]),
-  plugins: [sentryPlugin, loggingPlugin],
+  plugins: [loggingPlugin],
   formatError: (formattedError, error) => {
     const cause = (error as any)?.extensions?.cause;
     const requestId = cause?.data?.requestId;
@@ -45,7 +44,7 @@ const server = new ApolloServer({
 });
 
 const { url } = await startStandaloneServer(server, {
-  listen: { port: Number(process.env["PORT"]) || 4001 },
+  listen: { port: Number(process.env["PORT"]) || 4002 },
   context: async ({ req }) => {
     const rawHeaders = {
       "x-user-id": req.headers["x-user-id"] as string | undefined,
@@ -60,9 +59,9 @@ const { url } = await startStandaloneServer(server, {
       ...headers,
       userId,
       userRole: headers["x-user-role"],
-      trackerTrpc: createTrackerTrpcClient(headers),
+      authTrpc: createAuthTrpcClient(headers),
     };
   },
 });
 
-logger.info({ url }, "subgraph tracker ready");
+logger.info({ url }, "subgraph auth ready");

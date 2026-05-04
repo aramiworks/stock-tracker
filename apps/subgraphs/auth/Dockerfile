@@ -9,8 +9,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Copy workspace package.json files needed for install
-COPY apps/subgraphs/tracker/package.json apps/subgraphs/tracker/
-COPY apps/services/tracker/package.json apps/services/tracker/
+COPY apps/subgraphs/auth/package.json apps/subgraphs/auth/
+COPY apps/services/auth/package.json apps/services/auth/
 COPY packages/prisma/package.json packages/prisma/
 COPY packages/types/package.json packages/types/
 COPY packages/validation/package.json packages/validation/
@@ -19,22 +19,22 @@ COPY packages/typescript-config/package.json packages/typescript-config/
 COPY packages/eslint-config/package.json packages/eslint-config/
 
 # Install all dependencies (including devDependencies for build)
-RUN npm ci --workspace=@stock-tracker/subgraph-tracker --workspace=@stock-tracker/tracker-service --workspace=@stock-tracker/prisma --workspace=@stock-tracker/types --workspace=@stock-tracker/validation --workspace=@stock-tracker/nestjs-common --include-workspace-root
+RUN npm ci --workspace=@stock-tracker/subgraph-auth --workspace=@stock-tracker/auth-service --workspace=@stock-tracker/prisma --workspace=@stock-tracker/types --workspace=@stock-tracker/validation --workspace=@stock-tracker/nestjs-common --include-workspace-root
 
 # Copy source files for workspace packages
 COPY packages/ packages/
-COPY apps/subgraphs/tracker/ apps/subgraphs/tracker/
-COPY apps/services/tracker/ apps/services/tracker/
+COPY apps/subgraphs/auth/ apps/subgraphs/auth/
+COPY apps/services/auth/ apps/services/auth/
 
 # Build workspace packages, then the subgraph.
-# tracker-service is NOT built here — its package.json `exports`
+# auth-service is NOT built here — its package.json `exports`
 # points at TS source (./src/trpc/trpc.router.ts), so the subgraph's tsc resolves
 # types directly from source. We only need its src + node_modules present.
 RUN npm run build --workspace=@stock-tracker/validation \
  && npm run build --workspace=@stock-tracker/types \
  && npm run build --workspace=@stock-tracker/prisma \
  && npm run build --workspace=@stock-tracker/nestjs-common \
- && npm run build --workspace=@stock-tracker/subgraph-tracker
+ && npm run build --workspace=@stock-tracker/subgraph-auth
 
 # ---------------------------------------------------------------------------
 # Stage 2 — runner: production image
@@ -48,10 +48,10 @@ ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 
 # Copy workspace package.json files
-# tracker-service is listed as a dep of subgraph-tracker, so npm ci needs its
+# auth-service is listed as a dep of subgraph-auth, so npm ci needs its
 # package.json present even though we don't run it here.
-COPY apps/subgraphs/tracker/package.json apps/subgraphs/tracker/
-COPY apps/services/tracker/package.json apps/services/tracker/
+COPY apps/subgraphs/auth/package.json apps/subgraphs/auth/
+COPY apps/services/auth/package.json apps/services/auth/
 COPY packages/types/package.json packages/types/
 COPY packages/validation/package.json packages/validation/
 COPY packages/nestjs-common/package.json packages/nestjs-common/
@@ -59,14 +59,13 @@ COPY packages/typescript-config/package.json packages/typescript-config/
 COPY packages/eslint-config/package.json packages/eslint-config/
 
 # Install production dependencies only
-RUN npm ci --workspace=@stock-tracker/subgraph-tracker --workspace=@stock-tracker/tracker-service --workspace=@stock-tracker/types --workspace=@stock-tracker/validation --workspace=@stock-tracker/nestjs-common --include-workspace-root --omit=dev
+RUN npm ci --workspace=@stock-tracker/subgraph-auth --workspace=@stock-tracker/auth-service --workspace=@stock-tracker/types --workspace=@stock-tracker/validation --workspace=@stock-tracker/nestjs-common --include-workspace-root --omit=dev
 
 # Copy built output from builder
 COPY --from=builder /app/packages/validation/dist/ packages/validation/dist/
 COPY --from=builder /app/packages/types/dist/ packages/types/dist/
-COPY --from=builder /app/apps/subgraphs/tracker/dist/ apps/subgraphs/tracker/dist/
+COPY --from=builder /app/apps/subgraphs/auth/dist/ apps/subgraphs/auth/dist/
 
-EXPOSE 4001
+EXPOSE 4002
 
-CMD ["node", "--import", "./apps/subgraphs/tracker/dist/instrument.js", "apps/subgraphs/tracker/dist/server.js"]
-
+CMD ["node", "apps/subgraphs/auth/dist/server.js"]

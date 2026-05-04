@@ -4,14 +4,14 @@ import type { ChildProcess } from "node:child_process";
 import { spawn } from "node:child_process";
 import { dirname, resolve as pathResolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { trackerTypeDefs } from "../tracker/views/tracker.views.js";
-import { trackerResolvers } from "../tracker/controllers/tracker.controllers.js";
-import { createTrackerTrpcClient } from "../clients/trpc.js";
+import { authTypeDefs } from "../auth/views/auth.views.js";
+import { authResolvers } from "../auth/controllers/auth.controllers.js";
+import { createAuthTrpcClient } from "../clients/trpc.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 interface TrpcServersHandle {
-  trackerUrl: string;
+  authUrl: string;
   close: () => Promise<void>;
 }
 
@@ -87,25 +87,22 @@ function killChild(child: ChildProcess): Promise<void> {
 }
 
 /**
- * Starts the tracker-service NestJS tRPC server as a child process and returns
- * its URL. Subgraph tests use this to wire a real tracker tRPC client into the
- * test Apollo server without needing the auth subgraph or its service.
+ * Starts the auth-service NestJS tRPC server as a child process and returns its
+ * URL. Subgraph tests use this to wire a real auth tRPC client into the test
+ * Apollo server without needing the tracker subgraph or its service.
  */
 export async function startTrpcServers(): Promise<TrpcServersHandle> {
-  const trackerCliPath = pathResolve(
+  const authCliPath = pathResolve(
     __dirname,
-    "../../../../services/tracker/dist/test-server-cli.js",
+    "../../../../services/auth/dist/test-server-cli.js",
   );
 
-  const trackerHandle = await spawnNestTestServer(
-    trackerCliPath,
-    "TRACKER_URL",
-  );
+  const authHandle = await spawnNestTestServer(authCliPath, "AUTH_URL");
 
   return {
-    trackerUrl: trackerHandle.url,
+    authUrl: authHandle.url,
     close: async () => {
-      await killChild(trackerHandle.child);
+      await killChild(authHandle.child);
     },
   };
 }
@@ -113,7 +110,7 @@ export async function startTrpcServers(): Promise<TrpcServersHandle> {
 export function createTestApolloServer(): ApolloServer {
   return new ApolloServer({
     schema: buildSubgraphSchema([
-      { typeDefs: trackerTypeDefs, resolvers: trackerResolvers },
+      { typeDefs: authTypeDefs, resolvers: authResolvers },
     ]),
     formatError: (formattedError, error) => {
       const cause = (error as Record<string, unknown>)?.extensions as
@@ -137,19 +134,19 @@ interface ExecuteOptions {
   server: ApolloServer;
   query: string;
   variables?: Record<string, unknown>;
-  trackerUrl: string;
+  authUrl: string;
   userId?: string;
 }
 
 /**
- * Execute a GraphQL operation against the test Apollo server with a real
- * tracker tRPC client pointing at the spawned tracker-service test server.
+ * Execute a GraphQL operation against the test Apollo server with a real auth
+ * tRPC client pointing at the spawned auth-service test server.
  */
 export async function executeAs({
   server,
   query,
   variables,
-  trackerUrl,
+  authUrl,
   userId,
 }: ExecuteOptions) {
   const headers: Record<string, string | undefined> = {
@@ -158,15 +155,15 @@ export async function executeAs({
     "x-request-id": "test-request-id",
   };
 
-  const prevTracker = process.env["TRPC_TRACKER_SERVICE_URL"];
-  process.env["TRPC_TRACKER_SERVICE_URL"] = trackerUrl;
+  const prevAuth = process.env["TRPC_AUTH_SERVICE_URL"];
+  process.env["TRPC_AUTH_SERVICE_URL"] = authUrl;
 
-  const trackerTrpc = createTrackerTrpcClient(headers);
+  const authTrpc = createAuthTrpcClient(headers);
 
-  if (prevTracker !== undefined) {
-    process.env["TRPC_TRACKER_SERVICE_URL"] = prevTracker;
+  if (prevAuth !== undefined) {
+    process.env["TRPC_AUTH_SERVICE_URL"] = prevAuth;
   } else {
-    delete process.env["TRPC_TRACKER_SERVICE_URL"];
+    delete process.env["TRPC_AUTH_SERVICE_URL"];
   }
 
   const response = await server.executeOperation(
@@ -181,7 +178,7 @@ export async function executeAs({
         "x-request-id": "test-request-id",
         userId,
         userRole: undefined,
-        trackerTrpc,
+        authTrpc,
       },
     },
   );

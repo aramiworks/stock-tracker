@@ -31,7 +31,6 @@ tags:
     id: "accounts-detail-screen"
 - assertVisible:
     id: "accounts-detail-empty-state"
-- takeScreenshot: empty-state-screen
 
 # Step 4: Clean up — delete the account
 - tapOn:

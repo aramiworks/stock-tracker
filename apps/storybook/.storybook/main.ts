@@ -95,6 +95,13 @@ const config: StorybookConfig = {
         ),
       },
       { find: "react-native", replacement: "react-native-web" },
+      // Mock react-i18next — useTranslation returns key passthrough; no i18n
+      // provider is set up in Storybook so this prevents render errors in views
+      // that call t("namespace.key").
+      {
+        find: "react-i18next",
+        replacement: path.resolve(__dirname, "./mocks/react-i18next.js"),
+      },
       { find: "@", replacement: path.resolve(__dirname, "../../mobile/src") },
       {
         find: "@stock-tracker/validation",
@@ -111,7 +118,8 @@ const config: StorybookConfig = {
           (a as { find: string }).find !== "@" &&
           (a as { find: string }).find !== "@expo/vector-icons" &&
           (a as { find: string }).find !== "@expo/vector-icons/MaterialIcons" &&
-          (a as { find: string }).find !== "@stock-tracker/validation",
+          (a as { find: string }).find !== "@stock-tracker/validation" &&
+          (a as { find: string }).find !== "react-i18next",
       ),
     ];
     // @aramiworks/ui ships TypeScript source (.tsx files). Exclude from

@@ -3,11 +3,11 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FullScreenDialog } from "@aramiworks/ui";
-import { accountUpdateInputSchema } from "@stock-tracker/validation";
+import { watchUpdateInputSchema } from "@stock-tracker/validation";
 import { TextInputField } from "@/shared/components/text-input-field";
 import type { z } from "zod";
 
-type AccountUpdateFormData = z.infer<typeof accountUpdateInputSchema>;
+type AccountUpdateFormData = z.infer<typeof watchUpdateInputSchema>;
 
 type TrackerAccountsDetailEditAccountModalViewProps = {
   visible: boolean;
@@ -39,7 +39,7 @@ export const TrackerAccountsDetailEditAccountModalView = memo(
       reset,
       formState: { errors },
     } = useForm<AccountUpdateFormData>({
-      resolver: zodResolver(accountUpdateInputSchema),
+      resolver: zodResolver(watchUpdateInputSchema),
       defaultValues: {
         id: currentValues.id,
         storeName: currentValues.storeName,

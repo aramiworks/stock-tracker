@@ -107,7 +107,11 @@ jest.mock("@aramiworks/ui", () => {
     Card: (props: Record<string, unknown>) =>
       React.createElement(
         View,
-        { testID: props.testID, onPress: props.onPress },
+        {
+          testID: props.testID,
+          onPress: props.onPress,
+          onLongPress: props.onLongPress,
+        },
         props.children,
       ),
     Text: (props: Record<string, unknown>) =>

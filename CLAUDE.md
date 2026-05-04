@@ -117,7 +117,7 @@ npm run check-types            # Type check all packages
 
 ## Design
 
-- Primary: #FF2D55
+- Primary: #FF2D55 (Cartier red)
 - Secondary: #009E99 (teal)
 - Font: Inter
 - Language: Korean (ko)

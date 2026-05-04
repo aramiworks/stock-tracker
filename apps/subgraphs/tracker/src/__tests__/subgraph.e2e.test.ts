@@ -14,9 +14,11 @@ let authUrl: string;
 let trackerUrl: string;
 let closeServers: () => Promise<void>;
 
-let seededAccountId: string;
-let seededAccountId2: string;
-let seededPurchaseId: string;
+let seededUnitId: string;
+let seededSkuId: string;
+let seededWatchId: string;
+let seededDropEventId: string;
+let seededAlertId: string;
 
 beforeAll(async () => {
   const handles = await startTrpcServers();
@@ -38,55 +40,66 @@ beforeAll(async () => {
     },
   });
 
-  // Seed account
-  const account = await prisma.tracker_accounts.create({
+  // Seed watchable unit
+  const unit = await prisma.watchable_units.create({
+    data: {
+      brand: "Hermes",
+      product_line: "Birkin",
+      model_name: "Birkin 25 E2E Test",
+      active: true,
+    },
+  });
+  seededUnitId = unit.id;
+
+  // Seed SKU
+  const sku = await prisma.skus.create({
+    data: {
+      watchable_unit_id: seededUnitId,
+      color: "Noir",
+      leather: "Togo",
+      active: true,
+    },
+  });
+  seededSkuId = sku.id;
+
+  // Seed watch for the test user
+  const watch = await prisma.watches.create({
     data: {
       auth_user_id: TEST_USER_ID,
-      store_name: "Subgraph E2E Store",
-      sa_name: "Test SA",
+      watchable_unit_id: seededUnitId,
+      notify_push: true,
+      notify_email: false,
+      active: true,
     },
   });
-  seededAccountId = account.id;
+  seededWatchId = watch.id;
 
-  // Seed second account for sort/search tests
-  const account2 = await prisma.tracker_accounts.create({
+  // Seed drop event
+  const dropEvent = await prisma.drop_events.create({
     data: {
-      auth_user_id: TEST_USER_ID,
-      store_name: "Alpha Filter Store",
-      sa_name: "Filter SA",
+      sku_id: seededSkuId,
+      detected_at: new Date(),
     },
   });
-  seededAccountId2 = account2.id;
+  seededDropEventId = dropEvent.id;
 
-  // Seed purchase on first account (January 2025)
-  const purchase = await prisma.tracker_purchases.create({
+  // Seed alert (unread)
+  const alert = await prisma.alerts.create({
     data: {
-      tracker_account_id: seededAccountId,
-      item_name: "Subgraph E2E Ring",
-      item_category: "반지",
-      amount: 5000000,
-      currency: "KRW",
-      purchase_date: new Date("2025-01-15"),
+      watch_id: seededWatchId,
+      drop_event_id: seededDropEventId,
+      channel: "push",
     },
   });
-  seededPurchaseId = purchase.id;
-
-  // Seed purchase on second account (June 2025, different category)
-  await prisma.tracker_purchases.create({
-    data: {
-      tracker_account_id: seededAccountId2,
-      item_name: "Filter Test Necklace",
-      item_category: "목걸이",
-      amount: 8000000,
-      currency: "KRW",
-      purchase_date: new Date("2025-06-20"),
-    },
-  });
+  seededAlertId = alert.id;
 });
 
 afterAll(async () => {
-  await prisma.tracker_purchases.deleteMany({});
-  await prisma.tracker_accounts.deleteMany({});
+  await prisma.alerts.deleteMany({});
+  await prisma.drop_events.deleteMany({});
+  await prisma.watches.deleteMany({});
+  await prisma.skus.deleteMany({});
+  await prisma.watchable_units.deleteMany({ where: { model_name: { contains: "E2E Test" } } });
   await prisma.auth_users.deleteMany({ where: { id: TEST_USER_ID } });
   await prisma.$disconnect();
   await server.stop();
@@ -159,124 +172,30 @@ describe("auth queries", () => {
   });
 });
 
-describe("tracker queries", () => {
-  it("returns dashboard summary", async () => {
+describe("dashboard query", () => {
+  it("returns dashboard summary with Hermes fields", async () => {
     const res = await exec(`
       query {
         dashboard {
-          totalAccounts
-          totalPurchases
-          totalSpent
+          activeWatches
+          unreadAlerts
+          recentDrops
         }
       }
     `);
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.dashboard.totalAccounts).toBeGreaterThanOrEqual(1);
-    expect(data?.dashboard.totalPurchases).toBeGreaterThanOrEqual(1);
-    expect(data?.dashboard.totalSpent).toBeDefined();
-  });
-
-  it("returns accounts list", async () => {
-    const res = await exec(`
-      query {
-        accounts {
-          id
-          storeName
-          saName
-          createdAt
-        }
-      }
-    `);
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.accounts.length).toBeGreaterThanOrEqual(1);
-    expect(
-      data?.accounts.some((a: { id: string }) => a.id === seededAccountId),
-    ).toBe(true);
-  });
-
-  it("returns a single account by id", async () => {
-    const res = await exec(
-      `
-      query Account($id: ID!) {
-        account(id: $id) {
-          id
-          storeName
-          saName
-          notes
-          createdAt
-        }
-      }
-    `,
-      { id: seededAccountId },
-    );
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.account.id).toBe(seededAccountId);
-    expect(data?.account.storeName).toBe("Subgraph E2E Store");
-    expect(data?.account.saName).toBe("Test SA");
-  });
-
-  it("resolves nested purchases on account", async () => {
-    const res = await exec(
-      `
-      query AccountWithPurchases($id: ID!) {
-        account(id: $id) {
-          id
-          purchases {
-            id
-            itemName
-            amount
-            currency
-          }
-        }
-      }
-    `,
-      { id: seededAccountId },
-    );
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.account.purchases).toBeDefined();
-    expect(data?.account.purchases.length).toBeGreaterThanOrEqual(1);
-    expect(
-      data?.account.purchases.some(
-        (p: { id: string }) => p.id === seededPurchaseId,
-      ),
-    ).toBe(true);
-  });
-
-  it("returns purchases filtered by accountId", async () => {
-    const res = await exec(
-      `
-      query Purchases($accountId: ID) {
-        purchases(accountId: $accountId) {
-          id
-          itemName
-          amount
-          currency
-          purchaseDate
-        }
-      }
-    `,
-      { accountId: seededAccountId },
-    );
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.purchases).toBeDefined();
-    expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
+    expect(data?.dashboard.activeWatches).toBeGreaterThanOrEqual(1);
+    expect(data?.dashboard.unreadAlerts).toBeGreaterThanOrEqual(1);
+    expect(data?.dashboard.recentDrops).toBeGreaterThanOrEqual(0);
   });
 
   it("returns error for dashboard without auth", async () => {
     const res = await execUnauth(`
       query {
         dashboard {
-          totalAccounts
+          activeWatches
         }
       }
     `);
@@ -287,282 +206,298 @@ describe("tracker queries", () => {
   });
 });
 
-describe("mutations", () => {
-  let mutationAccountId: string;
-  let mutationPurchaseId: string;
-
-  it("creates an account", async () => {
+describe("catalog queries", () => {
+  it("returns catalog list with seeded unit", async () => {
     const res = await exec(`
-      mutation {
-        createAccount(input: { storeName: "Mutation Test Store", saName: "Mut SA" }) {
+      query {
+        catalog {
           id
-          storeName
-          saName
+          brand
+          productLine
+          modelName
+          active
+          skus {
+            id
+            color
+          }
         }
       }
     `);
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.createAccount.id).toBeDefined();
-    expect(data?.createAccount.storeName).toBe("Mutation Test Store");
-    expect(data?.createAccount.saName).toBe("Mut SA");
-    mutationAccountId = data?.createAccount.id;
+    expect(data?.catalog.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data?.catalog.some((u: { id: string }) => u.id === seededUnitId),
+    ).toBe(true);
+    const seeded = data?.catalog.find(
+      (u: { id: string }) => u.id === seededUnitId,
+    );
+    expect(seeded?.brand).toBe("Hermes");
+    expect(seeded?.skus.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("updates an account", async () => {
+  it("filters catalog by productLine", async () => {
     const res = await exec(
       `
-      mutation UpdateAccount($input: UpdateAccountInput!) {
-        updateAccount(input: $input) {
+      query Catalog($productLine: String) {
+        catalog(productLine: $productLine) {
           id
-          storeName
-          notes
+          productLine
         }
       }
     `,
-      {
-        input: {
-          id: mutationAccountId,
-          storeName: "Updated Mutation Store",
-          notes: "updated via subgraph e2e",
-        },
-      },
+      { productLine: "Birkin" },
     );
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.updateAccount.storeName).toBe("Updated Mutation Store");
-    expect(data?.updateAccount.notes).toBe("updated via subgraph e2e");
+    expect(
+      data?.catalog.every(
+        (u: { productLine: string }) => u.productLine === "Birkin",
+      ),
+    ).toBe(true);
   });
 
-  it("creates a purchase", async () => {
+  it("returns a single catalog item by id", async () => {
     const res = await exec(
       `
-      mutation CreatePurchase($input: CreatePurchaseInput!) {
-        createPurchase(input: $input) {
+      query CatalogItem($id: ID!) {
+        catalogItem(id: $id) {
           id
-          itemName
-          amount
-          currency
-          purchaseDate
+          brand
+          modelName
+          skus {
+            id
+            color
+            leather
+          }
         }
       }
     `,
-      {
-        input: {
-          accountId: mutationAccountId,
-          itemName: "Mutation Test Ring",
-          amount: 3000000,
-          currency: "KRW",
-          purchaseDate: "2025-03-15",
-        },
-      },
+      { id: seededUnitId },
     );
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.createPurchase.id).toBeDefined();
-    expect(data?.createPurchase.itemName).toBe("Mutation Test Ring");
-    mutationPurchaseId = data?.createPurchase.id;
+    expect(data?.catalogItem.id).toBe(seededUnitId);
+    expect(data?.catalogItem.modelName).toBe("Birkin 25 E2E Test");
+    expect(data?.catalogItem.skus.length).toBeGreaterThanOrEqual(1);
+    expect(data?.catalogItem.skus[0].color).toBe("Noir");
   });
 
-  it("updates a purchase", async () => {
-    const res = await exec(
-      `
-      mutation UpdatePurchase($input: UpdatePurchaseInput!) {
-        updatePurchase(input: $input) {
+  it("returns error for catalog without auth", async () => {
+    const res = await execUnauth(`
+      query {
+        catalog {
           id
-          itemName
-          amount
-          notes
         }
       }
-    `,
-      {
-        input: {
-          id: mutationPurchaseId,
-          itemName: "Updated Mutation Ring",
-          amount: 4000000,
-          notes: "updated via subgraph e2e",
-        },
-      },
-    );
+    `);
 
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.updatePurchase.itemName).toBe("Updated Mutation Ring");
-    expect(data?.updatePurchase.notes).toBe("updated via subgraph e2e");
-  });
-
-  it("deletes a purchase", async () => {
-    const res = await exec(
-      `
-      mutation DeletePurchase($id: ID!) {
-        deletePurchase(id: $id)
-      }
-    `,
-      { id: mutationPurchaseId },
-    );
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.deletePurchase).toBe(true);
-  });
-
-  it("deletes an account", async () => {
-    const res = await exec(
-      `
-      mutation DeleteAccount($id: ID!) {
-        deleteAccount(id: $id)
-      }
-    `,
-      { id: mutationAccountId },
-    );
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.deleteAccount).toBe(true);
+    const { errors } = getData(res);
+    expect(errors).toBeDefined();
+    expect(errors!.length).toBeGreaterThan(0);
   });
 });
 
-describe("filtering and sorting", () => {
-  it("filters purchases by dateRange", async () => {
-    const res = await exec(
-      `
-      query Purchases($dateRange: DateRangeInput) {
-        purchases(dateRange: $dateRange) {
-          id
-          itemName
-          purchaseDate
-        }
-      }
-    `,
-      { dateRange: { from: "2025-01-01", to: "2025-01-31" } },
-    );
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
-    expect(
-      data?.purchases.every((p: { itemName: string }) =>
-        p.itemName.includes("Ring"),
-      ),
-    ).toBe(true);
-  });
-
-  it("filters purchases by search (store name)", async () => {
-    const res = await exec(
-      `
-      query Purchases($search: String) {
-        purchases(search: $search) {
-          id
-          itemName
-        }
-      }
-    `,
-      { search: "Alpha" },
-    );
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
-    expect(
-      data?.purchases.every((p: { itemName: string }) =>
-        p.itemName.includes("Necklace"),
-      ),
-    ).toBe(true);
-  });
-
-  it("filters purchases by itemCategory", async () => {
-    const res = await exec(
-      `
-      query Purchases($itemCategory: String) {
-        purchases(itemCategory: $itemCategory) {
-          id
-          itemName
-        }
-      }
-    `,
-      { itemCategory: "반지" },
-    );
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
-    expect(
-      data?.purchases.every((p: { itemName: string }) =>
-        p.itemName.includes("Ring"),
-      ),
-    ).toBe(true);
-  });
-
-  it("returns empty when filters match nothing", async () => {
-    const res = await exec(
-      `
-      query Purchases($search: String) {
-        purchases(search: $search) {
-          id
-        }
-      }
-    `,
-      { search: "NonExistentStore12345" },
-    );
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.purchases).toEqual([]);
-  });
-
-  it("sorts accounts by store_name ascending", async () => {
+describe("watches queries", () => {
+  it("returns watches list for the current user", async () => {
     const res = await exec(`
       query {
-        accounts(sortBy: store_name, sortOrder: asc) {
+        watches {
           id
-          storeName
+          watchableUnitId
+          notifyPush
+          notifyEmail
+          active
+          watchableUnit {
+            id
+            brand
+            modelName
+          }
+          sku {
+            id
+          }
         }
       }
     `);
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.accounts.length).toBeGreaterThanOrEqual(2);
-    const names = data?.accounts.map((a: { storeName: string }) => a.storeName);
-    expect(names).toEqual([...names].sort());
+    expect(data?.watches.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data?.watches.some((w: { id: string }) => w.id === seededWatchId),
+    ).toBe(true);
+    const seeded = data?.watches.find(
+      (w: { id: string }) => w.id === seededWatchId,
+    );
+    expect(seeded?.watchableUnit.brand).toBe("Hermes");
   });
 
-  it("searches accounts by store name", async () => {
-    const res = await exec(
-      `
-      query Accounts($search: String) {
-        accounts(search: $search) {
+  it("returns error for watches without auth", async () => {
+    const res = await execUnauth(`
+      query {
+        watches {
           id
-          storeName
         }
       }
-    `,
-      { search: "Alpha" },
-    );
+    `);
 
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.accounts.length).toBe(1);
-    expect(data?.accounts[0].storeName).toBe("Alpha Filter Store");
+    const { errors } = getData(res);
+    expect(errors).toBeDefined();
+    expect(errors!.length).toBeGreaterThan(0);
   });
+});
 
-  it("returns all purchases without filter params (backward compat)", async () => {
+describe("alerts queries", () => {
+  it("returns alert feed for the current user", async () => {
     const res = await exec(`
       query {
-        purchases {
-          id
-          itemName
+        alerts {
+          items {
+            id
+            watchId
+            channel
+            sentAt
+            readAt
+            createdAt
+            dropEvent {
+              id
+              skuId
+              detectedAt
+            }
+          }
+          nextCursor
         }
       }
     `);
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.purchases.length).toBeGreaterThanOrEqual(2);
+    expect(data?.alerts.items.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data?.alerts.items.some((a: { id: string }) => a.id === seededAlertId),
+    ).toBe(true);
+  });
+
+  it("returns unread alert count", async () => {
+    const res = await exec(`
+      query {
+        unreadAlertCount
+      }
+    `);
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.unreadAlertCount).toBeGreaterThanOrEqual(1);
+  });
+
+  it("returns error for alerts without auth", async () => {
+    const res = await execUnauth(`
+      query {
+        alerts {
+          items {
+            id
+          }
+          nextCursor
+        }
+      }
+    `);
+
+    const { errors } = getData(res);
+    expect(errors).toBeDefined();
+    expect(errors!.length).toBeGreaterThan(0);
+  });
+});
+
+describe("watch mutations", () => {
+  let mutationWatchId: string;
+
+  it("creates a watch", async () => {
+    const res = await exec(
+      `
+      mutation CreateWatch($input: CreateWatchInput!) {
+        createWatch(input: $input) {
+          id
+          watchableUnitId
+          notifyPush
+          notifyEmail
+          active
+        }
+      }
+    `,
+      {
+        input: {
+          watchableUnitId: seededUnitId,
+          skuId: seededSkuId,
+          notifyPush: true,
+          notifyEmail: false,
+        },
+      },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.createWatch.id).toBeDefined();
+    expect(data?.createWatch.watchableUnitId).toBe(seededUnitId);
+    mutationWatchId = data?.createWatch.id;
+  });
+
+  it("updates a watch", async () => {
+    const res = await exec(
+      `
+      mutation UpdateWatch($input: UpdateWatchInput!) {
+        updateWatch(input: $input) {
+          id
+          notifyEmail
+          active
+        }
+      }
+    `,
+      {
+        input: {
+          id: mutationWatchId,
+          notifyEmail: true,
+        },
+      },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.updateWatch.notifyEmail).toBe(true);
+  });
+
+  it("deletes a watch", async () => {
+    const res = await exec(
+      `
+      mutation DeleteWatch($id: ID!) {
+        deleteWatch(id: $id)
+      }
+    `,
+      { id: mutationWatchId },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.deleteWatch).toBe(true);
+  });
+});
+
+describe("markAlertRead mutation", () => {
+  it("marks an alert as read", async () => {
+    const res = await exec(
+      `
+      mutation MarkAlertRead($id: ID!) {
+        markAlertRead(id: $id)
+      }
+    `,
+      { id: seededAlertId },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.markAlertRead).toBe(true);
   });
 });
 
@@ -570,7 +505,7 @@ describe("error propagation", () => {
   it("includes error info on unauthorized queries", async () => {
     const res = await execUnauth(`
       query {
-        accounts {
+        watches {
           id
         }
       }

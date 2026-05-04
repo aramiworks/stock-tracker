@@ -2,4 +2,4 @@
 "@stock-tracker/router": major
 ---
 
-Merge branch 'main' into test/INF-1245-bump-major
+Bump router to major version for INF-1245 release pipeline smoke test.

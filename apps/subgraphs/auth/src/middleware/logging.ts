@@ -4,6 +4,8 @@ import { createLogger } from "@stock-tracker/config";
 const logger = createLogger({
   service: "subgraph-auth",
   env: process.env["NODE_ENV"],
+  betterStackToken: process.env["AUTH_SUBGRAPH_BETTER_STACK_SOURCE_TOKEN"],
+  betterStackIngestHost: process.env["BETTER_STACK_INGEST_HOST"],
 });
 
 export { logger };

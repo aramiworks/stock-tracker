@@ -12,7 +12,10 @@ import { TrpcModule } from "./trpc/trpc.module.js";
   imports: [
     AppConfigModule.forSchema(baseEnvSchema),
     PrismaModule,
-    LoggerModule.forService("auth-service"),
+    LoggerModule.forService("auth-service", {
+      token: process.env["AUTH_SERVICE_BETTER_STACK_SOURCE_TOKEN"],
+      ingestHost: process.env["BETTER_STACK_INGEST_HOST"],
+    }),
     HealthModule,
     TrpcModule,
   ],

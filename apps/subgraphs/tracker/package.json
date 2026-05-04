@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx --import src/instrument.ts watch src/server.ts",
     "build": "npm run print-schema && tsc",
-    "start": "node dist/server.js",
+    "start": "node --import ./dist/instrument.js dist/server.js",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
     "codegen": "graphql-codegen --config codegen.ts",

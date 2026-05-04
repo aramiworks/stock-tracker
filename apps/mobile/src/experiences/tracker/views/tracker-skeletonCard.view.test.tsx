@@ -3,7 +3,7 @@ import { render } from "@testing-library/react-native";
 import { TrackerSkeletonCardView } from "./tracker-skeletonCard.view";
 
 describe("TrackerSkeletonCardView", () => {
-  it("renders with default dimensions", () => {
+  it("renders without children", () => {
     const { toJSON } = render(<TrackerSkeletonCardView />);
     expect(toJSON()).toBeTruthy();
   });

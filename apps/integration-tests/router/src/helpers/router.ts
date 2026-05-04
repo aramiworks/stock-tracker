@@ -73,7 +73,7 @@ export async function spawnRouter({
 
   const port = env["ROUTER_PORT"] ?? env["PORT"];
   if (!port) {
-    throw new Error("spawnRouter requires env.ROUTER_PORT to be set");
+    throw new Error("spawnRouter requires env.ROUTER_PORT to be set (env.PORT is accepted as a legacy fallback)");
   }
   const url = `http://127.0.0.1:${port}`;
 

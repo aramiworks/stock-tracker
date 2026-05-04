@@ -12,7 +12,7 @@ const meta: Meta<typeof TrackerSkeletonCardView> = {
 export default meta;
 type Story = StoryObj<typeof TrackerSkeletonCardView>;
 
-const SaSkeleton = () => (
+const AvatarLineSkeleton = () => (
   <XStack gap={12} alignItems="center">
     <Skeleton width={44} height={44} borderRadius={22} />
     <YStack flex={1} gap={6}>
@@ -26,7 +26,7 @@ const SaSkeleton = () => (
 export const Default: Story = {
   render: () => (
     <TrackerSkeletonCardView>
-      <SaSkeleton />
+      <AvatarLineSkeleton />
     </TrackerSkeletonCardView>
   ),
 };
@@ -40,7 +40,7 @@ export const Overview: Story = {
           name: "default",
           render: () => (
             <TrackerSkeletonCardView>
-              <SaSkeleton />
+              <AvatarLineSkeleton />
             </TrackerSkeletonCardView>
           ),
         },

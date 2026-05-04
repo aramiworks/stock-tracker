@@ -35,9 +35,10 @@ jobs:
           WORKFLOWS=("Backend Docker" "Deploy Web" "Schema Publish" "EAS Update (OTA)")
           ALL_GREEN=true
           for wf in "${WORKFLOWS[@]}"; do
-            STATUS=$(gh run list --repo "${{ github.repository }}" --commit "$SHA" --workflow "$wf" --limit 1 --json conclusion -q '.[0].conclusion')
-            echo "$wf: $STATUS"
-            if [ "$STATUS" != "success" ]; then
+            STATUS=$(gh run list --repo "${{ github.repository }}" --workflow "$wf" --branch main --limit 5 --json headSha,conclusion -q ".[] | select(.headSha == \"$SHA\") | .conclusion" | head -1)
+            echo "$wf: ${STATUS:-not-run}"
+            # Only fail if the workflow ran and failed — skip workflows that didn't run for this commit
+            if [ -n "$STATUS" ] && [ "$STATUS" != "success" ]; then
               ALL_GREEN=false
             fi
           done

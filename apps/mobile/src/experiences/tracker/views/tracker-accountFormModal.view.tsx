@@ -2,11 +2,11 @@ import { memo, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FullScreenDialog, Snackbar } from "@aramiworks/ui";
-import { watchCreateInputSchema } from "@stock-tracker/validation";
+import { accountCreateInputSchema } from "@stock-tracker/validation";
 import { TextInputField } from "@/shared/components/text-input-field";
 import type { z } from "zod";
 
-type AccountFormData = z.infer<typeof watchCreateInputSchema>;
+type AccountFormData = z.infer<typeof accountCreateInputSchema>;
 
 type TrackerAccountFormModalViewProps = {
   visible: boolean;
@@ -26,7 +26,7 @@ export const TrackerAccountFormModalView = memo(
       reset,
       formState: { errors },
     } = useForm<AccountFormData>({
-      resolver: zodResolver(watchCreateInputSchema),
+      resolver: zodResolver(accountCreateInputSchema),
       defaultValues: {
         storeName: "",
         saName: "",

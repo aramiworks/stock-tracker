@@ -3,11 +3,11 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FullScreenDialog } from "@aramiworks/ui";
-import { watchCreateInputSchema } from "@stock-tracker/validation";
+import { purchaseCreateInputSchema } from "@stock-tracker/validation";
 import { TextInputField } from "@/shared/components/text-input-field";
 import type { z } from "zod";
 
-type PurchaseFormData = z.input<typeof watchCreateInputSchema>;
+type PurchaseFormData = z.input<typeof purchaseCreateInputSchema>;
 
 type PurchaseFormDefaultValues = Partial<PurchaseFormData>;
 
@@ -34,7 +34,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
       reset,
       formState: { errors },
     } = useForm<PurchaseFormData>({
-      resolver: zodResolver(watchCreateInputSchema),
+      resolver: zodResolver(purchaseCreateInputSchema),
       defaultValues: {
         itemName: "",
         amount: undefined as unknown as number,

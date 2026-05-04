@@ -1,6 +1,13 @@
 import { memo, useState, type ReactNode } from "react";
 import { View, RefreshControl, StyleSheet } from "react-native";
-import { FAB, DashboardTemplate, TopAppBar } from "@aramiworks/ui";
+import {
+  FAB,
+  DashboardTemplate,
+  TopAppBar,
+  XStack,
+  YStack,
+  Skeleton,
+} from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
   TrackerDashboardHomeScreenState,
@@ -77,13 +84,34 @@ export const TrackerDashboardHomeViews = memo(
       ),
       loading: (
         <>
-          <TrackerSkeletonCardView width={350} height={36} />
+          <TrackerSkeletonCardView>
+            <Skeleton width={200} height={12} />
+          </TrackerSkeletonCardView>
           <View style={styles.spacer16} />
-          <TrackerSkeletonCardView width={350} height={100} />
+          <TrackerSkeletonCardView>
+            <XStack gap={12} alignItems="center">
+              <Skeleton width={44} height={44} borderRadius={22} />
+              <YStack flex={1} gap={6}>
+                <Skeleton width={100} height={12} />
+                <Skeleton width={80} height={10} />
+                <Skeleton width={120} height={10} />
+              </YStack>
+            </XStack>
+          </TrackerSkeletonCardView>
           <View style={styles.spacer16} />
-          <TrackerSkeletonCardView width={350} height={68} />
+          <TrackerSkeletonCardView>
+            <YStack gap={8}>
+              <Skeleton width={120} height={14} />
+              <Skeleton width={180} height={20} />
+            </YStack>
+          </TrackerSkeletonCardView>
           <View style={styles.spacer12} />
-          <TrackerSkeletonCardView width={350} height={68} />
+          <TrackerSkeletonCardView>
+            <YStack gap={8}>
+              <Skeleton width={120} height={14} />
+              <Skeleton width={180} height={20} />
+            </YStack>
+          </TrackerSkeletonCardView>
         </>
       ),
       error: <TrackerDashboardHomeErrorStateView onRetry={onRetry} />,

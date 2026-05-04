@@ -50,6 +50,55 @@ describe("createLogger", () => {
     });
   });
 
+  describe("with betterStackToken", () => {
+    it("sets level to info", () => {
+      const logger = createLogger({
+        service: "test-svc",
+        env: "production",
+        betterStackToken: "fake-token",
+      });
+      expect(logger.level).toBe("info");
+    });
+
+    it("sets base.service", () => {
+      const logger = createLogger({
+        service: "test-svc",
+        env: "production",
+        betterStackToken: "fake-token",
+      });
+      expect(logger.bindings()).toMatchObject({ service: "test-svc" });
+    });
+
+    it("uses default endpoint when betterStackIngestHost is not provided", () => {
+      const logger = createLogger({
+        service: "test-svc",
+        env: "production",
+        betterStackToken: "fake-token",
+      });
+      expect(logger.level).toBe("info");
+    });
+
+    it("uses host as-is when betterStackIngestHost already has https:// prefix", () => {
+      const logger = createLogger({
+        service: "test-svc",
+        env: "production",
+        betterStackToken: "fake-token",
+        betterStackIngestHost: "https://custom.ingest.example.com",
+      });
+      expect(logger.level).toBe("info");
+    });
+
+    it("prepends https:// when betterStackIngestHost has no protocol", () => {
+      const logger = createLogger({
+        service: "test-svc",
+        env: "production",
+        betterStackToken: "fake-token",
+        betterStackIngestHost: "custom.ingest.example.com",
+      });
+      expect(logger.level).toBe("info");
+    });
+  });
+
   describe("env fallback to process.env.NODE_ENV", () => {
     const originalEnv = process.env["NODE_ENV"];
 

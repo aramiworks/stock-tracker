@@ -22,17 +22,14 @@ tags:
     below: "탱크 워치"
 - assertVisible:
     id: "purchase-form-itemName"
-- takeScreenshot: purchase-edit-form
 
 # Clear and update the notes field
 - tapOn:
     id: "purchase-form-notes"
 - inputText: "E2E 수정 테스트"
-- takeScreenshot: purchase-edit-form-filled
 - tapOn:
     id: "purchase-form-action"
 
 # Verify back on detail screen
 - assertVisible:
     id: "accounts-detail-screen"
-- takeScreenshot: purchase-edit-final

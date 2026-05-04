@@ -1,3 +1,3 @@
-export * from "./dashboard";
-export * from "./accounts";
+export * from "./alerts";
+export * from "./watchlist";
 export * from "./history";

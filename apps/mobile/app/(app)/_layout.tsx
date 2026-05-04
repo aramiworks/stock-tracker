@@ -40,17 +40,17 @@ export default function AppLayout() {
       }}
     >
       <Tabs.Screen
-        name="tracker/dashboard"
+        name="tracker/alerts"
         options={{
-          title: t("nav.dashboard"),
-          tabBarIcon: ({ focused }) => <TabIcon label="📊" focused={focused} />,
+          title: t("nav.alerts"),
+          tabBarIcon: ({ focused }) => <TabIcon label="🔔" focused={focused} />,
         }}
       />
       <Tabs.Screen
-        name="tracker/accounts"
+        name="tracker/watchlist"
         options={{
-          title: t("nav.accounts"),
-          tabBarIcon: ({ focused }) => <TabIcon label="👤" focused={focused} />,
+          title: t("nav.watchlist"),
+          tabBarIcon: ({ focused }) => <TabIcon label="👁" focused={focused} />,
         }}
       />
       <Tabs.Screen

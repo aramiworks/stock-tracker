@@ -1,96 +1,98 @@
 {
-  "accounts": {
+  "alerts": {
+    "feed": {
+      "emptyState": {
+        "cta": "상품 추가하기",
+        "subtitle": "관심 상품을 추가하고 재입고 알림을 받아보세요",
+        "title": "등록된 상품이 없습니다"
+      },
+      "errorState": {
+        "retry": "다시 시도",
+        "subtitle": "네트워크 연결을 확인하고 다시 시도해주세요",
+        "title": "데이터를 불러올 수 없습니다"
+      },
+      "refreshFab": "새로고침",
+      "productCard": {
+        "outOfStock": "품절",
+        "inStock": "재입고됨",
+        "brandLabel": "{{brand}}",
+        "statusAvailable": "{{brand}} · {{store}} · 구매 가능",
+        "statusOutOfStock": "{{brand}} · {{store}} · 품절",
+        "statusWatching": "{{brand}} · {{store}} · 감시 중"
+      },
+      "stockSummary": {
+        "watching": "감시 중: {{count}}개",
+        "label": "재입고 현황"
+      },
+      "addProductFab": "상품 추가",
+      "title": "재입고 알림"
+    }
+  },
+  "watchlist": {
     "detail": {
       "errorState": {
         "retry": "다시 시도",
         "subtitle": "네트워크 연결을 확인하고 다시 시도해주세요",
-        "title": "SA 정보를 불러올 수 없습니다"
+        "title": "상품 정보를 불러올 수 없습니다"
       },
-      "addPurchase": "+ 구매 추가",
       "back": "←",
       "deleteAction": "삭제",
       "editAction": "편집",
-      "recentPurchases": "최근 구매 내역",
-      "title": "SA 상세"
+      "restockHistory": "재입고 이력",
+      "title": "상품 상세"
     },
     "form": {
       "add": {
         "submit": "추가",
-        "title": "SA 계좌 추가"
+        "title": "관심 상품 추가"
       },
       "fields": {
-        "boutiqueName": {
-          "label": "부티크 이름",
+        "brand": {
+          "label": "브랜드",
+          "placeholder": "브랜드 선택"
+        },
+        "storeName": {
+          "label": "매장",
           "placeholder": "청담 부티크"
         },
         "notes": {
           "label": "메모 (선택)",
           "placeholder": "메모를 입력하세요"
         },
-        "saName": {
-          "label": "SA 이름 (선택)",
-          "placeholder": "김서연 SA"
+        "productName": {
+          "label": "상품명",
+          "placeholder": "상품명을 입력하세요"
         }
       },
       "edit": {
         "submit": "수정",
-        "title": "SA 계좌 수정"
+        "title": "관심 상품 수정"
       }
     },
     "list": {
       "emptyState": {
-        "cta": "SA 추가하기",
-        "subtitle": "담당 SA를 추가해보세요",
-        "title": "등록된 SA가 없습니다"
+        "cta": "상품 추가하기",
+        "subtitle": "관심 상품을 등록하면 재입고 시 알림을 받을 수 있습니다",
+        "title": "관심 상품이 없습니다"
       },
       "errorState": {
         "retry": "다시 시도",
         "subtitle": "네트워크 연결을 확인하고 다시 시도해주세요",
-        "title": "계좌 정보를 불러올 수 없습니다"
+        "title": "목록을 불러올 수 없습니다"
       },
-      "saListItem": {
-        "statusEligible": "자격 충족 · ₩{{amount}}",
-        "statusNoPurchases": "구매 없음 · ₩0",
-        "statusNotEligible": "자격 미충족 · ₩{{amount}}"
+      "productListItem": {
+        "statusInStock": "재입고됨 · {{brand}} · {{store}}",
+        "statusOutOfStock": "품절 · {{brand}} · {{store}}",
+        "statusWatching": "감시 중 · {{brand}} · {{store}}"
       },
       "confirm": {
-        "deleteAccount": {
-          "message": "{{name}} ({{boutique}})을(를) 삭제하시겠습니까?",
-          "title": "계좌 삭제"
+        "deleteProduct": {
+          "message": "{{name}} ({{store}})을(를) 삭제하시겠습니까?",
+          "title": "상품 삭제"
         }
       },
-      "title": "SA 계좌"
+      "title": "관심 목록"
     }
-  },
-  "eligibility": {
-    "eligible": "✓  탱크 구매 자격 충족",
-    "notEligible": "✕  탱크 구매 자격 미충족"
-  },
-  "dashboard": {
-    "emptyState": {
-      "cta": "SA 추가하기",
-      "subtitle": "SA를 추가하고 구매를 기록해보세요",
-      "title": "아직 구매 내역이 없습니다"
-    },
-    "errorState": {
-      "retry": "다시 시도",
-      "subtitle": "네트워크 연결을 확인하고 다시 시도해주세요",
-      "title": "데이터를 불러올 수 없습니다"
-    },
-    "refreshFab": "새로고침",
-    "saCard": {
-      "noPurchases": "구매 내역 없음",
-      "spend": "₩{{amount}} 구매",
-      "statusEligible": "{{boutique}} · 자격 충족",
-      "statusNoPurchases": "{{boutique}} · 구매 없음",
-      "statusNotEligible": "{{boutique}} · 자격 미충족"
-    },
-    "spendSummary": {
-      "goal": "목표: ₩{{amount}}",
-      "label": "총 구매 금액"
-    },
-    "addAccountFab": "계좌 추가",
-    "title": "대시보드"
   },
   "history": {
     "browse": {
@@ -101,67 +103,25 @@
         "threeMonths": "3개월"
       },
       "emptyState": {
-        "cta": "구매 기록하기",
-        "subtitle": "구매를 기록하면 여기에 표시됩니다",
-        "title": "구매 내역이 없습니다"
+        "cta": "상품 등록하기",
+        "subtitle": "재입고 알림이 발생하면 여기에 표시됩니다",
+        "title": "알림 내역이 없습니다"
       },
       "errorState": {
         "retry": "다시 시도",
         "subtitle": "네트워크 연결을 확인하고 다시 시도해주세요",
-        "title": "히스토리를 불러올 수 없습니다"
+        "title": "알림을 불러올 수 없습니다"
       },
       "confirmDelete": {
-        "message": "{{name}}을(를) 삭제하시겠습니까?",
-        "title": "구매 삭제"
+        "message": "{{name}} 알림을 삭제하시겠습니까?",
+        "title": "알림 삭제"
       },
-      "title": "구매 히스토리"
+      "title": "알림 히스토리"
     }
   },
   "nav": {
-    "accounts": "계좌",
-    "dashboard": "대시보드",
+    "alerts": "알림",
+    "watchlist": "관심목록",
     "history": "히스토리"
-  },
-  "purchases": {
-    "form": {
-      "add": {
-        "submit": "추가",
-        "title": "구매 추가"
-      },
-      "fields": {
-        "amount": {
-          "label": "금액",
-          "placeholder": "3200000"
-        },
-        "itemCategory": {
-          "label": "카테고리 (선택)",
-          "placeholder": "주얼리"
-        },
-        "itemName": {
-          "label": "상품명",
-          "placeholder": "트리니티 링"
-        },
-        "notes": {
-          "label": "메모 (선택)",
-          "placeholder": "메모를 입력하세요"
-        },
-        "purchaseDate": {
-          "label": "구매일 (YYYY-MM-DD)",
-          "placeholder": "2024-03-15"
-        },
-        "storeLocation": {
-          "label": "매장 (선택)",
-          "placeholder": "청담 부티크"
-        }
-      },
-      "edit": {
-        "submit": "수정",
-        "title": "구매 수정"
-      }
-    },
-    "modal": {
-      "save": "저장"
-    },
-    "cancel": "취소"
   }
 }

@@ -71,9 +71,9 @@ export async function spawnRouter({
     if (echoLogs) process.stderr.write(chunk);
   });
 
-  const port = env["PORT"] ?? env["ROUTER_PORT"];
+  const port = env["ROUTER_PORT"] ?? env["PORT"];
   if (!port) {
-    throw new Error("spawnRouter requires env.PORT (or ROUTER_PORT) to be set");
+    throw new Error("spawnRouter requires env.ROUTER_PORT to be set");
   }
   const url = `http://127.0.0.1:${port}`;
 

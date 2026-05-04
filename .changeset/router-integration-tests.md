@@ -1,5 +1,5 @@
 ---
-"@stock-tracker/api": patch
+"@stock-tracker/mobile": patch
 ---
 
 Add Apollo Router integration tests covering JWKS validation, Rhai JWT-claim header mapping, and supergraph composition. New workspace `apps/integration-tests/router` runs the real `apollo-router` binary (v2.10.0, matching `apps/router/Dockerfile`) against a mock federated subgraph; reuses the production `apps/router/router.yaml` and `apps/router/rhai/main.rhai` verbatim.

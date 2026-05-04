@@ -25,14 +25,14 @@ and `router-e2e.yml`.
 
 ## Test cases
 
-| #   | Name                                                     | What it proves                                                           |
-| --- | -------------------------------------------------------- | ------------------------------------------------------------------------ |
-| 1   | `me` query returns the authenticated user                | JWKS validation + auth subgraph + tRPC auth-service                      |
-| 2   | `dashboard` query returns aggregates                     | Tracker subgraph + tRPC tracker-service + Prisma                         |
-| 3   | Unauthenticated request is rejected                      | Router enforces JWT before reaching subgraphs                            |
-| 4   | `createAccount` mutation round-trips                     | Mutation path through full chain + DB write _(skipped — INF-1247)_       |
-| 5   | Created account is owned by the JWT subject and readable | `x-user-id` propagation + RLS / ownership scoping _(skipped — INF-1247)_ |
-| 6   | Invalid query returns errors with extensions             | Error envelope preserved through router                                  |
+| #   | Name                                                     | What it proves                                      |
+| --- | -------------------------------------------------------- | --------------------------------------------------- |
+| 1   | `me` query returns the authenticated user                | JWKS validation + auth subgraph + tRPC auth-service |
+| 2   | `dashboard` query returns aggregates                     | Tracker subgraph + tRPC tracker-service + Prisma    |
+| 3   | Unauthenticated request is rejected                      | Router enforces JWT before reaching subgraphs       |
+| 4   | `createAccount` mutation round-trips                     | Mutation path through full chain + DB write         |
+| 5   | Created account is owned by the JWT subject and readable | `x-user-id` propagation + RLS / ownership scoping   |
+| 6   | Invalid query returns errors with extensions             | Error envelope preserved through router             |
 
 ## Required env
 

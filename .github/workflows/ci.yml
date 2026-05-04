@@ -269,7 +269,8 @@ jobs:
             echo "Checking $subgraph_name against $APOLLO_GRAPH_REF..."
             ~/.rover/bin/rover subgraph check "$APOLLO_GRAPH_REF" \
               --schema "$schema" \
-              --name "$subgraph_name"
+              --name "$subgraph_name" \
+              --query-count-threshold 1
           done
         env:
           APOLLO_KEY: ${{ secrets.APOLLO_KEY }}

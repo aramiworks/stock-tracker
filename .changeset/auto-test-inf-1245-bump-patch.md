@@ -2,4 +2,4 @@
 "@stock-tracker/router": patch
 ---
 
-Merge branch 'main' into test/INF-1245-bump-patch
+Bump patch version (smoke test INF-1245).

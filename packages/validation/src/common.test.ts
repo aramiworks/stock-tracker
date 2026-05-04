@@ -1,9 +1,8 @@
 import { describe, expect, it } from "@jest/globals";
 import {
-  amountRangeSchema,
-  currencySchema,
   dateRangeSchema,
-  itemCategorySchema,
+  productLineSchema,
+  alertChannelSchema,
   paginationInputSchema,
   sanitizedString,
   sortOrderSchema,
@@ -68,26 +67,38 @@ describe("sortOrderSchema", () => {
   });
 });
 
-describe("currencySchema", () => {
-  it.each(["KRW", "USD", "EUR", "JPY", "GBP", "CNY"] as const)(
-    "accepts %s",
-    (code) => {
-      expect(currencySchema.parse(code)).toBe(code);
-    },
-  );
+describe("productLineSchema", () => {
+  it.each([
+    "Birkin",
+    "Kelly",
+    "Constance",
+    "Picotin",
+    "Lindy",
+    "Evelyne",
+    "Bolide",
+    "Garden Party",
+    "Herbag",
+    "Other",
+  ] as const)("accepts %s", (line) => {
+    expect(productLineSchema.parse(line)).toBe(line);
+  });
 
-  it("rejects an unknown currency", () => {
-    expect(currencySchema.safeParse("BTC").success).toBe(false);
+  it("rejects an unknown product line", () => {
+    expect(productLineSchema.safeParse("Chanel").success).toBe(false);
   });
 });
 
-describe("itemCategorySchema", () => {
-  it("accepts a known category", () => {
-    expect(itemCategorySchema.parse("브레이슬릿")).toBe("브레이슬릿");
+describe("alertChannelSchema", () => {
+  it("accepts push", () => {
+    expect(alertChannelSchema.parse("push")).toBe("push");
   });
 
-  it("rejects an unknown category", () => {
-    expect(itemCategorySchema.safeParse("unknown").success).toBe(false);
+  it("accepts email", () => {
+    expect(alertChannelSchema.parse("email")).toBe("email");
+  });
+
+  it("rejects unknown channel", () => {
+    expect(alertChannelSchema.safeParse("sms").success).toBe(false);
   });
 });
 
@@ -159,51 +170,6 @@ describe("dateRangeSchema", () => {
 
   it("rejects an invalid date string", () => {
     expect(dateRangeSchema.safeParse({ from: "not-a-date" }).success).toBe(
-      false,
-    );
-  });
-});
-
-describe("amountRangeSchema", () => {
-  it("accepts undefined (optional)", () => {
-    expect(amountRangeSchema.parse(undefined)).toBeUndefined();
-  });
-
-  it("accepts an empty object", () => {
-    expect(amountRangeSchema.parse({})).toEqual({});
-  });
-
-  it("accepts min-only", () => {
-    expect(amountRangeSchema.parse({ min: 10 })).toEqual({ min: 10 });
-  });
-
-  it("accepts max-only", () => {
-    expect(amountRangeSchema.parse({ max: 100 })).toEqual({ max: 100 });
-  });
-
-  it("accepts min <= max", () => {
-    expect(amountRangeSchema.parse({ min: 10, max: 100 })).toEqual({
-      min: 10,
-      max: 100,
-    });
-  });
-
-  it("rejects min > max", () => {
-    const result = amountRangeSchema.safeParse({ min: 100, max: 10 });
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.issues[0]!.message).toBe(
-        "amountRange.min must not exceed amountRange.max",
-      );
-    }
-  });
-
-  it("rejects non-positive min", () => {
-    expect(amountRangeSchema.safeParse({ min: 0 }).success).toBe(false);
-  });
-
-  it("rejects max above the cap", () => {
-    expect(amountRangeSchema.safeParse({ max: 10_000_000_000 }).success).toBe(
       false,
     );
   });

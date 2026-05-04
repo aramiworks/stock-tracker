@@ -6,5 +6,5 @@ model auth_users {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
-  tracker_accounts tracker_accounts[]
+  watches watches[]
 }

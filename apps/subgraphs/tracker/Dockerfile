@@ -71,4 +71,5 @@ COPY --from=builder /app/apps/subgraphs/tracker/dist/ apps/subgraphs/tracker/dis
 
 EXPOSE 4001
 
-CMD ["node", "apps/subgraphs/tracker/dist/server.js"]
+CMD ["node", "--import", "./apps/subgraphs/tracker/dist/instrument.js", "apps/subgraphs/tracker/dist/server.js"]
+

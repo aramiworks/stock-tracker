@@ -1,8 +1,8 @@
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
-import type { TrackerAppRouter } from "@stock-tracker/tracker-service/trpc";
+import type { AuthAppRouter } from "@stock-tracker/auth-service/trpc";
 
-export type TrackerTrpcClient = ReturnType<typeof createTrackerTrpcClient>;
+export type AuthTrpcClient = ReturnType<typeof createAuthTrpcClient>;
 
 function forwardHeaders(headers: Record<string, string | undefined>) {
   return () => {
@@ -15,15 +15,14 @@ function forwardHeaders(headers: Record<string, string | undefined>) {
   };
 }
 
-export const createTrackerTrpcClient = (
+export const createAuthTrpcClient = (
   headers: Record<string, string | undefined>,
 ) => {
-  return createTRPCClient<TrackerAppRouter>({
+  return createTRPCClient<AuthAppRouter>({
     links: [
       httpBatchLink({
         url:
-          process.env["TRPC_TRACKER_SERVICE_URL"] ||
-          "http://localhost:4020/trpc",
+          process.env["TRPC_AUTH_SERVICE_URL"] || "http://localhost:4030/trpc",
         transformer: superjson,
         headers: forwardHeaders(headers),
       }),

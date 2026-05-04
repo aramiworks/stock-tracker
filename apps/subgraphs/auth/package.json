@@ -1,12 +1,12 @@
 {
-  "name": "@stock-tracker/subgraph-tracker",
+  "name": "@stock-tracker/subgraph-auth",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx --import src/instrument.ts watch src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "npm run print-schema && tsc",
-    "start": "node --import ./dist/instrument.js dist/server.js",
+    "start": "node dist/server.js",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
     "codegen": "graphql-codegen --config codegen.ts",
@@ -17,8 +17,7 @@
   "dependencies": {
     "@apollo/server": "^4.11.0",
     "@apollo/subgraph": "^2.9.0",
-    "@sentry/node": "^9.4.0",
-    "@stock-tracker/tracker-service": "*",
+    "@stock-tracker/auth-service": "*",
     "@stock-tracker/config": "*",
     "@stock-tracker/types": "*",
     "@stock-tracker/validation": "*",

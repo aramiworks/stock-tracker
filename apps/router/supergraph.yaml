@@ -1,5 +1,9 @@
 federation_version: 2
 subgraphs:
+  auth:
+    routing_url: http://localhost:4013
+    schema:
+      subgraph_url: http://localhost:4013
   tracker:
     routing_url: http://localhost:4011
     schema:

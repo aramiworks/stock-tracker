@@ -1,4 +1,4 @@
-import type { TrackerTrpcClient } from "./clients/trpc.js";
+import type { AuthTrpcClient } from "./clients/trpc.js";
 
 export interface SubgraphContext {
   "x-user-id"?: string;
@@ -7,5 +7,5 @@ export interface SubgraphContext {
   authorization?: string;
   userId?: string;
   userRole?: string;
-  trackerTrpc: TrackerTrpcClient;
+  authTrpc: AuthTrpcClient;
 }

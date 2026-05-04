@@ -64,11 +64,23 @@ jobs:
           for schema in ./apps/subgraphs/*/schema.graphql; do
             subgraph_dir=$(dirname "$schema")
             subgraph_name=$(basename "$subgraph_dir")
-            echo "Publishing $subgraph_name to $APOLLO_GRAPH_REF..."
+            case "$subgraph_name" in
+              auth)
+                routing_url="http://subgraph-auth.railway.internal:4002"
+                ;;
+              tracker)
+                routing_url="http://subgraph-tracker.railway.internal:4001"
+                ;;
+              *)
+                echo "Unknown subgraph $subgraph_name — add a routing URL mapping" >&2
+                exit 1
+                ;;
+            esac
+            echo "Publishing $subgraph_name to $APOLLO_GRAPH_REF (routing $routing_url)..."
             ~/.rover/bin/rover subgraph publish "$APOLLO_GRAPH_REF" \
               --schema "$schema" \
               --name "$subgraph_name" \
-              --routing-url "http://subgraph-tracker.railway.internal:4001"
+              --routing-url "$routing_url"
           done
         env:
           APOLLO_KEY: ${{ secrets.APOLLO_KEY }}

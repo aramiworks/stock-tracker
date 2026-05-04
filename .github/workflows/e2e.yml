@@ -53,42 +53,22 @@ jobs:
     needs: gate
     if: github.event_name != 'workflow_run' || needs.gate.outputs.all-green == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build packages
-        run: npx turbo run build --filter='./packages/*'
-      - name: Generate Prisma client
-        run: npx turbo run db:generate
-      - name: Push schema to database
-        run: npx prisma db push --schema packages/prisma/prisma/schema --skip-generate
+      - name: Run full-stack e2e against deployed develop
+        run: npm run test:e2e -w apps/integration-tests/full-stack
         env:
-          DATABASE_URL: postgresql://postgres:test@localhost:5432/test
-      - name: Build auth-service
-        run: npx tsc -p apps/services/auth/tsconfig.json
-      - name: Build tracker-service
-        run: npx tsc -p apps/services/tracker/tsconfig.json
-      - name: Run subgraph e2e tests
-        run: npm run test:e2e -w apps/subgraphs/tracker
-        env:
-          DATABASE_URL: postgresql://postgres:test@localhost:5432/test
+          E2E_GRAPHQL_URL: ${{ secrets.E2E_GRAPHQL_URL }}
+          E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

@@ -23,4 +23,5 @@ export const env = {
   userPassword: required("E2E_USER_PASSWORD"),
 };
 
+// Reserved for Supabase Management API calls (e.g., admin user operations).
 export const projectRef = new URL(env.supabaseUrl).hostname.split(".")[0];

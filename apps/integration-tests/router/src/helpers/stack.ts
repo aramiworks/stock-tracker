@@ -75,10 +75,12 @@ export async function startStack(): Promise<StackHandle> {
       cwd: ROUTER_DIR,
       env: {
         SUPABASE_JWKS_URL: jwks.url,
-        // router.yaml binds the supergraph listener to ${env.PORT} (Railway
-        // convention). Tests pick a free port and pass it through here.
-        PORT: String(routerPort),
-        ALLOWED_ORIGINS: "http://localhost:0",
+        // router.yaml binds the supergraph listener to ${env.ROUTER_PORT:-4002}.
+        // Tests pick a free port and pass it here. INF-1224 renamed PORT →
+        // ROUTER_PORT in router.yaml to avoid colliding with NestJS services
+        // that also read process.env.PORT.
+        ROUTER_PORT: String(routerPort),
+        CORS_ORIGIN: "http://localhost:0",
         APOLLO_KEY: apolloKey,
         APOLLO_GRAPH_REF: apolloGraphRef,
       },

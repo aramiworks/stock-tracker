@@ -49,6 +49,11 @@ jobs:
             dir: apps/subgraphs/tracker
             dockerfile: infra/docker/node-service.Dockerfile
             entrypoint: dist/server.js
+          - service: subgraph-auth
+            package: "@stock-tracker/subgraph-auth"
+            dir: apps/subgraphs/auth
+            dockerfile: infra/docker/node-service.Dockerfile
+            entrypoint: dist/server.js
           - service: router
             package: ""
             dir: ""

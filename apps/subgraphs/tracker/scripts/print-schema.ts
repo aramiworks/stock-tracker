@@ -15,13 +15,9 @@ import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { buildSubgraphSchema, printSubgraphSchema } from "@apollo/subgraph";
-import { authTypeDefs } from "../src/auth/views/auth.views.js";
 import { trackerTypeDefs } from "../src/tracker/views/tracker.views.js";
 
-const schema = buildSubgraphSchema([
-  { typeDefs: authTypeDefs },
-  { typeDefs: trackerTypeDefs },
-]);
+const schema = buildSubgraphSchema([{ typeDefs: trackerTypeDefs }]);
 
 const sdl = printSubgraphSchema(schema);
 

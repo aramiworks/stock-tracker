@@ -34,11 +34,14 @@ apps/
 │   ├── auth/            # NestJS auth service (port 4030, /trpc)
 │   └── tracker/         # NestJS tracker service (port 4020, /trpc)
 ├── subgraphs/
-│   └── tracker/         # Apollo subgraph (port 4001)
+│   ├── auth/            # Apollo subgraph (port 4002, dev 4013) → auth-service
+│   │   └── src/
+│   │       ├── auth/    # GraphQL auth resolvers
+│   │       └── clients/ # tRPC client to auth-service
+│   └── tracker/         # Apollo subgraph (port 4001, dev 4011) → tracker-service
 │       └── src/
-│           ├── auth/    # GraphQL auth resolvers → auth-service
-│           ├── tracker/ # GraphQL tracker resolvers → tracker-service
-│           └── clients/ # tRPC clients to auth-service + tracker-service
+│           ├── tracker/ # GraphQL tracker resolvers
+│           └── clients/ # tRPC client to tracker-service
 ├── router/              # Apollo Router config (JWT, CORS, composition)
 └── storybook/           # Storybook web build (Vercel)
 
@@ -64,7 +67,7 @@ packages/
 - Views → tRPC input/output DTOs (Zod schemas)
 - Lifecycles → Trigger.dev jobs, events, webhooks
 
-**Data flow:** Mobile → Apollo Router (JWT) → Subgraph (GraphQL) → auth-service / tracker-service (tRPC) → Prisma → Supabase
+**Data flow:** Mobile → Apollo Router (JWT) → auth + tracker subgraphs (GraphQL) → auth-service / tracker-service (tRPC) → Prisma → Supabase
 
 ## Naming
 
@@ -97,7 +100,9 @@ npm install                    # Install all dependencies
 npm run dev:mobile             # Start Expo dev server
 npm run dev:auth-service       # Start NestJS auth service (port 4030)
 npm run dev:tracker-service    # Start NestJS tracker service (port 4020)
-npm run dev:subgraph           # Start Apollo subgraph (port 4001)
+npm run dev:subgraph           # Start both Apollo subgraphs (auth + tracker)
+npm run dev:subgraph:auth      # Start auth subgraph only (port 4013 dev)
+npm run dev:subgraph:tracker   # Start tracker subgraph only (port 4011 dev)
 npm run dev:router             # Start Apollo Router (rover dev)
 npm run dev:backend            # Start all backend services
 npm run dev:storybook          # Start Storybook web

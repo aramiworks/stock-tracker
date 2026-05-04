@@ -4,19 +4,13 @@ import type { ChildProcess } from "node:child_process";
 import { spawn } from "node:child_process";
 import { dirname, resolve as pathResolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { authTypeDefs } from "../auth/views/auth.views.js";
-import { authResolvers } from "../auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "../tracker/views/tracker.views.js";
 import { trackerResolvers } from "../tracker/controllers/tracker.controllers.js";
-import {
-  createAuthTrpcClient,
-  createTrackerTrpcClient,
-} from "../clients/trpc.js";
+import { createTrackerTrpcClient } from "../clients/trpc.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 interface TrpcServersHandle {
-  authUrl: string;
   trackerUrl: string;
   close: () => Promise<void>;
 }
@@ -93,45 +87,25 @@ function killChild(child: ChildProcess): Promise<void> {
 }
 
 /**
- * Starts two NestJS tRPC servers as child processes:
- *   - auth-service test server (apps/services/auth)
- *   - tracker-service test server (apps/services/tracker)
- *
- * Both use the same pattern: precompiled JS spawned via `node`, with a
- * stdout protocol (AUTH_URL=<url> / TRACKER_URL=<url>) signaling readiness.
+ * Starts the tracker-service NestJS tRPC server as a child process and returns
+ * its URL. Subgraph tests use this to wire a real tracker tRPC client into the
+ * test Apollo server without needing the auth subgraph or its service.
  */
 export async function startTrpcServers(): Promise<TrpcServersHandle> {
-  const authCliPath = pathResolve(
-    __dirname,
-    "../../../../services/auth/dist/test-server-cli.js",
-  );
   const trackerCliPath = pathResolve(
     __dirname,
     "../../../../services/tracker/dist/test-server-cli.js",
   );
 
-  // Start both servers in parallel
-  const [authHandle, trackerHandle] = await Promise.all([
-    spawnNestTestServer(authCliPath, "AUTH_URL"),
-    spawnNestTestServer(trackerCliPath, "TRACKER_URL").catch(async (err) => {
-      // If tracker fails to start, we still need to clean up the auth server
-      // that may have already started. Re-throw after best-effort cleanup.
-      throw err;
-    }),
-  ]).catch(async (err) => {
-    // Best-effort cleanup of any started children. We can't reach the handles
-    // here, so the caller's test framework will handle stragglers if any.
-    throw err;
-  });
+  const trackerHandle = await spawnNestTestServer(
+    trackerCliPath,
+    "TRACKER_URL",
+  );
 
   return {
-    authUrl: authHandle.url,
     trackerUrl: trackerHandle.url,
     close: async () => {
-      await Promise.all([
-        killChild(authHandle.child),
-        killChild(trackerHandle.child),
-      ]);
+      await killChild(trackerHandle.child);
     },
   };
 }
@@ -139,7 +113,6 @@ export async function startTrpcServers(): Promise<TrpcServersHandle> {
 export function createTestApolloServer(): ApolloServer {
   return new ApolloServer({
     schema: buildSubgraphSchema([
-      { typeDefs: authTypeDefs, resolvers: authResolvers },
       { typeDefs: trackerTypeDefs, resolvers: trackerResolvers },
     ]),
     formatError: (formattedError, error) => {
@@ -164,21 +137,18 @@ interface ExecuteOptions {
   server: ApolloServer;
   query: string;
   variables?: Record<string, unknown>;
-  authUrl: string;
   trackerUrl: string;
   userId?: string;
 }
 
 /**
- * Execute a GraphQL operation against the test Apollo server with real
- * tRPC clients. The auth client points at the auth-service test server
- * and the tracker client points at the tracker-service test server.
+ * Execute a GraphQL operation against the test Apollo server with a real
+ * tracker tRPC client pointing at the spawned tracker-service test server.
  */
 export async function executeAs({
   server,
   query,
   variables,
-  authUrl,
   trackerUrl,
   userId,
 }: ExecuteOptions) {
@@ -188,19 +158,11 @@ export async function executeAs({
     "x-request-id": "test-request-id",
   };
 
-  const prevAuth = process.env["TRPC_AUTH_SERVICE_URL"];
   const prevTracker = process.env["TRPC_TRACKER_SERVICE_URL"];
-  process.env["TRPC_AUTH_SERVICE_URL"] = authUrl;
   process.env["TRPC_TRACKER_SERVICE_URL"] = trackerUrl;
 
-  const authTrpc = createAuthTrpcClient(headers);
   const trackerTrpc = createTrackerTrpcClient(headers);
 
-  if (prevAuth !== undefined) {
-    process.env["TRPC_AUTH_SERVICE_URL"] = prevAuth;
-  } else {
-    delete process.env["TRPC_AUTH_SERVICE_URL"];
-  }
   if (prevTracker !== undefined) {
     process.env["TRPC_TRACKER_SERVICE_URL"] = prevTracker;
   } else {
@@ -219,7 +181,6 @@ export async function executeAs({
         "x-request-id": "test-request-id",
         userId,
         userRole: undefined,
-        authTrpc,
         trackerTrpc,
       },
     },

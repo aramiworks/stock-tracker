@@ -6,8 +6,8 @@
 model watchable_units {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   brand        String   @default("Hermes")
-  product_line String   // e.g. "Birkin", "Kelly", "Constance", "Picotin"
-  model_name   String   // e.g. "Birkin 25", "Kelly 28 Sellier"
+  product_line String // e.g. "Birkin", "Kelly", "Constance", "Picotin"
+  model_name   String // e.g. "Birkin 25", "Kelly 28 Sellier"
   image_url    String?
   active       Boolean  @default(true)
   created_at   DateTime @default(now())
@@ -24,10 +24,10 @@ model watchable_units {
 model skus {
   id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   watchable_unit_id String   @db.Uuid
-  color             String   // e.g. "Noir", "Gold", "Etoupe"
-  leather           String?  // e.g. "Togo", "Epsom", "Swift"
-  hardware          String?  // e.g. "GHW", "PHW"
-  size              String?  // e.g. "25", "28", "30"
+  color             String // e.g. "Noir", "Gold", "Etoupe"
+  leather           String? // e.g. "Togo", "Epsom", "Swift"
+  hardware          String? // e.g. "GHW", "PHW"
+  size              String? // e.g. "25", "28", "30"
   reference_code    String?  @unique
   image_url         String?
   active            Boolean  @default(true)
@@ -83,7 +83,7 @@ model alerts {
   id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   watch_id      String    @db.Uuid
   drop_event_id String    @db.Uuid
-  channel       String    // "push" | "email"
+  channel       String // "push" | "email"
   sent_at       DateTime?
   read_at       DateTime?
   created_at    DateTime  @default(now())

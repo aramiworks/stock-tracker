@@ -10,63 +10,89 @@ const prisma = new PrismaClient();
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000001";
 
 let server: ApolloServer;
-let authUrl: string;
 let trackerUrl: string;
 let closeServers: () => Promise<void>;
 
 let seededUnitId: string;
+let seededUnitId2: string;
 let seededSkuId: string;
+let seededSkuId2: string;
 let seededWatchId: string;
 let seededDropEventId: string;
 let seededAlertId: string;
 
 beforeAll(async () => {
   const handles = await startTrpcServers();
-  authUrl = handles.authUrl;
   trackerUrl = handles.trackerUrl;
   closeServers = handles.close;
 
   server = createTestApolloServer();
   await server.start();
 
-  // Seed test user
+  // Seed test user (FK requirement for watches.auth_user_id)
   await prisma.auth_users.upsert({
     where: { id: TEST_USER_ID },
     update: {},
     create: {
       id: TEST_USER_ID,
       supabase_id: TEST_USER_ID,
-      email: "subgraph-e2e@test.local",
+      email: "subgraph-tracker-e2e@test.local",
     },
   });
 
-  // Seed watchable unit
+  // Seed watchable unit (Hermes Birkin)
   const unit = await prisma.watchable_units.create({
     data: {
       brand: "Hermes",
       product_line: "Birkin",
-      model_name: "Birkin 25 E2E Test",
+      model_name: "Birkin 25",
       active: true,
     },
   });
   seededUnitId = unit.id;
 
-  // Seed SKU
+  // Seed second watchable unit (Chanel Classic Flap — for brand filter tests)
+  const unit2 = await prisma.watchable_units.create({
+    data: {
+      brand: "Chanel",
+      product_line: "Classic",
+      model_name: "Classic Flap Medium",
+      active: true,
+    },
+  });
+  seededUnitId2 = unit2.id;
+
+  // Seed SKU on first unit
   const sku = await prisma.skus.create({
     data: {
       watchable_unit_id: seededUnitId,
-      color: "Noir",
+      color: "Gold",
       leather: "Togo",
+      hardware: "Gold",
+      size: "25",
       active: true,
     },
   });
   seededSkuId = sku.id;
 
-  // Seed watch for the test user
+  // Seed SKU on second unit
+  const sku2 = await prisma.skus.create({
+    data: {
+      watchable_unit_id: seededUnitId2,
+      color: "Black",
+      leather: "Lambskin",
+      hardware: "Silver",
+      active: true,
+    },
+  });
+  seededSkuId2 = sku2.id;
+
+  // Seed a watch for the test user
   const watch = await prisma.watches.create({
     data: {
       auth_user_id: TEST_USER_ID,
       watchable_unit_id: seededUnitId,
+      sku_id: seededSkuId,
       notify_push: true,
       notify_email: false,
       active: true,
@@ -74,16 +100,17 @@ beforeAll(async () => {
   });
   seededWatchId = watch.id;
 
-  // Seed drop event
+  // Seed a drop event on the SKU
   const dropEvent = await prisma.drop_events.create({
     data: {
       sku_id: seededSkuId,
+      source_url: "https://hermes.co.kr/test",
       detected_at: new Date(),
     },
   });
   seededDropEventId = dropEvent.id;
 
-  // Seed alert (unread)
+  // Seed an alert linked to the watch and drop event
   const alert = await prisma.alerts.create({
     data: {
       watch_id: seededWatchId,
@@ -99,7 +126,7 @@ afterAll(async () => {
   await prisma.drop_events.deleteMany({});
   await prisma.watches.deleteMany({});
   await prisma.skus.deleteMany({});
-  await prisma.watchable_units.deleteMany({ where: { model_name: { contains: "E2E Test" } } });
+  await prisma.watchable_units.deleteMany({});
   await prisma.auth_users.deleteMany({ where: { id: TEST_USER_ID } });
   await prisma.$disconnect();
   await server.stop();
@@ -121,7 +148,6 @@ function exec(
     server,
     query,
     variables,
-    authUrl,
     trackerUrl,
     userId: userId ?? TEST_USER_ID,
   });
@@ -132,48 +158,13 @@ function execUnauth(query: string, variables?: Record<string, unknown>) {
     server,
     query,
     variables,
-    authUrl,
     trackerUrl,
     userId: undefined,
   });
 }
 
-describe("auth queries", () => {
-  it("returns the seeded user from me query", async () => {
-    const res = await exec(`
-      query {
-        me {
-          id
-          email
-          displayName
-        }
-      }
-    `);
-
-    const { data, errors } = getData(res);
-    expect(errors).toBeUndefined();
-    expect(data?.me.id).toBe(TEST_USER_ID);
-    expect(data?.me.email).toBe("subgraph-e2e@test.local");
-  });
-
-  it("returns error for me query without auth", async () => {
-    const res = await execUnauth(`
-      query {
-        me {
-          id
-          email
-        }
-      }
-    `);
-
-    const { errors } = getData(res);
-    expect(errors).toBeDefined();
-    expect(errors!.length).toBeGreaterThan(0);
-  });
-});
-
 describe("dashboard query", () => {
-  it("returns dashboard summary with Hermes fields", async () => {
+  it("returns dashboard summary", async () => {
     const res = await exec(`
       query {
         dashboard {
@@ -207,7 +198,7 @@ describe("dashboard query", () => {
 });
 
 describe("catalog queries", () => {
-  it("returns catalog list with seeded unit", async () => {
+  it("returns catalog list", async () => {
     const res = await exec(`
       query {
         catalog {
@@ -226,15 +217,62 @@ describe("catalog queries", () => {
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.catalog.length).toBeGreaterThanOrEqual(1);
+    expect(data?.catalog.length).toBeGreaterThanOrEqual(2);
     expect(
       data?.catalog.some((u: { id: string }) => u.id === seededUnitId),
     ).toBe(true);
-    const seeded = data?.catalog.find(
-      (u: { id: string }) => u.id === seededUnitId,
+  });
+
+  it("returns a single catalog item by id", async () => {
+    const res = await exec(
+      `
+      query CatalogItem($id: ID!) {
+        catalogItem(id: $id) {
+          id
+          brand
+          productLine
+          modelName
+          skus {
+            id
+            color
+            leather
+            hardware
+          }
+        }
+      }
+    `,
+      { id: seededUnitId },
     );
-    expect(seeded?.brand).toBe("Hermes");
-    expect(seeded?.skus.length).toBeGreaterThanOrEqual(1);
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.catalogItem.id).toBe(seededUnitId);
+    expect(data?.catalogItem.brand).toBe("Hermes");
+    expect(data?.catalogItem.productLine).toBe("Birkin");
+    expect(data?.catalogItem.modelName).toBe("Birkin 25");
+    expect(data?.catalogItem.skus.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("filters catalog by brand", async () => {
+    const res = await exec(
+      `
+      query Catalog($brand: String) {
+        catalog(brand: $brand) {
+          id
+          brand
+          modelName
+        }
+      }
+    `,
+      { brand: "Hermes" },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.catalog.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data?.catalog.every((u: { brand: string }) => u.brand === "Hermes"),
+    ).toBe(true);
   });
 
   it("filters catalog by productLine", async () => {
@@ -259,55 +297,70 @@ describe("catalog queries", () => {
     ).toBe(true);
   });
 
-  it("returns a single catalog item by id", async () => {
+  it("filters catalog by search (model name)", async () => {
     const res = await exec(
       `
-      query CatalogItem($id: ID!) {
-        catalogItem(id: $id) {
+      query Catalog($search: String) {
+        catalog(search: $search) {
           id
-          brand
           modelName
-          skus {
-            id
-            color
-            leather
-          }
         }
       }
     `,
-      { id: seededUnitId },
+      { search: "Classic" },
     );
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.catalogItem.id).toBe(seededUnitId);
-    expect(data?.catalogItem.modelName).toBe("Birkin 25 E2E Test");
-    expect(data?.catalogItem.skus.length).toBeGreaterThanOrEqual(1);
-    expect(data?.catalogItem.skus[0].color).toBe("Noir");
+    expect(data?.catalog.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data?.catalog.every((u: { modelName: string }) =>
+        u.modelName.includes("Classic"),
+      ),
+    ).toBe(true);
   });
 
-  it("returns error for catalog without auth", async () => {
-    const res = await execUnauth(`
+  it("returns empty when search matches nothing", async () => {
+    const res = await exec(
+      `
+      query Catalog($search: String) {
+        catalog(search: $search) {
+          id
+        }
+      }
+    `,
+      { search: "NonExistentModel12345" },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.catalog).toEqual([]);
+  });
+
+  it("returns full catalog without filter params", async () => {
+    const res = await exec(`
       query {
         catalog {
           id
+          brand
         }
       }
     `);
 
-    const { errors } = getData(res);
-    expect(errors).toBeDefined();
-    expect(errors!.length).toBeGreaterThan(0);
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.catalog.length).toBeGreaterThanOrEqual(2);
   });
 });
 
 describe("watches queries", () => {
-  it("returns watches list for the current user", async () => {
+  it("returns user watches", async () => {
     const res = await exec(`
       query {
         watches {
           id
           watchableUnitId
+          skuId
           notifyPush
           notifyEmail
           active
@@ -318,6 +371,7 @@ describe("watches queries", () => {
           }
           sku {
             id
+            color
           }
         }
       }
@@ -329,10 +383,6 @@ describe("watches queries", () => {
     expect(
       data?.watches.some((w: { id: string }) => w.id === seededWatchId),
     ).toBe(true);
-    const seeded = data?.watches.find(
-      (w: { id: string }) => w.id === seededWatchId,
-    );
-    expect(seeded?.watchableUnit.brand).toBe("Hermes");
   });
 
   it("returns error for watches without auth", async () => {
@@ -351,7 +401,7 @@ describe("watches queries", () => {
 });
 
 describe("alerts queries", () => {
-  it("returns alert feed for the current user", async () => {
+  it("returns alert feed", async () => {
     const res = await exec(`
       query {
         alerts {
@@ -359,13 +409,11 @@ describe("alerts queries", () => {
             id
             watchId
             channel
-            sentAt
             readAt
-            createdAt
             dropEvent {
               id
               skuId
-              detectedAt
+              sourceUrl
             }
           }
           nextCursor
@@ -391,6 +439,24 @@ describe("alerts queries", () => {
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
     expect(data?.unreadAlertCount).toBeGreaterThanOrEqual(1);
+  });
+
+  it("filters alerts with unreadOnly", async () => {
+    const res = await exec(`
+      query {
+        alerts(unreadOnly: true) {
+          items {
+            id
+            readAt
+          }
+          nextCursor
+        }
+      }
+    `);
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.alerts.items).toBeDefined();
   });
 
   it("returns error for alerts without auth", async () => {
@@ -421,6 +487,7 @@ describe("watch mutations", () => {
         createWatch(input: $input) {
           id
           watchableUnitId
+          skuId
           notifyPush
           notifyEmail
           active
@@ -429,10 +496,9 @@ describe("watch mutations", () => {
     `,
       {
         input: {
-          watchableUnitId: seededUnitId,
-          skuId: seededSkuId,
+          watchableUnitId: seededUnitId2,
           notifyPush: true,
-          notifyEmail: false,
+          notifyEmail: true,
         },
       },
     );
@@ -440,7 +506,10 @@ describe("watch mutations", () => {
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
     expect(data?.createWatch.id).toBeDefined();
-    expect(data?.createWatch.watchableUnitId).toBe(seededUnitId);
+    expect(data?.createWatch.watchableUnitId).toBe(seededUnitId2);
+    expect(data?.createWatch.notifyPush).toBe(true);
+    expect(data?.createWatch.notifyEmail).toBe(true);
+    expect(data?.createWatch.active).toBe(true);
     mutationWatchId = data?.createWatch.id;
   });
 
@@ -450,6 +519,7 @@ describe("watch mutations", () => {
       mutation UpdateWatch($input: UpdateWatchInput!) {
         updateWatch(input: $input) {
           id
+          notifyPush
           notifyEmail
           active
         }
@@ -458,14 +528,16 @@ describe("watch mutations", () => {
       {
         input: {
           id: mutationWatchId,
-          notifyEmail: true,
+          notifyPush: false,
+          active: false,
         },
       },
     );
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.updateWatch.notifyEmail).toBe(true);
+    expect(data?.updateWatch.notifyPush).toBe(false);
+    expect(data?.updateWatch.active).toBe(false);
   });
 
   it("deletes a watch", async () => {

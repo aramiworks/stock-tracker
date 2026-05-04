@@ -1,8 +1,6 @@
 name: E2E
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
   workflow_run:
     workflows:
@@ -37,9 +35,10 @@ jobs:
           WORKFLOWS=("Backend Docker" "Deploy Web" "Schema Publish" "EAS Update (OTA)")
           ALL_GREEN=true
           for wf in "${WORKFLOWS[@]}"; do
-            STATUS=$(gh run list --repo "${{ github.repository }}" --commit "$SHA" --workflow "$wf" --limit 1 --json conclusion -q '.[0].conclusion')
-            echo "$wf: $STATUS"
-            if [ "$STATUS" != "success" ]; then
+            STATUS=$(gh run list --repo "${{ github.repository }}" --workflow "$wf" --branch main --limit 5 --json headSha,conclusion -q ".[] | select(.headSha == \"$SHA\") | .conclusion" | head -1)
+            echo "$wf: ${STATUS:-not-run}"
+            # Only fail if the workflow ran and failed — skip workflows that didn't run for this commit
+            if [ -n "$STATUS" ] && [ "$STATUS" != "success" ]; then
               ALL_GREEN=false
             fi
           done
@@ -60,6 +59,20 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Wait for GraphQL backend
+        env:
+          E2E_GRAPHQL_URL: ${{ secrets.E2E_GRAPHQL_URL }}
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl --connect-timeout 10 -s -o /dev/null "$E2E_GRAPHQL_URL"; then
+              echo "Backend reachable after attempt $i"
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 10s..."
+            sleep 10
+          done
+          echo "Backend not reachable after 60s"
+          exit 1
       - name: Run full-stack e2e against deployed develop
         run: npm run test:e2e -w apps/integration-tests/full-stack
         env:

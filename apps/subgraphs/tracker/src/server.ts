@@ -1,14 +1,9 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { buildSubgraphSchema } from "@apollo/subgraph";
-import { authTypeDefs } from "./auth/views/auth.views.js";
-import { authResolvers } from "./auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "./tracker/views/tracker.views.js";
 import { trackerResolvers } from "./tracker/controllers/tracker.controllers.js";
-import {
-  createAuthTrpcClient,
-  createTrackerTrpcClient,
-} from "./clients/trpc.js";
+import { createTrackerTrpcClient } from "./clients/trpc.js";
 import { logger, loggingPlugin } from "./middleware/logging.js";
 import { sentryPlugin } from "./middleware/sentry.js";
 
@@ -33,7 +28,6 @@ function getUserIdFromJwt(
 
 const server = new ApolloServer({
   schema: buildSubgraphSchema([
-    { typeDefs: authTypeDefs, resolvers: authResolvers },
     { typeDefs: trackerTypeDefs, resolvers: trackerResolvers },
   ]),
   plugins: [sentryPlugin, loggingPlugin],
@@ -66,7 +60,6 @@ const { url } = await startStandaloneServer(server, {
       ...headers,
       userId,
       userRole: headers["x-user-role"],
-      authTrpc: createAuthTrpcClient(headers),
       trackerTrpc: createTrackerTrpcClient(headers),
     };
   },

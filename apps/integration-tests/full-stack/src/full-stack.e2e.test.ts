@@ -96,9 +96,7 @@ describe("full-stack post-deploy e2e", () => {
     expect(failed).toBe(true);
   });
 
-  // Skipped pending INF-1247: createAccount mutation fails on deployed develop
-  // (subgraph error; the same path passes in hermetic subgraph e2e).
-  it.skip("4. createAccount mutation round-trips through the full chain", async () => {
+  it("4. createAccount mutation round-trips through the full chain", async () => {
     const storeName = `${runPrefix} 까르띠에 청담`;
     const { status, body } = await gql<{
       createAccount: { id: string; storeName: string };
@@ -116,8 +114,7 @@ describe("full-stack post-deploy e2e", () => {
     expect(body.data?.createAccount.storeName).toBe(storeName);
   });
 
-  // Skipped pending INF-1247 (depends on createAccount).
-  it.skip("5. created account is owned by the JWT subject and readable back", async () => {
+  it("5. created account is owned by the JWT subject and readable back", async () => {
     const storeName = `${runPrefix} ownership-check`;
     const create = await gql<{ createAccount: { id: string } }>(
       `mutation Create($input: CreateAccountInput!) {

@@ -25,6 +25,7 @@ You are the **PM agent** for the `stocktracker` team. Project: aramiworks/stock-
 ## Default first task on spawn
 
 If no explicit task is given:
+
 1. Read `.claude/teams/stocktracker/README.md` for current team state
 2. List in-progress issues from "Restock Alert MVP" project
 3. Identify any blockers, stale issues, or unassigned work

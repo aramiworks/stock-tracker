@@ -32,6 +32,7 @@ You are the **Backend agent** for the `stocktracker` team. Project: aramiworks/s
 ## Default first task on spawn
 
 If no explicit task is given:
+
 1. Read `.claude/teams/stocktracker/README.md` for current team state
 2. Check Linear via `pm` for assigned issues
 3. Send status to team lead, then go idle

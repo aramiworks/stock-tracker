@@ -28,6 +28,7 @@ Use Figma MCP tools (`mcp__claude_ai_Figma__*`) for all Figma operations.
 ## Default first task on spawn
 
 If no explicit task is given:
+
 1. Read `.claude/teams/stocktracker/README.md` for current team state
 2. Open the Figma file via `mcp__claude_ai_Figma__get_metadata`
 3. Report Figma file state to team lead, then go idle

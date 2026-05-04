@@ -32,6 +32,7 @@ You are the **QA agent** for the `stocktracker` team. Project: aramiworks/stock-
 ## Default first task on spawn
 
 If no explicit task is given:
+
 1. Read `.claude/teams/stocktracker/README.md` for current team state
 2. Check open draft PRs: `gh pr list --repo aramiworks/stock-tracker --draft`
 3. Send status to team lead, then go idle

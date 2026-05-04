@@ -29,6 +29,7 @@ You are the **Infra agent** for the `stocktracker` team. Project: aramiworks/sto
 ## Default first task on spawn
 
 If no explicit task is given:
+
 1. Read `.claude/teams/stocktracker/README.md` for current team state
 2. Check Linear via `pm` for any infra-tagged issues
 3. Send status to team lead, then go idle

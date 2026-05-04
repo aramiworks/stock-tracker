@@ -4,6 +4,6 @@
 import { initSentry } from "@stock-tracker/nestjs-common";
 
 initSentry({
-  service: "auth-service",
-  dsn: process.env["AUTH_SERVICE_SENTRY_DSN"],
+  service: "tracker-service",
+  dsn: process.env["TRACKER_SERVICE_SENTRY_DSN"],
 });

@@ -19,13 +19,25 @@ export const sentryPlugin: ApolloServerPlugin = {
 
     return {
       async didEncounterErrors({ errors }) {
+        const unexpected = errors.filter((e) => {
+          const code = e.extensions?.code as string | undefined;
+          return (
+            code !== "UNAUTHENTICATED" &&
+            code !== "FORBIDDEN" &&
+            code !== "BAD_USER_INPUT" &&
+            code !== "GRAPHQL_VALIDATION_FAILED" &&
+            code !== "PERSISTED_QUERY_NOT_FOUND" &&
+            code !== "PERSISTED_QUERY_NOT_SUPPORTED"
+          );
+        });
+        if (unexpected.length === 0) return;
         Sentry.withScope((scope) => {
           scope.setTags({
             operation,
             ...(requestId && { requestId }),
           });
           if (userId) scope.setUser({ id: userId });
-          for (const error of errors) {
+          for (const error of unexpected) {
             Sentry.captureException(error.originalError ?? error);
           }
         });

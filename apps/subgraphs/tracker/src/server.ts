@@ -1,3 +1,4 @@
+import "./instrument.js";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { buildSubgraphSchema } from "@apollo/subgraph";
@@ -10,6 +11,7 @@ import {
   createTrackerTrpcClient,
 } from "./clients/trpc.js";
 import { logger, loggingPlugin } from "./middleware/logging.js";
+import { sentryPlugin } from "./middleware/sentry.js";
 
 // Decode JWT sub claim from Authorization header without re-validating.
 // The Apollo Router already validates the JWT via JWKS; the subgraph
@@ -35,7 +37,7 @@ const server = new ApolloServer({
     { typeDefs: authTypeDefs, resolvers: authResolvers },
     { typeDefs: trackerTypeDefs, resolvers: trackerResolvers },
   ]),
-  plugins: [loggingPlugin],
+  plugins: [sentryPlugin, loggingPlugin],
   formatError: (formattedError, error) => {
     const cause = (error as any)?.extensions?.cause;
     const requestId = cause?.data?.requestId;

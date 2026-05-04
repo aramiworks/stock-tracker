@@ -35,7 +35,6 @@ tags:
 
 # Verify purchase was created
 - assertVisible: "삭제 테스트 링"
-- takeScreenshot: purchase-delete-before
 
 # Delete the purchase via its delete button
 - tapOn:
@@ -45,4 +44,3 @@ tags:
 
 # Verify purchase is gone
 - assertNotVisible: "삭제 테스트 링"
-- takeScreenshot: purchase-delete-final

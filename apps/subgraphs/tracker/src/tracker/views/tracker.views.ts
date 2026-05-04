@@ -85,7 +85,11 @@ export const trackerTypeDefs = gql`
     """
     Browse the product catalog
     """
-    catalog(productLine: String, search: String, activeOnly: Boolean): [WatchableUnit!]!
+    catalog(
+      productLine: String
+      search: String
+      activeOnly: Boolean
+    ): [WatchableUnit!]!
 
     """
     Get a single catalog item by ID

@@ -30,6 +30,12 @@ export const createLogger = ({
   }
 
   if (betterStackToken) {
+    const resolvedEndpoint = betterStackIngestHost
+      ? /^https?:\/\//.test(betterStackIngestHost)
+        ? betterStackIngestHost
+        : `https://${betterStackIngestHost}`
+      : "https://in.logs.betterstack.com";
+
     return pino(
       { level: "info", base: { service } },
       pino.transport({
@@ -37,7 +43,7 @@ export const createLogger = ({
         options: {
           sourceToken: betterStackToken,
           options: {
-            endpoint: `https://${betterStackIngestHost ?? "in.logs.betterstack.com"}`,
+            endpoint: resolvedEndpoint,
           },
         },
       }),

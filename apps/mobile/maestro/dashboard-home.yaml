@@ -5,7 +5,6 @@ tags:
   - authenticated
 ---
 - launchApp
-- takeScreenshot: dashboard-home-initial
 - assertVisible:
     id: "dashboard-home-screen"
 - assertVisible:
@@ -24,4 +23,3 @@ tags:
       id: "sa-card-.*"
     direction: DOWN
     timeout: 3000
-- takeScreenshot: dashboard-home-final

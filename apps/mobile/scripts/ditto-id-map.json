@@ -37,22 +37,6 @@
     "ns": "auth",
     "key": "signIn.googleButton"
   },
-  "auth-signIn-gmailOauth-loadingState.caption": {
-    "ns": "auth",
-    "key": "signIn.loadingCaption"
-  },
-  "auth-signIn-gmailOauth-errorState.heading": {
-    "ns": "auth",
-    "key": "signIn.errorHeading"
-  },
-  "auth-signIn-gmailOauth-errorState.subtitle": {
-    "ns": "auth",
-    "key": "signIn.errorSubtitle"
-  },
-  "auth-signIn-gmailOauth-errorState.retry": {
-    "ns": "auth",
-    "key": "signIn.errorRetryButton"
-  },
 
   "tracker-nav.dashboard": { "ns": "tracker", "key": "nav.dashboard" },
   "tracker-nav.accounts": { "ns": "tracker", "key": "nav.accounts" },

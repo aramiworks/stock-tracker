@@ -1,12 +1,12 @@
-// Hermes Korea restock alert — catalog + alerts
+// Multi-brand luxury restock alert — catalog + alerts
 // Replaces old Cartier purchase tracker schema (accounts/purchases)
 
 // -- Catalog ---------------------------------------------------------------
 
 model watchable_units {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  brand        String   @default("Hermes")
-  product_line String // e.g. "Birkin", "Kelly", "Constance", "Picotin"
+  brand        String // e.g. "Hermes", "Chanel", "Dior", "LouisVuitton"
+  product_line String // brand-specific, e.g. "Birkin", "Kelly", "Classic Flap"
   model_name   String // e.g. "Birkin 25", "Kelly 28 Sellier"
   image_url    String?
   active       Boolean  @default(true)

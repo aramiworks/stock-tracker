@@ -86,6 +86,7 @@ export const trackerTypeDefs = gql`
     Browse the product catalog
     """
     catalog(
+      brand: String
       productLine: String
       search: String
       activeOnly: Boolean

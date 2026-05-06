@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { productLineSchema, sanitizedString } from "./common.js";
+import { brandSchema, sanitizedString } from "./common.js";
 
 // -- WatchableUnit ---------------------------------------------------------
 
@@ -49,7 +49,8 @@ export const skuOutputSchema = z.object({
 // -- Catalog browse input --------------------------------------------------
 
 export const catalogBrowseInputSchema = z.object({
-  productLine: productLineSchema.optional(),
+  brand: brandSchema.optional(),
+  productLine: sanitizedString(100).optional(),
   search: sanitizedString(100).optional(),
   activeOnly: z.boolean().default(true),
 });

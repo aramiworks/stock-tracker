@@ -34,6 +34,7 @@ export class TrackerCatalogBrowseControllers {
   constructor(private readonly models: TrackerCatalogBrowseModels) {}
 
   async list(input: {
+    brand?: string;
     productLine?: string;
     search?: string;
     activeOnly: boolean;

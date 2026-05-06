@@ -7,13 +7,19 @@ export const trackerResolvers = {
     },
     catalog: async (
       _: unknown,
-      args: { productLine?: string; search?: string; activeOnly?: boolean },
+      args: {
+        brand?: string;
+        productLine?: string;
+        search?: string;
+        activeOnly?: boolean;
+      },
       context: SubgraphContext,
     ) => {
       return context.trackerTrpc.tracker.catalog.browse.list.query({
-        productLine: args.productLine as Parameters<
+        brand: args.brand as Parameters<
           typeof context.trackerTrpc.tracker.catalog.browse.list.query
-        >[0]["productLine"],
+        >[0]["brand"],
+        productLine: args.productLine ?? undefined,
         search: args.search ?? undefined,
         activeOnly: args.activeOnly ?? true,
       });

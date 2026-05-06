@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import {
   dateRangeSchema,
-  productLineSchema,
+  brandSchema,
   alertChannelSchema,
   paginationInputSchema,
   sanitizedString,
@@ -67,24 +67,22 @@ describe("sortOrderSchema", () => {
   });
 });
 
-describe("productLineSchema", () => {
+describe("brandSchema", () => {
   it.each([
-    "Birkin",
-    "Kelly",
-    "Constance",
-    "Picotin",
-    "Lindy",
-    "Evelyne",
-    "Bolide",
-    "Garden Party",
-    "Herbag",
+    "Hermes",
+    "Chanel",
+    "Dior",
+    "LouisVuitton",
+    "Gucci",
+    "Celine",
+    "Bottega",
     "Other",
-  ] as const)("accepts %s", (line) => {
-    expect(productLineSchema.parse(line)).toBe(line);
+  ] as const)("accepts %s", (brand) => {
+    expect(brandSchema.parse(brand)).toBe(brand);
   });
 
-  it("rejects an unknown product line", () => {
-    expect(productLineSchema.safeParse("Chanel").success).toBe(false);
+  it("rejects an unknown brand", () => {
+    expect(brandSchema.safeParse("Supreme").success).toBe(false);
   });
 });
 

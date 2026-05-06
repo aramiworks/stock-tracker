@@ -9,16 +9,14 @@ export const paginationInputSchema = z.object({
 
 export const sortOrderSchema = z.enum(["asc", "desc"]).default("desc");
 
-export const productLineSchema = z.enum([
-  "Birkin",
-  "Kelly",
-  "Constance",
-  "Picotin",
-  "Lindy",
-  "Evelyne",
-  "Bolide",
-  "Garden Party",
-  "Herbag",
+export const brandSchema = z.enum([
+  "Hermes",
+  "Chanel",
+  "Dior",
+  "LouisVuitton",
+  "Gucci",
+  "Celine",
+  "Bottega",
   "Other",
 ]);
 

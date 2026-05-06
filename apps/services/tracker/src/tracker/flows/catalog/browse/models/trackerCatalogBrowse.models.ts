@@ -7,6 +7,7 @@ export class TrackerCatalogBrowseModels {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll(params: {
+    brand?: string;
     productLine?: string;
     search?: string;
     activeOnly: boolean;
@@ -15,6 +16,9 @@ export class TrackerCatalogBrowseModels {
 
     if (params.activeOnly) {
       where.active = true;
+    }
+    if (params.brand) {
+      where.brand = params.brand;
     }
     if (params.productLine) {
       where.product_line = params.productLine;
@@ -31,7 +35,11 @@ export class TrackerCatalogBrowseModels {
           orderBy: { color: "asc" },
         },
       },
-      orderBy: [{ product_line: "asc" }, { model_name: "asc" }],
+      orderBy: [
+        { brand: "asc" },
+        { product_line: "asc" },
+        { model_name: "asc" },
+      ],
     });
   }
 

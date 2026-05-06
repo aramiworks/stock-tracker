@@ -1,6 +1,6 @@
 appId: so.arami.stocktracker.app
 url: ${MAESTRO_APP_URL}
-name: Purchase - Edit
+name: Tracker - Accounts - Detail - Edit
 tags:
   - authenticated
   - crud
@@ -10,25 +10,23 @@ tags:
 - assertVisible:
     id: "accounts-list-screen"
 
-# Navigate to account with a purchase to edit
+# Navigate to an account that other flows don't assert on
 - tapOn: "까르띠에 롯데"
 - assertVisible:
     id: "accounts-detail-screen"
 
-# Tap edit on the purchase (까르띠에 롯데 has "탱크 워치")
-- assertVisible: "탱크 워치"
+# Open edit modal
 - tapOn:
-    id: "purchase-edit-.*"
-    below: "탱크 워치"
+    id: "accounts-detail-edit"
 - assertVisible:
-    id: "purchase-form-itemName"
+    id: "edit-account-form-storeName"
 
-# Clear and update the notes field
+# Edit the notes field (non-destructive to other flows)
 - tapOn:
-    id: "purchase-form-notes"
+    id: "edit-account-form-notes"
 - inputText: "E2E 수정 테스트"
 - tapOn:
-    id: "purchase-form-action"
+    id: "edit-account-form-action"
 
 # Verify back on detail screen
 - assertVisible:

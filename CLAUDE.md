@@ -129,7 +129,7 @@ npm run check-types            # Type check all packages
 | Experience | Flows     | Containers   |
 | ---------- | --------- | ------------ |
 | auth       | signIn    | gmailOauth   |
-| tracker    | alerts    | feed         |
+| tracker    | alerts    | home         |
 | tracker    | watchlist | list, detail |
 | tracker    | history   | browse       |
 

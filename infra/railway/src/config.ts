@@ -31,7 +31,7 @@ export const ENVIRONMENTS: Record<string, EnvironmentConfig> = {
   },
   master: {
     railwayEnvName: "master",
-    imageTag: "latest",
+    imageTag: "master",
     nodeEnv: "production",
     dopplerConfig: "master",
   },

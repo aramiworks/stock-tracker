@@ -201,6 +201,26 @@ jest.mock("@aramiworks/ui", () => {
   };
 });
 
+// mixpanel-react-native
+jest.mock("mixpanel-react-native", () => ({
+  Mixpanel: jest.fn().mockImplementation(() => ({
+    init: jest.fn().mockResolvedValue(undefined),
+    track: jest.fn(),
+    identify: jest.fn(),
+    reset: jest.fn(),
+  })),
+}));
+
+// @react-native-async-storage/async-storage
+jest.mock("@react-native-async-storage/async-storage", () => ({
+  __esModule: true,
+  default: {
+    getItem: jest.fn().mockResolvedValue(null),
+    setItem: jest.fn().mockResolvedValue(undefined),
+    removeItem: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
 // react-native-url-polyfill
 jest.mock("react-native-url-polyfill/auto", () => {});
 

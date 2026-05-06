@@ -3,9 +3,17 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FullScreenDialog } from "@aramiworks/ui";
-import { purchaseCreateInputSchema } from "@stock-tracker/validation";
+import { z } from "zod";
 import { TextInputField } from "@/shared/components/text-input-field";
-import type { z } from "zod";
+
+const purchaseCreateInputSchema = z.object({
+  itemName: z.string().min(1),
+  itemCategory: z.string().optional(),
+  amount: z.number().positive(),
+  purchaseDate: z.string().date(),
+  storeLocation: z.string().optional(),
+  notes: z.string().optional(),
+});
 
 type PurchaseFormData = z.input<typeof purchaseCreateInputSchema>;
 

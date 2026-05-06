@@ -2,14 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { TrpcService } from "./trpc.service.js";
 import { TrackerDashboardHomeControllers } from "../tracker/flows/dashboard/home/controllers/index.js";
 import { trackerDashboardHomeViews } from "../tracker/flows/dashboard/home/views/index.js";
-import { TrackerAccountsListControllers } from "../tracker/flows/accounts/list/controllers/index.js";
-import { trackerAccountsListViews } from "../tracker/flows/accounts/list/views/index.js";
-import { TrackerAccountsDetailControllers } from "../tracker/flows/accounts/detail/controllers/index.js";
-import { trackerAccountsDetailViews } from "../tracker/flows/accounts/detail/views/index.js";
-import { TrackerHistoryBrowseControllers } from "../tracker/flows/history/browse/controllers/index.js";
-import { trackerHistoryBrowseViews } from "../tracker/flows/history/browse/views/index.js";
-import { TrackerPurchasesManageControllers } from "../tracker/flows/purchases/manage/controllers/index.js";
-import { trackerPurchasesManageViews } from "../tracker/flows/purchases/manage/views/index.js";
+import { TrackerCatalogBrowseControllers } from "../tracker/flows/catalog/browse/controllers/index.js";
+import { trackerCatalogBrowseViews } from "../tracker/flows/catalog/browse/views/index.js";
+import { TrackerWatchlistManageControllers } from "../tracker/flows/watchlist/manage/controllers/index.js";
+import { trackerWatchlistManageViews } from "../tracker/flows/watchlist/manage/views/index.js";
+import { TrackerAlertsFeedControllers } from "../tracker/flows/alerts/feed/controllers/index.js";
+import { trackerAlertsFeedViews } from "../tracker/flows/alerts/feed/views/index.js";
 
 @Injectable()
 export class TrpcRouter {
@@ -18,10 +16,9 @@ export class TrpcRouter {
   constructor(
     private readonly trpc: TrpcService,
     private readonly dashboardHomeControllers: TrackerDashboardHomeControllers,
-    private readonly accountsListControllers: TrackerAccountsListControllers,
-    private readonly accountsDetailControllers: TrackerAccountsDetailControllers,
-    private readonly historyBrowseControllers: TrackerHistoryBrowseControllers,
-    private readonly purchasesManageControllers: TrackerPurchasesManageControllers,
+    private readonly catalogBrowseControllers: TrackerCatalogBrowseControllers,
+    private readonly watchlistManageControllers: TrackerWatchlistManageControllers,
+    private readonly alertsFeedControllers: TrackerAlertsFeedControllers,
   ) {
     const dashboardRouter = this.trpc.router({
       home: this.trpc.router({
@@ -33,79 +30,69 @@ export class TrpcRouter {
       }),
     });
 
-    const accountsRouter = this.trpc.router({
-      list: this.trpc.router({
-        all: this.trpc.protectedProcedure
-          .input(trackerAccountsListViews.all.input)
-          .output(trackerAccountsListViews.all.output)
-          .query(async ({ ctx, input }) => {
-            return this.accountsListControllers.all(input, ctx.userId);
-          }),
-        create: this.trpc.protectedProcedure
-          .input(trackerAccountsListViews.create.input)
-          .output(trackerAccountsListViews.create.output)
-          .mutation(async ({ ctx, input }) => {
-            return this.accountsListControllers.create(input, ctx.userId);
-          }),
-      }),
-      detail: this.trpc.router({
-        byId: this.trpc.protectedProcedure
-          .input(trackerAccountsDetailViews.byId.input)
-          .output(trackerAccountsDetailViews.byId.output)
-          .query(async ({ ctx, input }) => {
-            return this.accountsDetailControllers.byId(input, ctx.userId);
-          }),
-        update: this.trpc.protectedProcedure
-          .input(trackerAccountsDetailViews.update.input)
-          .output(trackerAccountsDetailViews.update.output)
-          .mutation(async ({ ctx, input }) => {
-            return this.accountsDetailControllers.update(input, ctx.userId);
-          }),
-        delete: this.trpc.protectedProcedure
-          .input(trackerAccountsDetailViews.delete.input)
-          .output(trackerAccountsDetailViews.delete.output)
-          .mutation(async ({ ctx, input }) => {
-            return this.accountsDetailControllers.delete(input, ctx.userId);
-          }),
-      }),
-    });
-
-    const historyRouter = this.trpc.router({
+    const catalogRouter = this.trpc.router({
       browse: this.trpc.router({
         list: this.trpc.protectedProcedure
-          .input(trackerHistoryBrowseViews.list.input)
-          .output(trackerHistoryBrowseViews.list.output)
-          .query(async ({ ctx, input }) => {
-            return this.historyBrowseControllers.list(input, ctx.userId);
+          .input(trackerCatalogBrowseViews.list.input)
+          .output(trackerCatalogBrowseViews.list.output)
+          .query(async ({ input }) => {
+            return this.catalogBrowseControllers.list(input);
+          }),
+        byId: this.trpc.protectedProcedure
+          .input(trackerCatalogBrowseViews.byId.input)
+          .output(trackerCatalogBrowseViews.byId.output)
+          .query(async ({ input }) => {
+            return this.catalogBrowseControllers.byId(input);
           }),
       }),
     });
 
-    const purchasesRouter = this.trpc.router({
+    const watchlistRouter = this.trpc.router({
       manage: this.trpc.router({
-        byId: this.trpc.protectedProcedure
-          .input(trackerPurchasesManageViews.byId.input)
-          .output(trackerPurchasesManageViews.byId.output)
-          .query(async ({ ctx, input }) => {
-            return this.purchasesManageControllers.byId(input, ctx.userId);
+        list: this.trpc.protectedProcedure
+          .output(trackerWatchlistManageViews.list.output)
+          .query(async ({ ctx }) => {
+            return this.watchlistManageControllers.list(ctx.userId);
           }),
         create: this.trpc.protectedProcedure
-          .input(trackerPurchasesManageViews.create.input)
-          .output(trackerPurchasesManageViews.create.output)
+          .input(trackerWatchlistManageViews.create.input)
+          .output(trackerWatchlistManageViews.create.output)
           .mutation(async ({ ctx, input }) => {
-            return this.purchasesManageControllers.create(input, ctx.userId);
+            return this.watchlistManageControllers.create(input, ctx.userId);
           }),
         update: this.trpc.protectedProcedure
-          .input(trackerPurchasesManageViews.update.input)
-          .output(trackerPurchasesManageViews.update.output)
+          .input(trackerWatchlistManageViews.update.input)
+          .output(trackerWatchlistManageViews.update.output)
           .mutation(async ({ ctx, input }) => {
-            return this.purchasesManageControllers.update(input, ctx.userId);
+            return this.watchlistManageControllers.update(input, ctx.userId);
           }),
         delete: this.trpc.protectedProcedure
-          .input(trackerPurchasesManageViews.delete.input)
-          .output(trackerPurchasesManageViews.delete.output)
+          .input(trackerWatchlistManageViews.delete.input)
+          .output(trackerWatchlistManageViews.delete.output)
           .mutation(async ({ ctx, input }) => {
-            return this.purchasesManageControllers.delete(input, ctx.userId);
+            return this.watchlistManageControllers.delete(input, ctx.userId);
+          }),
+      }),
+    });
+
+    const alertsRouter = this.trpc.router({
+      feed: this.trpc.router({
+        list: this.trpc.protectedProcedure
+          .input(trackerAlertsFeedViews.list.input)
+          .output(trackerAlertsFeedViews.list.output)
+          .query(async ({ ctx, input }) => {
+            return this.alertsFeedControllers.list(input, ctx.userId);
+          }),
+        markRead: this.trpc.protectedProcedure
+          .input(trackerAlertsFeedViews.markRead.input)
+          .output(trackerAlertsFeedViews.markRead.output)
+          .mutation(async ({ input }) => {
+            return this.alertsFeedControllers.markRead(input);
+          }),
+        unreadCount: this.trpc.protectedProcedure
+          .output(trackerAlertsFeedViews.unreadCount.output)
+          .query(async ({ ctx }) => {
+            return this.alertsFeedControllers.unreadCount(ctx.userId);
           }),
       }),
     });
@@ -113,9 +100,9 @@ export class TrpcRouter {
     this.appRouter = this.trpc.router({
       tracker: this.trpc.router({
         dashboard: dashboardRouter,
-        accounts: accountsRouter,
-        history: historyRouter,
-        purchases: purchasesRouter,
+        catalog: catalogRouter,
+        watchlist: watchlistRouter,
+        alerts: alertsRouter,
       }),
     });
   }

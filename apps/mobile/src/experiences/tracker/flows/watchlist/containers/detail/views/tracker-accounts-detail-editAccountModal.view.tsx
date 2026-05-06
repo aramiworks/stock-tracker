@@ -3,9 +3,15 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FullScreenDialog } from "@aramiworks/ui";
-import { accountUpdateInputSchema } from "@stock-tracker/validation";
+import { z } from "zod";
 import { TextInputField } from "@/shared/components/text-input-field";
-import type { z } from "zod";
+
+const accountUpdateInputSchema = z.object({
+  id: z.string().uuid(),
+  storeName: z.string().min(1).optional(),
+  saName: z.string().nullish(),
+  notes: z.string().nullish(),
+});
 
 type AccountUpdateFormData = z.infer<typeof accountUpdateInputSchema>;
 

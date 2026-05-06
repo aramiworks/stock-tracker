@@ -2,9 +2,14 @@ import { memo, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FullScreenDialog, Snackbar } from "@aramiworks/ui";
-import { accountCreateInputSchema } from "@stock-tracker/validation";
+import { z } from "zod";
 import { TextInputField } from "@/shared/components/text-input-field";
-import type { z } from "zod";
+
+const accountCreateInputSchema = z.object({
+  storeName: z.string().min(1),
+  saName: z.string().optional(),
+  notes: z.string().optional(),
+});
 
 type AccountFormData = z.infer<typeof accountCreateInputSchema>;
 

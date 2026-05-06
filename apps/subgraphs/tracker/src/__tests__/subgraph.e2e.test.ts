@@ -387,7 +387,7 @@ describe("catalog queries", () => {
     const firstData = getData(firstPage);
     expect(firstData.errors).toBeUndefined();
     expect(firstData.data?.catalog.items.length).toBe(1);
-    expect(firstData.data?.catalog.nextCursor).toBeDefined();
+    expect(firstData.data?.catalog.nextCursor).not.toBeNull();
 
     const secondPage = await exec(
       `

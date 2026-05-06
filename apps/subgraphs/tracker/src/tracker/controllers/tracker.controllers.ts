@@ -25,7 +25,7 @@ export const trackerResolvers = {
         search: args.search ?? undefined,
         activeOnly: args.activeOnly ?? true,
         cursor: args.cursor ?? undefined,
-        limit: args.limit ?? 20,
+        limit: args.limit,
       });
     },
     catalogItem: async (

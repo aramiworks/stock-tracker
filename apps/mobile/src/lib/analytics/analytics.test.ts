@@ -135,6 +135,14 @@ describe("analytics", () => {
     expect(mockReset).not.toHaveBeenCalled();
   });
 
+  it("getMixpanel returns null and resets initPromise when init throws", async () => {
+    mockInit.mockRejectedValueOnce(new Error("init failed"));
+    mockGetItem.mockResolvedValue("granted");
+    const { trackEvent } = loadModule();
+    await trackEvent("test-event");
+    expect(mockTrack).not.toHaveBeenCalled();
+  });
+
   it("trackScreen returns early when all efcv values are undefined", async () => {
     mockGetItem.mockResolvedValue("granted");
     const { trackScreen } = loadModule();

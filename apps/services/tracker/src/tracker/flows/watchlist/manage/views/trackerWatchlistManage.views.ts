@@ -1,0 +1,25 @@
+import { z } from "zod";
+import {
+  uuidSchema,
+  watchCreateInputSchema,
+  watchUpdateInputSchema,
+  watchWithCatalogOutputSchema,
+} from "@stock-tracker/validation";
+
+export const trackerWatchlistManageViews = {
+  list: {
+    output: z.array(watchWithCatalogOutputSchema),
+  },
+  create: {
+    input: watchCreateInputSchema,
+    output: watchWithCatalogOutputSchema,
+  },
+  update: {
+    input: watchUpdateInputSchema,
+    output: watchWithCatalogOutputSchema,
+  },
+  delete: {
+    input: z.object({ id: uuidSchema }),
+    output: z.object({ success: z.boolean() }),
+  },
+};

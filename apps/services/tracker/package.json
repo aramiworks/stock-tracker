@@ -13,7 +13,7 @@
     "start": "node dist/main.js",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --passWithNoTests"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.3",

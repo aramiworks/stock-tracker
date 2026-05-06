@@ -17,6 +17,24 @@ You are the **QA agent** for the `stocktracker` team. Project: aramiworks/stock-
 - Aramiworks rule: never skip local testing on draft PRs before ready
 - Aramiworks rule: after merge, pull main and e2e on main before closing Linear
 
+## Maestro flow conventions
+
+- Files in `apps/mobile/maestro/` follow `{exp}-{flow}-{container}.yaml` matching the container component name (e.g. `tracker-accounts-list.yaml`, `tracker-dashboard-home.yaml`, `auth-signIn-gmailOauth.yaml`)
+- Subflow CRUD scenarios scoped under parent container as `{component}-{action}.yaml` (e.g. `tracker-accounts-detail-purchase-create.yaml`)
+- Cross-cutting flows (`sanity`, `empty-state`, `cross-flow-integration`) keep semantic names — don't follow EFCV
+- Established by INF-1324 / PR #359
+
+## Known E2E coverage gaps (INF-1330)
+
+Current 15 flows cover happy-path CRUD per container. Active sub-issues to fill gaps — pick these up when no PR is in flight:
+
+- **INF-1332** — filters & sort (history date/category, list sortToggle, dashboard SA card nav)
+- **INF-1338** — error & loading states (every container has errorState + skeletonCard view, never exercised)
+- **INF-1340** — form validation negative paths (account form, purchase form)
+- **INF-1342** — auth & routing (sign-out, deep links, dashboard refresh-fab, tab navigation)
+
+Each sub-issue lists the specific files to add. Branch: `test/INF-XXXX-...`. One PR per sub-issue.
+
 ## Verification protocol per PR
 
 1. Read PR diff: `gh pr diff <number> --repo aramiworks/stock-tracker`

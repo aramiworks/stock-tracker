@@ -1,6 +1,6 @@
 appId: so.arami.stocktracker.app
 url: ${MAESTRO_APP_URL}
-name: Dashboard - Home
+name: Tracker - Dashboard - Home
 tags:
   - authenticated
 ---

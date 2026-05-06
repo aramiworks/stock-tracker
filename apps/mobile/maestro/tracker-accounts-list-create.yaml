@@ -1,6 +1,6 @@
 appId: so.arami.stocktracker.app
 url: ${MAESTRO_APP_URL}
-name: Accounts - Create
+name: Tracker - Accounts - List - Create
 tags:
   - authenticated
   - crud

@@ -1,6 +1,6 @@
 appId: so.arami.stocktracker.app
 url: ${MAESTRO_APP_URL}
-name: Accounts - Delete
+name: Tracker - Accounts - Detail - Delete
 tags:
   - authenticated
   - crud

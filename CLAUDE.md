@@ -82,8 +82,8 @@ packages/
 JSON files at `apps/mobile/src/lib/i18n/{locale}/{namespace}.json` are the **source of truth** — hand-edit them directly. One namespace per Experience (`auth.json`, `tracker.json`, `common.json`).
 
 ```tsx
-const { t } = useTranslation('auth');
-return <Text>{t('signIn.title')}</Text>;
+const { t } = useTranslation("auth");
+return <Text>{t("signIn.title")}</Text>;
 ```
 
 Ditto integration (`scripts/ditto-id-map.json`, `scripts/ditto-split.js`, `npm run ditto:pull`) is **deferred** — kept in the repo but not in the active workflow. See `~/Documents/aramiworks/conventions/design/i18n.md` for when/how to resume.

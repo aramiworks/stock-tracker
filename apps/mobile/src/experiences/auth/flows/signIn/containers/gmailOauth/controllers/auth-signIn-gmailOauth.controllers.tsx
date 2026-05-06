@@ -103,8 +103,8 @@ export const AuthSignInGmailOauthControllers =
           });
           if (error) throw error;
           await grantAnalyticsConsent();
-          await trackEvent("sign_in_succeeded", { provider: "google" });
           await upsertUserProfile();
+          await trackEvent("sign_in_succeeded", { provider: "google" });
         } catch {
           void trackEvent("sign_in_failed", { provider: "google" });
           // sign-in failed; auth state unchanged, user stays on sign-in screen
@@ -140,8 +140,8 @@ export const AuthSignInGmailOauthControllers =
             });
             if (error) throw error;
             await grantAnalyticsConsent();
-            await trackEvent("sign_in_succeeded", { provider: "google" });
             await upsertUserProfile();
+            await trackEvent("sign_in_succeeded", { provider: "google" });
           }
         }
       } catch (err) {

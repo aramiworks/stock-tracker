@@ -24,10 +24,15 @@ async function getMixpanel(): Promise<Mixpanel | null> {
   if (initPromise) return initPromise;
 
   initPromise = (async () => {
-    const instance = new Mixpanel(MIXPANEL_TOKEN, TRACK_AUTOMATIC_EVENTS);
-    await instance.init();
-    mixpanelInstance = instance;
-    return instance;
+    try {
+      const instance = new Mixpanel(MIXPANEL_TOKEN, TRACK_AUTOMATIC_EVENTS);
+      await instance.init();
+      mixpanelInstance = instance;
+      return instance;
+    } catch {
+      initPromise = null;
+      return null;
+    }
   })();
 
   return initPromise;
@@ -51,9 +56,13 @@ export async function trackEvent(
   name: string,
   properties?: Record<string, unknown>,
 ): Promise<void> {
-  if (!(await hasAnalyticsConsent())) return;
-  const instance = await getMixpanel();
-  instance?.track(name, properties);
+  try {
+    if (!(await hasAnalyticsConsent())) return;
+    const instance = await getMixpanel();
+    instance?.track(name, properties);
+  } catch {
+    // best-effort; never block the calling flow
+  }
 }
 
 /**
@@ -62,9 +71,13 @@ export async function trackEvent(
  * the anonymous distinct_id to the identified user.
  */
 export async function identifyUser(userId: string): Promise<void> {
-  if (!(await hasAnalyticsConsent())) return;
-  const instance = await getMixpanel();
-  instance?.identify(userId);
+  try {
+    if (!(await hasAnalyticsConsent())) return;
+    const instance = await getMixpanel();
+    instance?.identify(userId);
+  } catch {
+    // best-effort; never block the calling flow
+  }
 }
 
 /**
@@ -73,8 +86,12 @@ export async function identifyUser(userId: string): Promise<void> {
  * previous identity.
  */
 export async function resetAnalytics(): Promise<void> {
-  const instance = await getMixpanel();
-  instance?.reset();
+  try {
+    const instance = await getMixpanel();
+    instance?.reset();
+  } catch {
+    // best-effort; never block the calling flow
+  }
 }
 
 /**

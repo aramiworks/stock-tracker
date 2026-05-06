@@ -137,29 +137,20 @@ describe("catalogBrowseInputSchema", () => {
     expect(result.activeOnly).toBe(true);
   });
 
-  it("accepts a valid productLine", () => {
-    const result = catalogBrowseInputSchema.parse({ productLine: "Birkin" });
-    expect(result.productLine).toBe("Birkin");
+  it("accepts a valid brand", () => {
+    const result = catalogBrowseInputSchema.parse({ brand: "Hermes" });
+    expect(result.brand).toBe("Hermes");
   });
 
-  it("accepts all valid productLines", () => {
-    const lines = [
-      "Birkin",
-      "Kelly",
-      "Constance",
-      "Picotin",
-      "Lindy",
-      "Evelyne",
-      "Bolide",
-      "Garden Party",
-      "Herbag",
-      "Other",
-    ] as const;
-    for (const line of lines) {
-      expect(
-        catalogBrowseInputSchema.safeParse({ productLine: line }).success,
-      ).toBe(true);
-    }
+  it("rejects an invalid brand", () => {
+    expect(
+      catalogBrowseInputSchema.safeParse({ brand: "Supreme" }).success,
+    ).toBe(false);
+  });
+
+  it("accepts a valid productLine (free-form string)", () => {
+    const result = catalogBrowseInputSchema.parse({ productLine: "Birkin" });
+    expect(result.productLine).toBe("Birkin");
   });
 
   it("accepts a search string", () => {
@@ -170,12 +161,6 @@ describe("catalogBrowseInputSchema", () => {
   it("accepts activeOnly false", () => {
     const result = catalogBrowseInputSchema.parse({ activeOnly: false });
     expect(result.activeOnly).toBe(false);
-  });
-
-  it("rejects an invalid productLine", () => {
-    expect(
-      catalogBrowseInputSchema.safeParse({ productLine: "Cartier" }).success,
-    ).toBe(false);
   });
 
   it("rejects a search string that exceeds max length", () => {

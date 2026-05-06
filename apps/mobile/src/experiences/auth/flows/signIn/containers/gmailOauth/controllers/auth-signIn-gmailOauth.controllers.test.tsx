@@ -8,6 +8,11 @@ jest.mock("../../../../../../../lib/apollo/provider", () => ({
   AppApolloProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+jest.mock("../../../../../../../lib/analytics", () => ({
+  trackEvent: jest.fn().mockResolvedValue(undefined),
+  grantAnalyticsConsent: jest.fn().mockResolvedValue(undefined),
+}));
+
 const mockWebPromptAsync = jest.fn().mockResolvedValue(undefined);
 jest.mock("expo-auth-session/providers/google", () => ({
   useIdTokenAuthRequest: jest.fn(() => [
@@ -260,5 +265,29 @@ describe("AuthSignInGmailOauthControllers", () => {
       ref.current!.signInWithGoogle();
     });
     expect(getByTestId("signing-in").props.children).toBe("false");
+  });
+
+  it("tracks sign_in_failed when native sign-in throws", async () => {
+    const { trackEvent } = jest.requireMock(
+      "../../../../../../../lib/analytics",
+    ) as { trackEvent: jest.Mock };
+    (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValueOnce({
+      error: new Error("auth error"),
+    });
+    const ref = React.createRef<ConsumerHandle>();
+    render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer ref={ref} />
+      </AuthSignInGmailOauthControllers>,
+    );
+    await act(async () => {
+      const result = ref.current!.signInWithGoogle() as unknown as Promise<void>;
+      await result.catch(() => {
+        // expected — native flow re-throws after tracking the failure
+      });
+    });
+    expect(trackEvent).toHaveBeenCalledWith("sign_in_failed", {
+      provider: "google",
+    });
   });
 });

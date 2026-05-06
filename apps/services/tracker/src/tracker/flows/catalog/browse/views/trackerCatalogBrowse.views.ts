@@ -2,13 +2,14 @@ import { z } from "zod";
 import {
   uuidSchema,
   catalogBrowseInputSchema,
+  catalogPageOutputSchema,
   watchableUnitWithSkusOutputSchema,
 } from "@stock-tracker/validation";
 
 export const trackerCatalogBrowseViews = {
   list: {
     input: catalogBrowseInputSchema,
-    output: z.array(watchableUnitWithSkusOutputSchema),
+    output: catalogPageOutputSchema,
   },
   byId: {
     input: z.object({ id: uuidSchema }),

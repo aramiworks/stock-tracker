@@ -11,6 +11,8 @@ export class TrackerCatalogBrowseModels {
     productLine?: string;
     search?: string;
     activeOnly: boolean;
+    cursor?: string;
+    limit: number;
   }) {
     const where: Prisma.watchable_unitsWhereInput = {};
 
@@ -40,6 +42,11 @@ export class TrackerCatalogBrowseModels {
         { product_line: "asc" },
         { model_name: "asc" },
       ],
+      take: params.limit + 1,
+      ...(params.cursor && {
+        cursor: { id: params.cursor },
+        skip: 1,
+      }),
     });
   }
 

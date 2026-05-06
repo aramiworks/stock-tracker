@@ -57,6 +57,11 @@ export const trackerTypeDefs = gql`
     recentDrops: Int!
   }
 
+  type CatalogPage {
+    items: [WatchableUnit!]!
+    nextCursor: ID
+  }
+
   type AlertFeed {
     items: [Alert!]!
     nextCursor: ID
@@ -90,7 +95,9 @@ export const trackerTypeDefs = gql`
       productLine: String
       search: String
       activeOnly: Boolean
-    ): [WatchableUnit!]!
+      cursor: ID
+      limit: Int
+    ): CatalogPage!
 
     """
     Get a single catalog item by ID

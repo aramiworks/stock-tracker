@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { brandSchema, sanitizedString } from "./common.js";
+import {
+  brandSchema,
+  paginationInputSchema,
+  sanitizedString,
+} from "./common.js";
 
 // -- WatchableUnit ---------------------------------------------------------
 
@@ -48,9 +52,18 @@ export const skuOutputSchema = z.object({
 
 // -- Catalog browse input --------------------------------------------------
 
-export const catalogBrowseInputSchema = z.object({
-  brand: brandSchema.optional(),
-  productLine: sanitizedString(100).optional(),
-  search: sanitizedString(100).optional(),
-  activeOnly: z.boolean().default(true),
+export const catalogBrowseInputSchema = z
+  .object({
+    brand: brandSchema.optional(),
+    productLine: sanitizedString(100).optional(),
+    search: sanitizedString(100).optional(),
+    activeOnly: z.boolean().default(true),
+  })
+  .merge(paginationInputSchema);
+
+// -- Catalog browse output (paginated) -------------------------------------
+
+export const catalogPageOutputSchema = z.object({
+  items: z.array(watchableUnitWithSkusOutputSchema),
+  nextCursor: z.string().uuid().nullable(),
 });

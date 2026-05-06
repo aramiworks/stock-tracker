@@ -198,28 +198,31 @@ describe("dashboard query", () => {
 });
 
 describe("catalog queries", () => {
-  it("returns catalog list", async () => {
+  it("returns paginated catalog list", async () => {
     const res = await exec(`
       query {
         catalog {
-          id
-          brand
-          productLine
-          modelName
-          active
-          skus {
+          items {
             id
-            color
+            brand
+            productLine
+            modelName
+            active
+            skus {
+              id
+              color
+            }
           }
+          nextCursor
         }
       }
     `);
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.catalog.length).toBeGreaterThanOrEqual(2);
+    expect(data?.catalog.items.length).toBeGreaterThanOrEqual(2);
     expect(
-      data?.catalog.some((u: { id: string }) => u.id === seededUnitId),
+      data?.catalog.items.some((u: { id: string }) => u.id === seededUnitId),
     ).toBe(true);
   });
 
@@ -258,9 +261,12 @@ describe("catalog queries", () => {
       `
       query Catalog($brand: String) {
         catalog(brand: $brand) {
-          id
-          brand
-          modelName
+          items {
+            id
+            brand
+            modelName
+          }
+          nextCursor
         }
       }
     `,
@@ -269,9 +275,9 @@ describe("catalog queries", () => {
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.catalog.length).toBeGreaterThanOrEqual(1);
+    expect(data?.catalog.items.length).toBeGreaterThanOrEqual(1);
     expect(
-      data?.catalog.every((u: { brand: string }) => u.brand === "Hermes"),
+      data?.catalog.items.every((u: { brand: string }) => u.brand === "Hermes"),
     ).toBe(true);
   });
 
@@ -280,8 +286,11 @@ describe("catalog queries", () => {
       `
       query Catalog($productLine: String) {
         catalog(productLine: $productLine) {
-          id
-          productLine
+          items {
+            id
+            productLine
+          }
+          nextCursor
         }
       }
     `,
@@ -291,7 +300,7 @@ describe("catalog queries", () => {
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
     expect(
-      data?.catalog.every(
+      data?.catalog.items.every(
         (u: { productLine: string }) => u.productLine === "Birkin",
       ),
     ).toBe(true);
@@ -302,8 +311,11 @@ describe("catalog queries", () => {
       `
       query Catalog($search: String) {
         catalog(search: $search) {
-          id
-          modelName
+          items {
+            id
+            modelName
+          }
+          nextCursor
         }
       }
     `,
@@ -312,20 +324,23 @@ describe("catalog queries", () => {
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.catalog.length).toBeGreaterThanOrEqual(1);
+    expect(data?.catalog.items.length).toBeGreaterThanOrEqual(1);
     expect(
-      data?.catalog.every((u: { modelName: string }) =>
+      data?.catalog.items.every((u: { modelName: string }) =>
         u.modelName.includes("Classic"),
       ),
     ).toBe(true);
   });
 
-  it("returns empty when search matches nothing", async () => {
+  it("returns empty items when search matches nothing", async () => {
     const res = await exec(
       `
       query Catalog($search: String) {
         catalog(search: $search) {
-          id
+          items {
+            id
+          }
+          nextCursor
         }
       }
     `,
@@ -334,22 +349,67 @@ describe("catalog queries", () => {
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.catalog).toEqual([]);
+    expect(data?.catalog.items).toEqual([]);
+    expect(data?.catalog.nextCursor).toBeNull();
   });
 
   it("returns full catalog without filter params", async () => {
     const res = await exec(`
       query {
         catalog {
-          id
-          brand
+          items {
+            id
+            brand
+          }
+          nextCursor
         }
       }
     `);
 
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
-    expect(data?.catalog.length).toBeGreaterThanOrEqual(2);
+    expect(data?.catalog.items.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("paginates with limit and cursor", async () => {
+    const firstPage = await exec(`
+      query {
+        catalog(limit: 1) {
+          items {
+            id
+            brand
+          }
+          nextCursor
+        }
+      }
+    `);
+
+    const firstData = getData(firstPage);
+    expect(firstData.errors).toBeUndefined();
+    expect(firstData.data?.catalog.items.length).toBe(1);
+    expect(firstData.data?.catalog.nextCursor).toBeDefined();
+
+    const secondPage = await exec(
+      `
+      query Catalog($cursor: ID) {
+        catalog(limit: 1, cursor: $cursor) {
+          items {
+            id
+            brand
+          }
+          nextCursor
+        }
+      }
+    `,
+      { cursor: firstData.data?.catalog.nextCursor },
+    );
+
+    const secondData = getData(secondPage);
+    expect(secondData.errors).toBeUndefined();
+    expect(secondData.data?.catalog.items.length).toBe(1);
+    expect(secondData.data?.catalog.items[0].id).not.toBe(
+      firstData.data?.catalog.items[0].id,
+    );
   });
 });
 

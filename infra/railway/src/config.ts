@@ -65,16 +65,20 @@ export const SERVICES: ServiceDef[] = [
     ],
   },
   {
+    name: "subgraph-auth",
+    image: "ghcr.io/aramiworks/stock-tracker-subgraph-auth",
+    port: 4002,
+    // No healthcheckPath — Apollo Server startStandaloneServer has no /health endpoint
+    startCommand: "npm run start",
+    envVars: ["TRPC_AUTH_SERVICE_URL"],
+  },
+  {
     name: "subgraph-tracker",
     image: "ghcr.io/aramiworks/stock-tracker-subgraph-tracker",
     port: 4001,
     // No healthcheckPath — Apollo Server startStandaloneServer has no /health endpoint
     startCommand: "npm run start",
-    envVars: [
-      "DATABASE_URL",
-      "TRPC_AUTH_SERVICE_URL",
-      "TRPC_TRACKER_SERVICE_URL",
-    ],
+    envVars: ["TRPC_TRACKER_SERVICE_URL"],
   },
   {
     name: "router",

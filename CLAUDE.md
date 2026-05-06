@@ -137,9 +137,9 @@ npm run check-types            # Type check all packages
 
 Single trunk (`main`). No `develop` or `stage` branches — see `conventions/git.md`.
 
-| Environment | Trigger          | Mobile         | Backend (Docker → Railway) | Storybook         |
-| ----------- | ---------------- | -------------- | -------------------------- | ----------------- |
-| local       | `npm run dev:*`  | `expo start`   | `npm run dev:backend`      | `storybook dev`   |
+| Environment | Trigger                                   | Mobile         | Backend (Docker → Railway)        | Storybook         |
+| ----------- | ----------------------------------------- | -------------- | --------------------------------- | ----------------- |
+| local       | `npm run dev:*`                           | `expo start`   | `npm run dev:backend`             | `storybook dev`   |
 | develop     | manual (Backend Docker workflow_dispatch) | EAS Preview    | GHCR `:develop` → Railway develop | Vercel Preview    |
 | stage       | manual (Backend Docker workflow_dispatch) | EAS Preview    | GHCR `:stage` → Railway stage     | Vercel Preview    |
 | master      | manual (Backend Docker workflow_dispatch) | EAS Production | GHCR `:master` → Railway master   | Vercel Production |

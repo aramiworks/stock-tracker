@@ -52,7 +52,7 @@ async function main() {
 
   // Clean existing data for both users
   await prisma.tracker_accounts.deleteMany({
-    where: { auth_user_id: { in: [user1.id, user2.id] } },
+    where: { auth_user_id: { in: [user1.supabase_id, user2.supabase_id] } },
   });
 
   // --- User 1: 6 accounts ---
@@ -66,7 +66,7 @@ async function main() {
   ] = await Promise.all([
     prisma.tracker_accounts.create({
       data: {
-        auth_user_id: user1.id,
+        auth_user_id: user1.supabase_id,
         store_name: "까르띠에 청담",
         sa_name: "김SA",
         notes: "담당 SA 10년차, 연락처 010-1234-5678",
@@ -74,7 +74,7 @@ async function main() {
     }),
     prisma.tracker_accounts.create({
       data: {
-        auth_user_id: user1.id,
+        auth_user_id: user1.supabase_id,
         store_name: "까르띠에 롯데 본점",
         sa_name: "이SA",
         notes: "롯데 본점 1층",
@@ -82,14 +82,14 @@ async function main() {
     }),
     prisma.tracker_accounts.create({
       data: {
-        auth_user_id: user1.id,
+        auth_user_id: user1.supabase_id,
         store_name: "에르메스 도산",
         sa_name: "박SA",
       },
     }),
     prisma.tracker_accounts.create({
       data: {
-        auth_user_id: user1.id,
+        auth_user_id: user1.supabase_id,
         store_name: "루이비통 청담",
         sa_name: "정SA",
         notes: "VIP 라운지 이용 가능",
@@ -97,14 +97,14 @@ async function main() {
     }),
     prisma.tracker_accounts.create({
       data: {
-        auth_user_id: user1.id,
+        auth_user_id: user1.supabase_id,
         store_name: "샤넬 신세계",
         sa_name: "최SA",
       },
     }),
     prisma.tracker_accounts.create({
       data: {
-        auth_user_id: user1.id,
+        auth_user_id: user1.supabase_id,
         store_name: "티파니 현대",
         notes: "SA 미배정",
       },
@@ -115,7 +115,7 @@ async function main() {
   const [vanCleef, bulgari] = await Promise.all([
     prisma.tracker_accounts.create({
       data: {
-        auth_user_id: user2.id,
+        auth_user_id: user2.supabase_id,
         store_name: "반클리프 아펠 갤러리아",
         sa_name: "한SA",
         notes: "갤러리아 명품관 WEST",
@@ -123,7 +123,7 @@ async function main() {
     }),
     prisma.tracker_accounts.create({
       data: {
-        auth_user_id: user2.id,
+        auth_user_id: user2.supabase_id,
         store_name: "불가리 롯데",
         sa_name: "윤SA",
       },

@@ -140,6 +140,6 @@ Single trunk (`main`). No `develop` or `stage` branches — see `conventions/git
 | Environment | Trigger          | Mobile         | Backend (Docker → Railway) | Storybook         |
 | ----------- | ---------------- | -------------- | -------------------------- | ----------------- |
 | local       | `npm run dev:*`  | `expo start`   | `npm run dev:backend`      | `storybook dev`   |
-| develop     | manual (Railway) | EAS Preview    | GHCR → Railway dev         | Vercel Preview    |
-| stage       | manual (Railway) | EAS Preview    | GHCR → Railway staging     | Vercel Preview    |
-| master      | push to `main`   | EAS Production | GHCR → Railway master      | Vercel Production |
+| develop     | manual (Backend Docker workflow_dispatch) | EAS Preview    | GHCR `:develop` → Railway develop | Vercel Preview    |
+| stage       | manual (Backend Docker workflow_dispatch) | EAS Preview    | GHCR `:stage` → Railway stage     | Vercel Preview    |
+| master      | manual (Backend Docker workflow_dispatch) | EAS Production | GHCR `:master` → Railway master   | Vercel Production |

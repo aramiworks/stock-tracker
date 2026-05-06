@@ -8,7 +8,7 @@ on:
         required: true
         default: "develop"
         type: choice
-        options: [develop, staging, master]
+        options: [develop, stage, master]
   push:
     branches: [main]
     paths:

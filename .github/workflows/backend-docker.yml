@@ -8,19 +8,10 @@ on:
         required: true
         default: "develop"
         type: choice
-        options: [develop, staging, master]
-  push:
-    branches: [main]
-    paths:
-      - "apps/services/**"
-      - "apps/subgraphs/**"
-      - "apps/router/**"
-      - "packages/**"
-      - "infra/docker/**"
-      - "package-lock.json"
+        options: [develop, stage, master]
 
 concurrency:
-  group: backend-docker-${{ github.ref }}
+  group: backend-docker-${{ inputs.environment }}
   cancel-in-progress: true
 
 permissions:
@@ -74,16 +65,8 @@ jobs:
         id: tags
         run: |
           SHA="${{ github.sha }}"
-          BRANCH="${{ github.ref_name }}"
           IMAGE="ghcr.io/${{ github.repository_owner }}/stock-tracker-${{ matrix.service }}"
-          DISPATCH_ENV="${{ inputs.environment }}"
-          if [ -n "$DISPATCH_ENV" ]; then
-            ENV_TAG="$DISPATCH_ENV"
-          elif [ "$BRANCH" = "main" ]; then
-            ENV_TAG="latest"
-          else
-            ENV_TAG="$BRANCH"
-          fi
+          ENV_TAG="${{ inputs.environment }}"
           echo "tags=${IMAGE}:${SHA},${IMAGE}:${ENV_TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve build args
@@ -120,20 +103,7 @@ jobs:
       - name: Install redeploy deps
         run: npm install --prefix infra/railway
 
-      - name: Resolve Railway environment
-        id: env
-        run: |
-          DISPATCH_ENV="${{ inputs.environment }}"
-          BRANCH="${{ github.ref_name }}"
-          if [ -n "$DISPATCH_ENV" ]; then
-            echo "name=$DISPATCH_ENV" >> "$GITHUB_OUTPUT"
-          elif [ "$BRANCH" = "main" ]; then
-            echo "name=master" >> "$GITHUB_OUTPUT"
-          else
-            echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Trigger Railway redeploy
-        run: npx --prefix infra/railway tsx infra/railway/src/redeploy.ts ${{ steps.env.outputs.name }}
+        run: npx --prefix infra/railway tsx infra/railway/src/redeploy.ts ${{ inputs.environment }}
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}

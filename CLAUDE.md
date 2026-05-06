@@ -1,6 +1,6 @@
 # CLAUDE.md — stock-tracker
 
-Cartier purchase tracker. Turborepo monorepo with Expo mobile app and tRPC/GraphQL backend.
+Multi-brand luxury restock alert app (Hermès Korea first). Turborepo monorepo with Expo mobile app and tRPC/GraphQL backend.
 
 ## Stack
 
@@ -27,7 +27,7 @@ apps/
 │   │   └── (app)/       # Authenticated screens (tab navigator)
 │   ├── src/experiences/  # All logic (EFCV + MCVL)
 │   │   ├── auth/        # Auth experience
-│   │   └── tracker/     # Tracker experience (dashboard, accounts, history)
+│   │   └── tracker/     # Tracker experience (alerts, watchlist, history)
 │   ├── .ondevice/       # Storybook RN config
 │   └── maestro/         # E2E test flows
 ├── services/
@@ -129,8 +129,8 @@ npm run check-types            # Type check all packages
 | Experience | Flows     | Containers   |
 | ---------- | --------- | ------------ |
 | auth       | signIn    | gmailOauth   |
-| tracker    | dashboard | home         |
-| tracker    | accounts  | list, detail |
+| tracker    | alerts    | feed         |
+| tracker    | watchlist | list, detail |
 | tracker    | history   | browse       |
 
 ## Deployment

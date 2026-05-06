@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { TrackerAccountsDetailContainer } from "@/experiences/tracker/flows/accounts/containers/detail";
+import { TrackerAccountsDetailContainer } from "@/experiences/tracker/flows/watchlist/containers/detail";
 
 export default function AccountDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

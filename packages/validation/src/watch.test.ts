@@ -91,9 +91,9 @@ describe("watchUpdateInputSchema", () => {
   });
 
   it("rejects invalid uuid for id", () => {
-    expect(
-      watchUpdateInputSchema.safeParse({ id: "not-a-uuid" }).success,
-    ).toBe(false);
+    expect(watchUpdateInputSchema.safeParse({ id: "not-a-uuid" }).success).toBe(
+      false,
+    );
   });
 });
 

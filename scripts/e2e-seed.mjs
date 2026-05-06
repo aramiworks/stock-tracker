@@ -10,7 +10,7 @@ const USER_EMAIL = process.env.E2E_USER_EMAIL;
 
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY || !USER_EMAIL) {
   console.error(
-    "Missing required env vars: E2E_SUPABASE_URL, E2E_SUPABASE_SERVICE_ROLE_KEY, E2E_USER_EMAIL"
+    "Missing required env vars: E2E_SUPABASE_URL, E2E_SUPABASE_SERVICE_ROLE_KEY, E2E_USER_EMAIL",
   );
   process.exit(1);
 }
@@ -28,16 +28,24 @@ async function restFetch(path, options = {}) {
   const res = await fetch(rest(path), { headers, ...options });
   const text = await res.text();
   if (!res.ok) {
-    throw new Error(`REST ${options.method ?? "GET"} ${path} failed (${res.status}): ${text}`);
+    throw new Error(
+      `REST ${options.method ?? "GET"} ${path} failed (${res.status}): ${text}`,
+    );
   }
   return text ? JSON.parse(text) : null;
 }
 
 // 1. Look up the Supabase auth user UUID
 console.log(`Looking up Supabase user ID for ${USER_EMAIL}...`);
-const authRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?per_page=1000`, {
-  headers: { apikey: SERVICE_ROLE_KEY, Authorization: `Bearer ${SERVICE_ROLE_KEY}` },
-});
+const authRes = await fetch(
+  `${SUPABASE_URL}/auth/v1/admin/users?per_page=1000`,
+  {
+    headers: {
+      apikey: SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+    },
+  },
+);
 if (!authRes.ok) {
   const body = await authRes.text();
   console.error(`Supabase admin users API failed (${authRes.status}): ${body}`);
@@ -61,18 +69,28 @@ const [user] = await restFetch("/auth_users?on_conflict=supabase_id", {
     display_name: "E2E Test User",
     updated_at: now,
   }),
-  headers: { ...headers, Prefer: "resolution=merge-duplicates,return=representation" },
+  headers: {
+    ...headers,
+    Prefer: "resolution=merge-duplicates,return=representation",
+  },
 });
 console.log(`Upserted auth_users row: ${user.id}`);
 
 // 3. Clean existing accounts (idempotency)
-const existingAccounts = await restFetch(`/tracker_accounts?auth_user_id=eq.${user.id}&select=id`);
+const existingAccounts = await restFetch(
+  `/tracker_accounts?auth_user_id=eq.${user.supabase_id}&select=id`,
+);
 if (existingAccounts.length > 0) {
   const ids = existingAccounts.map((a) => a.id);
-  await restFetch(`/tracker_purchases?tracker_account_id=in.(${ids.join(",")})`, {
+  await restFetch(
+    `/tracker_purchases?tracker_account_id=in.(${ids.join(",")})`,
+    {
+      method: "DELETE",
+    },
+  );
+  await restFetch(`/tracker_accounts?auth_user_id=eq.${user.supabase_id}`, {
     method: "DELETE",
   });
-  await restFetch(`/tracker_accounts?auth_user_id=eq.${user.id}`, { method: "DELETE" });
   console.log(`Cleaned ${existingAccounts.length} existing account(s)`);
 }
 
@@ -81,14 +99,14 @@ const accounts = await restFetch("/tracker_accounts", {
   method: "POST",
   body: JSON.stringify([
     {
-      auth_user_id: user.id,
+      auth_user_id: user.supabase_id,
       store_name: "까르띠에 청담",
       sa_name: "김SA",
       notes: "E2E 테스트 계좌 1",
       updated_at: now,
     },
     {
-      auth_user_id: user.id,
+      auth_user_id: user.supabase_id,
       store_name: "까르띠에 롯데",
       sa_name: "이SA",
       notes: "E2E 테스트 계좌 2",

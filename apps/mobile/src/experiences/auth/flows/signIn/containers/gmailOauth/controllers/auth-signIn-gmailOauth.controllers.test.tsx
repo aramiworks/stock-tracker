@@ -281,7 +281,8 @@ describe("AuthSignInGmailOauthControllers", () => {
       </AuthSignInGmailOauthControllers>,
     );
     await act(async () => {
-      const result = ref.current!.signInWithGoogle() as unknown as Promise<void>;
+      const result =
+        ref.current!.signInWithGoogle() as unknown as Promise<void>;
       await result.catch(() => {
         // expected — native flow re-throws after tracking the failure
       });

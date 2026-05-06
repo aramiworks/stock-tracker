@@ -2,11 +2,13 @@ import "../src/lib/i18n";
 import * as Sentry from "@sentry/react-native";
 import { Slot } from "expo-router";
 import { AuthModels } from "../src/experiences/auth/models/auth.models";
+import { AnalyticsScreenTracker, initAnalytics } from "../src/lib/analytics";
 import { AppApolloProvider } from "../src/lib/apollo/provider";
 import { initSentry, SentryEfcvTracker } from "../src/lib/sentry";
 import { AppTamaguiProvider } from "../src/lib/tamagui/provider";
 
 initSentry();
+initAnalytics();
 
 function RootLayout() {
   return (
@@ -14,6 +16,7 @@ function RootLayout() {
       <AuthModels>
         <AppApolloProvider>
           <SentryEfcvTracker />
+          <AnalyticsScreenTracker />
           <Slot />
         </AppApolloProvider>
       </AuthModels>

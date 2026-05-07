@@ -34,9 +34,11 @@ model skus {
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
 
-  watchable_unit watchable_units @relation(fields: [watchable_unit_id], references: [id])
-  drop_events    drop_events[]
-  watches        watches[]
+  watchable_unit  watchable_units  @relation(fields: [watchable_unit_id], references: [id])
+  drop_events     drop_events[]
+  watches         watches[]
+  sku_stock_state sku_stock_state?
+  parse_errors    parse_errors[]
 
   @@index([watchable_unit_id])
   @@index([color, leather])
@@ -93,4 +95,30 @@ model alerts {
 
   @@index([watch_id, created_at])
   @@index([drop_event_id])
+}
+
+// -- Scraper state -----------------------------------------------------------
+
+model sku_stock_state {
+  sku_id             String   @id @db.Uuid
+  in_stock           Boolean
+  last_checked       DateTime
+  last_changed       DateTime
+  consecutive_errors Int      @default(0)
+
+  sku skus @relation(fields: [sku_id], references: [id])
+}
+
+model parse_errors {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku_id      String?  @db.Uuid
+  brand       String
+  source_url  String?
+  error_msg   String
+  raw_payload Json
+  created_at  DateTime @default(now())
+
+  sku skus? @relation(fields: [sku_id], references: [id])
+
+  @@index([brand, created_at])
 }

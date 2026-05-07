@@ -50,7 +50,7 @@
 
 - **IPRoyal:** Potentially most cost-effective at scale — $1.75/GB at 500 GB+ would put MVP (~215 GB/mo) at ~$376/mo, well under Bright Data PAYG. However, 32M pool is 5× smaller than Oxylabs (higher KR IP exhaustion risk), no free trial, and the 500 GB+ rate may not apply below that threshold (confirm with vendor).
 
-- **Decodo (Smartproxy):** Cheapest at MVP scale ($26/mo), but 30-min sticky session cap is tight for extended browsing sessions. No disclosed KR pool size. Less battle-tested against Akamai specifically. 3-day / 100 MB trial is too small for a meaningful bake-test.
+- **Decodo (Smartproxy):** Volume quote required at ~215 GB/month — highest published tier is 10 GB. 30-min sticky session cap is tight for extended browsing sessions. No disclosed KR pool size. Less battle-tested against Akamai specifically. 3-day / 100 MB trial is too small for a meaningful bake-test.
 
 ## Recommendation
 

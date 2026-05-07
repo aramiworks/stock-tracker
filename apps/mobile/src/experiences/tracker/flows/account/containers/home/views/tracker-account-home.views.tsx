@@ -73,10 +73,7 @@ export const TrackerAccountHomeViews = memo(
                 paddingVertical={12}
               >
                 <Text style={styles.label}>
-                  {t(
-                    "account.home.accountInfoCard.signupDateLabel",
-                    "가입일",
-                  )}
+                  {t("account.home.accountInfoCard.signupDateLabel", "가입일")}
                 </Text>
                 <Text style={styles.value}>{formattedDate}</Text>
               </XStack>

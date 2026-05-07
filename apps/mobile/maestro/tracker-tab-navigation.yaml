@@ -1,0 +1,30 @@
+appId: so.arami.stocktracker.app
+url: ${MAESTRO_APP_URL}
+name: Tracker - Tab Navigation
+tags:
+  - authenticated
+---
+# Cycle the three live bottom tabs (alerts / watchlist / history) and assert
+# each container renders. Account tab is pending under INF-1334 and skipped.
+
+- launchApp
+
+# Default landing tab — alerts (재입고 알림)
+- tapOn: "알림"
+- assertVisible:
+    id: "dashboard-home-screen"
+
+# Watchlist tab (관심목록)
+- tapOn: "관심목록"
+- assertVisible:
+    id: "accounts-list-screen"
+
+# History tab (히스토리)
+- tapOn: "히스토리"
+- assertVisible:
+    id: "history-browse-screen"
+
+# Cycle back to alerts to confirm bidirectional navigation
+- tapOn: "알림"
+- assertVisible:
+    id: "dashboard-home-screen"

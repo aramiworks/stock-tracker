@@ -119,6 +119,23 @@
       "title": "알림 히스토리"
     }
   },
+  "account": {
+    "home": {
+      "topBar": {
+        "title": "계정"
+      },
+      "accountInfoCard": {
+        "emailLabel": "이메일",
+        "signupDateLabel": "가입일"
+      },
+      "signOutButton": {
+        "label": "로그아웃"
+      },
+      "versionFooter": {
+        "label": "버전"
+      }
+    }
+  },
   "nav": {
     "alerts": "알림",
     "watchlist": "관심목록",

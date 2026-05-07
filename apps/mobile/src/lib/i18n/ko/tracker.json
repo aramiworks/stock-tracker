@@ -133,6 +133,10 @@
       },
       "versionFooter": {
         "label": "버전"
+      },
+      "error": {
+        "message": "정보를 불러올 수 없습니다",
+        "retryButton": "다시 시도"
       }
     }
   },

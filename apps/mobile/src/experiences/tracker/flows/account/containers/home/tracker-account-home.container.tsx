@@ -19,7 +19,7 @@ export const TrackerAccountHomeContainer = memo(() => {
     <QueryErrorBoundary
       fallback={
         /* istanbul ignore next -- error boundary fallback */ ({ retry }) => (
-          <TrackerAccountHomeViews />
+          <TrackerAccountHomeViews screenState="error" onRetry={retry} />
         )
       }
     >

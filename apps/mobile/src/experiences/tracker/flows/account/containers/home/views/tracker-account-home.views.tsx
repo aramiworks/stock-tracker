@@ -18,6 +18,8 @@ interface TrackerAccountHomeViewsProps {
   createdAt?: string;
   signOut?: () => Promise<void>;
   isSigningOut?: boolean;
+  onRetry?: () => void;
+  screenState?: "default" | "error";
 }
 
 export const TrackerAccountHomeViews = memo(
@@ -26,6 +28,8 @@ export const TrackerAccountHomeViews = memo(
     createdAt = "",
     signOut,
     isSigningOut = false,
+    onRetry,
+    screenState = "default",
   }: TrackerAccountHomeViewsProps) => {
     const { t } = useTranslation("tracker");
     const router = useRouter();
@@ -39,6 +43,34 @@ export const TrackerAccountHomeViews = memo(
       : "";
 
     const version = Constants.expoConfig?.version ?? "0.0.0";
+
+    if (screenState === "error") {
+      return (
+        <DashboardTemplate
+          testID="account-home-screen"
+          topBar={
+            <TopAppBar
+              type="small"
+              title={t("account.home.topBar.title", "계정")}
+              navigationIcon="arrow-back"
+              onNavigationPress={() => router.back()}
+              testID="account-home-top-bar"
+            />
+          }
+        >
+          <YStack padding={16} gap={24} flex={1} justifyContent="center" alignItems="center">
+            <Text style={styles.label}>
+              {t("account.home.error.message", "정보를 불러올 수 없습니다")}
+            </Text>
+            {onRetry && (
+              <Button variant="outlined" onPress={onRetry} testID="retry-button">
+                {t("account.home.error.retryButton", "다시 시도")}
+              </Button>
+            )}
+          </YStack>
+        </DashboardTemplate>
+      );
+    }
 
     return (
       <DashboardTemplate

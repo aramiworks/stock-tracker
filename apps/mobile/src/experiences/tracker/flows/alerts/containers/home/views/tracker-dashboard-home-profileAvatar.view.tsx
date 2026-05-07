@@ -2,9 +2,11 @@ import { memo } from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 export const TrackerDashboardHomeProfileAvatarView = memo(() => {
   const router = useRouter();
+  const { t } = useTranslation("tracker");
 
   return (
     <Pressable
@@ -12,7 +14,7 @@ export const TrackerDashboardHomeProfileAvatarView = memo(() => {
       style={styles.avatar}
       testID="profile-avatar"
       accessibilityRole="button"
-      accessibilityLabel="계정"
+      accessibilityLabel={t("account.home.topBar.title", "계정")}
     >
       <MaterialCommunityIcons name="account" size={18} color="#49454F" />
     </Pressable>

@@ -14,15 +14,15 @@ const prisma = new PrismaClient();
 
 const hermesUnits = [
   // Bolide
-  { productLine: "Bolide", modelName: "Bolide 1923 30" },
-  { productLine: "Bolide", modelName: "Bolide 1923 Mini" },
+  { productLine: "Bolide", modelName: "Bolide Mini" },
+  { productLine: "Bolide", modelName: "Bolide 27" },
+  { productLine: "Bolide", modelName: "Bolide 31" },
   // Evelyne
-  { productLine: "Evelyne", modelName: "Evelyne TPM" },
-  { productLine: "Evelyne", modelName: "Evelyne PM" },
-  { productLine: "Evelyne", modelName: "Evelyne GM" },
+  { productLine: "Evelyne", modelName: "Evelyne 29" },
+  { productLine: "Evelyne", modelName: "Evelyne 33" },
   // Picotin
-  { productLine: "Picotin", modelName: "Picotin Lock 18" },
-  { productLine: "Picotin", modelName: "Picotin Lock 22" },
+  { productLine: "Picotin", modelName: "Picotin 18" },
+  { productLine: "Picotin", modelName: "Picotin 22" },
   // Lindy
   { productLine: "Lindy", modelName: "Lindy Mini" },
   { productLine: "Lindy", modelName: "Lindy 26" },
@@ -35,8 +35,8 @@ const hermesUnits = [
   { productLine: "Constance", modelName: "Constance 18" },
   { productLine: "Constance", modelName: "Constance 24" },
   // Herbag
-  { productLine: "Herbag", modelName: "Herbag Zip 31" },
-  { productLine: "Herbag", modelName: "Herbag Zip 39" },
+  { productLine: "Herbag", modelName: "Herbag 31" },
+  { productLine: "Herbag", modelName: "Herbag 39" },
   // Halzan
   { productLine: "Halzan", modelName: "Halzan Mini" },
   { productLine: "Halzan", modelName: "Halzan 25" },
@@ -60,23 +60,23 @@ const hermesUnits = [
 
 const cartierUnits = [
   {
-    productLine: "Tank Must",
-    modelName: "Tank Must Small Steel Blue",
+    productLine: "Tank",
+    modelName: "Tank Must Large Steel",
     referenceCode: "WSTA0106",
   },
   {
-    productLine: "Tank Must",
-    modelName: "Tank Must Small Steel Silver",
+    productLine: "Tank",
+    modelName: "Tank Must Small Steel",
     referenceCode: "WSTA0107",
   },
   {
-    productLine: "Tank Must",
-    modelName: "Tank Must Large Steel Blue",
+    productLine: "Tank",
+    modelName: "Tank Must Small Leather",
     referenceCode: "WSTA0135",
   },
   {
-    productLine: "Tank Must",
-    modelName: "Tank Must Large Steel Silver",
+    productLine: "Tank",
+    modelName: "Tank Must Large Leather",
     referenceCode: "WSTA0136",
   },
 ];
@@ -124,23 +124,23 @@ async function main() {
     });
 
     // Each Cartier reference maps 1:1 to a SKU
-    const color = unit.modelName.includes("Blue") ? "Blue" : "Silver";
     const size = unit.modelName.includes("Small") ? "Small" : "Large";
+    const hardware = unit.modelName.includes("Leather") ? "Leather" : "Steel";
 
     await prisma.skus.upsert({
       where: { reference_code: unit.referenceCode },
       create: {
         watchable_unit_id: created.id,
-        color,
-        hardware: "Steel",
+        color: "Silver",
+        hardware,
         size,
         reference_code: unit.referenceCode,
         active: true,
       },
       update: {
         watchable_unit_id: created.id,
-        color,
-        hardware: "Steel",
+        color: "Silver",
+        hardware,
         size,
         active: true,
       },

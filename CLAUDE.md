@@ -126,12 +126,12 @@ npm run check-types            # Type check all packages
 
 ## Experiences
 
-| Experience | Flows         | Containers   |
-| ---------- | ------------- | ------------ |
-| auth       | signIn        | gmailOauth   |
-| tracker    | catalog       | browse       |
-| tracker    | watchlist     | list, detail |
-| tracker    | alertHistory  | browse       |
+| Experience | Flows        | Containers   |
+| ---------- | ------------ | ------------ |
+| auth       | signIn       | gmailOauth   |
+| tracker    | catalog      | browse       |
+| tracker    | watchlist    | list, detail |
+| tracker    | alertHistory | browse       |
 
 ## Deployment
 

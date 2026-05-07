@@ -55,3 +55,18 @@ doppler run -- npm run dev:router
 | `NODE_ENV`                      | `development`                                             |
 
 For `dev`/`stg`/`prd` configs, populate via the Doppler dashboard with the respective Railway + Supabase cloud credentials.
+
+## Scraper vars
+
+Residential proxy credentials for the restock scraper (`apps/scraper`). Set after Jace provisions the proxy account.
+
+| Var              | Description                                                    |
+| ---------------- | -------------------------------------------------------------- |
+| `PROXY_PROVIDER` | Provider name (e.g., `oxylabs`)                                |
+| `PROXY_HOST`     | Proxy endpoint hostname (e.g., `pr.oxylabs.io`)               |
+| `PROXY_PORT`     | Proxy endpoint port (e.g., `7777`)                             |
+| `PROXY_USERNAME` | Auth username from provider dashboard                          |
+| `PROXY_PASSWORD` | Auth password from provider dashboard                          |
+| `PROXY_COUNTRY`  | Target country code (e.g., `KR`)                               |
+
+<!-- TODO(INF-1357): set actual values after Jace provisions Oxylabs account -->

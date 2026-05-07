@@ -12,6 +12,8 @@ export const trackerResolvers = {
         productLine?: string;
         search?: string;
         activeOnly?: boolean;
+        cursor?: string;
+        limit?: number;
       },
       context: SubgraphContext,
     ) => {
@@ -22,6 +24,8 @@ export const trackerResolvers = {
         productLine: args.productLine ?? undefined,
         search: args.search ?? undefined,
         activeOnly: args.activeOnly ?? true,
+        cursor: args.cursor ?? undefined,
+        limit: args.limit,
       });
     },
     catalogItem: async (

@@ -38,9 +38,16 @@ export class TrackerCatalogBrowseControllers {
     productLine?: string;
     search?: string;
     activeOnly: boolean;
+    cursor?: string;
+    limit: number;
   }) {
     const units = await this.models.findAll(input);
-    return units.map(mapUnit);
+    const hasMore = units.length > input.limit;
+    const items = hasMore ? units.slice(0, input.limit) : units;
+    return {
+      items: items.map(mapUnit),
+      nextCursor: hasMore ? (items[items.length - 1]?.id ?? null) : null,
+    };
   }
 
   async byId(input: { id: string }) {

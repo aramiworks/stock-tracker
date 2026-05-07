@@ -95,6 +95,13 @@ const config: StorybookConfig = {
         ),
       },
       { find: "react-native", replacement: "react-native-web" },
+      // Mock expo-router — useRouter, useSegments, Slot, Link, Redirect stubs;
+      // no router provider is set up in Storybook so this prevents render errors
+      // in components that call useRouter().
+      {
+        find: "expo-router",
+        replacement: path.resolve(__dirname, "./mocks/expo-router.js"),
+      },
       // Mock react-i18next — useTranslation returns key passthrough; no i18n
       // provider is set up in Storybook so this prevents render errors in views
       // that call t("namespace.key").
@@ -119,7 +126,8 @@ const config: StorybookConfig = {
           (a as { find: string }).find !== "@expo/vector-icons" &&
           (a as { find: string }).find !== "@expo/vector-icons/MaterialIcons" &&
           (a as { find: string }).find !== "@stock-tracker/validation" &&
-          (a as { find: string }).find !== "react-i18next",
+          (a as { find: string }).find !== "react-i18next" &&
+          (a as { find: string }).find !== "expo-router",
       ),
     ];
     // @aramiworks/ui ships TypeScript source (.tsx files). Exclude from

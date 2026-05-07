@@ -24,7 +24,9 @@ import {
 } from "./tracker-account-home.controllers";
 
 function setQueryData(
-  overrides: { me?: { id: string; email: string; createdAt: string } | null } = {},
+  overrides: {
+    me?: { id: string; email: string; createdAt: string } | null;
+  } = {},
 ) {
   (useSuspenseQuery as unknown as jest.Mock).mockReturnValue({
     data: {

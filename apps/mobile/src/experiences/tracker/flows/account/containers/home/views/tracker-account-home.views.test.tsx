@@ -19,14 +19,21 @@ jest.mock("@aramiworks/ui", () => {
   const { View } = require("react-native");
   return {
     Button: ({ children, onPress, disabled, testID }: any) =>
-      require("react").createElement(View, { testID, onPress, accessibilityState: { disabled: !!disabled } }, children),
+      require("react").createElement(
+        View,
+        { testID, onPress, accessibilityState: { disabled: !!disabled } },
+        children,
+      ),
     Card: ({ children, testID }: any) =>
       require("react").createElement(View, { testID }, children),
     DashboardTemplate: ({ children, topBar, testID }: any) =>
       require("react").createElement(View, { testID }, topBar, children),
     Divider: () => require("react").createElement(View, { testID: "divider" }),
     TopAppBar: ({ onNavigationPress, testID }: any) =>
-      require("react").createElement(View, { testID, onPress: onNavigationPress }),
+      require("react").createElement(View, {
+        testID,
+        onPress: onNavigationPress,
+      }),
     XStack: ({ children }: any) =>
       require("react").createElement(View, null, children),
     YStack: ({ children }: any) =>
@@ -62,9 +69,7 @@ describe("TrackerAccountHomeViews", () => {
   });
 
   it("renders empty string when createdAt is empty", () => {
-    const { getByTestId } = render(
-      <TrackerAccountHomeViews createdAt="" />,
-    );
+    const { getByTestId } = render(<TrackerAccountHomeViews createdAt="" />);
     expect(getByTestId("account-home-screen")).toBeTruthy();
   });
 

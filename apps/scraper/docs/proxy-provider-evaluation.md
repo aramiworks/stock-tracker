@@ -6,29 +6,29 @@
 
 ## Scale Estimate (MVP)
 
-| Metric             | Value                   |
-| ------------------ | ----------------------- |
-| SKUs               | ~100                    |
-| Poll interval      | 60s                     |
-| Avg response size  | ~50KB                   |
+| Metric             | Value                            |
+| ------------------ | -------------------------------- |
+| SKUs               | ~100                             |
+| Poll interval      | 60s                              |
+| Avg response size  | ~50KB                            |
 | Monthly requests   | ~4.3M (100 × 1440 × 30)          |
 | Monthly bandwidth  | **~215 GB/month** (4.3M × 50 KB) |
 | Growth buffer (2×) | ~430 GB/month                    |
 
 ## Provider Comparison
 
-| Criteria                  | Bright Data                                                                      | Oxylabs                                                     | IPRoyal                                          | Decodo (Smartproxy)                         |
-| ------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------- |
-| **Global IP pool**        | 400M+                                                                            | 175M+                                                       | 32M+                                             | 115M+                                       |
-| **KR IP pool**            | Not disclosed (195 countries)                                                    | **1.3M+ KR IPs** (disclosed)                                | Not disclosed                                    | Not disclosed                               |
-| **Price at ~215 GB/mo**   | $4.00/GB PAYG = **~$860/mo**                                                     | Basic plan (20 GB) insufficient — **enterprise quote required**             | 500 GB+ rate ($1.75/GB) ≈ **~$376/mo est.** — confirm tier applies at 215 GB | 10 GB is highest published tier — **volume quote required**  |
-| **Price at ~430 GB/mo**   | $4.00/GB PAYG = **~$1,720/mo**                                                   | **Enterprise quote required**                               | 500 GB+ rate ($1.75/GB) ≈ **~$752/mo est.**      | **Volume quote required**                   |
-| **Sticky sessions**       | Up to 60 min (custom plan for longer)                                            | Supported (duration not published)                          | **Up to 7 days**                                 | Up to 30 min (up to 24h on higher tiers)    |
-| **TLS fingerprint**       | Web Unlocker handles automatically; Scraping Browser has randomized fingerprints | AI-powered routing; highest documented Akamai success rates | Web Unblocker (AI-managed fingerprints)          | Basic residential — no managed unlocker     |
-| **Country targeting**     | Country/city/ASN                                                                 | Country/city/ZIP/ASN                                        | Country/state/city                               | Country/city/ZIP                            |
-| **Free trial**            | 7-day, $2 credit (business verification required)                                | 7-day (contact sales)                                       | **No free trial**                                | **3-day, 100 MB**                           |
-| **Traffic expiry**        | Monthly (unused expires)                                                         | Monthly (unused expires)                                    | **Never expires**                                | Monthly (unused expires)                    |
-| **Anti-bot track record** | Industry leader — Web Unlocker, CAPTCHA solving                                  | Highest documented Akamai/Cloudflare success rates          | Smaller pool — less battle-tested against Akamai | Mid-tier — adequate for simpler protections |
+| Criteria                  | Bright Data                                                                      | Oxylabs                                                         | IPRoyal                                                                      | Decodo (Smartproxy)                                         |
+| ------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **Global IP pool**        | 400M+                                                                            | 175M+                                                           | 32M+                                                                         | 115M+                                                       |
+| **KR IP pool**            | Not disclosed (195 countries)                                                    | **1.3M+ KR IPs** (disclosed)                                    | Not disclosed                                                                | Not disclosed                                               |
+| **Price at ~215 GB/mo**   | $4.00/GB PAYG = **~$860/mo**                                                     | Basic plan (20 GB) insufficient — **enterprise quote required** | 500 GB+ rate ($1.75/GB) ≈ **~$376/mo est.** — confirm tier applies at 215 GB | 10 GB is highest published tier — **volume quote required** |
+| **Price at ~430 GB/mo**   | $4.00/GB PAYG = **~$1,720/mo**                                                   | **Enterprise quote required**                                   | 500 GB+ rate ($1.75/GB) ≈ **~$752/mo est.**                                  | **Volume quote required**                                   |
+| **Sticky sessions**       | Up to 60 min (custom plan for longer)                                            | Supported (duration not published)                              | **Up to 7 days**                                                             | Up to 30 min (up to 24h on higher tiers)                    |
+| **TLS fingerprint**       | Web Unlocker handles automatically; Scraping Browser has randomized fingerprints | AI-powered routing; highest documented Akamai success rates     | Web Unblocker (AI-managed fingerprints)                                      | Basic residential — no managed unlocker                     |
+| **Country targeting**     | Country/city/ASN                                                                 | Country/city/ZIP/ASN                                            | Country/state/city                                                           | Country/city/ZIP                                            |
+| **Free trial**            | 7-day, $2 credit (business verification required)                                | 7-day (contact sales)                                           | **No free trial**                                                            | **3-day, 100 MB**                                           |
+| **Traffic expiry**        | Monthly (unused expires)                                                         | Monthly (unused expires)                                        | **Never expires**                                                            | Monthly (unused expires)                                    |
+| **Anti-bot track record** | Industry leader — Web Unlocker, CAPTCHA solving                                  | Highest documented Akamai/Cloudflare success rates              | Smaller pool — less battle-tested against Akamai                             | Mid-tier — adequate for simpler protections                 |
 
 ## Analysis
 

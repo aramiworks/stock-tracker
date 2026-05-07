@@ -12,6 +12,7 @@ jest.mock("react-i18next", () => ({
 }));
 
 jest.mock("expo-constants", () => ({
+  __esModule: true,
   default: { expoConfig: { version: "1.2.3" } },
 }));
 
@@ -98,5 +99,14 @@ describe("TrackerAccountHomeViews", () => {
     const { getByTestId } = render(<TrackerAccountHomeViews />);
     const btn = getByTestId("sign-out-button");
     expect(btn.props.accessibilityState?.disabled).toBe(false);
+  });
+
+  it("shows fallback version when expoConfig has no version", () => {
+    const Constants = jest.requireMock("expo-constants").default;
+    const original = Constants.expoConfig;
+    Constants.expoConfig = {};
+    const { getByTestId } = render(<TrackerAccountHomeViews />);
+    expect(getByTestId("version-footer").props.children).toContain("0.0.0");
+    Constants.expoConfig = original;
   });
 });

@@ -27,4 +27,6 @@ tags:
     id: "sign-out-button"
 - assertVisible:
     id: "auth-signIn-gmailOauth-screen"
+- assertVisible:
+    id: "sign-in-google-button"
 - assertVisible: "Sign in with Google"

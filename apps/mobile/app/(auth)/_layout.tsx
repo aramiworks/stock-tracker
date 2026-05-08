@@ -6,7 +6,7 @@ export default function AuthLayout() {
   const isLoading = useAuthStore((s) => s.isLoading);
 
   if (!isLoading && isAuthenticated) {
-    return <Redirect href="/tracker/dashboard/home" />;
+    return <Redirect href="/tracker/alerts/home" />;
   }
 
   return <Stack screenOptions={{ headerShown: false }} />;

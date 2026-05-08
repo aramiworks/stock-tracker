@@ -1,4 +1,15 @@
+import { gql } from "@apollo/client";
 import { graphql } from "./generated/gql";
+
+export const ME_QUERY = gql`
+  query Me {
+    me {
+      id
+      email
+      createdAt
+    }
+  }
+`;
 
 export const DASHBOARD_QUERY = graphql(`
   query Dashboard {

@@ -60,6 +60,12 @@ export default function AppLayout() {
           tabBarIcon: ({ focused }) => <TabIcon label="📋" focused={focused} />,
         }}
       />
+      <Tabs.Screen
+        name="tracker/account"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

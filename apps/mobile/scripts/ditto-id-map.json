@@ -365,5 +365,30 @@
   "tracker-history-browse-errorState.retry": {
     "ns": "tracker",
     "key": "history.browse.errorState.retry"
+  },
+
+  "tracker-account-home.topBar.title": {
+    "ns": "tracker",
+    "key": "account.home.topBar.title"
+  },
+  "tracker-account-home.accountInfoCard.emailLabel": {
+    "ns": "tracker",
+    "key": "account.home.accountInfoCard.emailLabel"
+  },
+  "tracker-account-home.accountInfoCard.signupDateLabel": {
+    "ns": "tracker",
+    "key": "account.home.accountInfoCard.signupDateLabel"
+  },
+  "tracker-account-home.signOutButton.label": {
+    "ns": "tracker",
+    "key": "account.home.signOutButton.label"
+  },
+  "tracker-account-home.versionFooter.label": {
+    "ns": "tracker",
+    "key": "account.home.versionFooter.label"
+  },
+  "tracker-navigationBar.watchlistTab.label": {
+    "ns": "tracker",
+    "key": "nav.watchlist"
   }
 }

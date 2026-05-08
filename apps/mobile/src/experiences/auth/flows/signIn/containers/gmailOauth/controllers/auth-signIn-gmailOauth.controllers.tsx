@@ -16,6 +16,10 @@ import {
   isSuccessResponse,
 } from "@react-native-google-signin/google-signin";
 import { supabase } from "../../../../../../../lib/supabase";
+import {
+  grantAnalyticsConsent,
+  trackEvent,
+} from "../../../../../../../lib/analytics";
 import { apolloClient } from "../../../../../../../lib/apollo/provider";
 import { UpsertUserDocument } from "@/lib/graphql/generated/graphql";
 
@@ -98,8 +102,11 @@ export const AuthSignInGmailOauthControllers =
             nonce: webRequest?.nonce,
           });
           if (error) throw error;
+          await grantAnalyticsConsent();
           await upsertUserProfile();
+          await trackEvent("sign_in_succeeded", { provider: "google" });
         } catch {
+          void trackEvent("sign_in_failed", { provider: "google" });
           // sign-in failed; auth state unchanged, user stays on sign-in screen
         } finally {
           /* istanbul ignore next -- defensive unmount guard */
@@ -110,6 +117,7 @@ export const AuthSignInGmailOauthControllers =
 
     const signInWithGoogle = useCallback(async () => {
       setIsSigningIn(true);
+      void trackEvent("sign_in_started", { provider: "google" });
       try {
         if (Platform.OS === "web") {
           // Web: trigger the browser OAuth flow; result handled in useEffect above.
@@ -131,9 +139,14 @@ export const AuthSignInGmailOauthControllers =
               token: idToken,
             });
             if (error) throw error;
+            await grantAnalyticsConsent();
             await upsertUserProfile();
+            await trackEvent("sign_in_succeeded", { provider: "google" });
           }
         }
+      } catch (err) {
+        void trackEvent("sign_in_failed", { provider: "google" });
+        throw err;
       } finally {
         /* istanbul ignore next -- defensive unmount guard */
         if (isMountedRef.current) setIsSigningIn(false);

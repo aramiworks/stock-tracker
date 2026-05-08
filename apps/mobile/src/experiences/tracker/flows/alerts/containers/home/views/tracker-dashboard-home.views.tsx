@@ -21,6 +21,7 @@ import { TrackerDashboardHomeEmptyStateView } from "./tracker-dashboard-home-emp
 import { TrackerDashboardHomeErrorStateView } from "./tracker-dashboard-home-errorState.view";
 import { TrackerSkeletonCardView } from "@/experiences/tracker/views";
 import { TrackerAccountFormModalView } from "@/experiences/tracker/views/tracker-accountFormModal.view";
+import { TrackerDashboardHomeProfileAvatarView } from "./tracker-dashboard-home-profileAvatar.view";
 
 type TrackerDashboardHomeViewsProps =
   Partial<TrackerDashboardHomeControllersOutput> & {
@@ -145,6 +146,7 @@ export const TrackerDashboardHomeViews = memo(
               type="small"
               title={t("dashboard.title")}
               testID="dashboard-home-title"
+              trailingContent={<TrackerDashboardHomeProfileAvatarView />}
             />
           }
           refreshControl={

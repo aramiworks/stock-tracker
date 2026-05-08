@@ -30,142 +30,141 @@ async function main() {
     update: { email: E2E_EMAIL, display_name: "E2E Test User" },
   });
 
-  // Clean existing accounts for idempotency
-  await prisma.tracker_accounts.deleteMany({
-    where: { auth_user_id: user.id },
+  // Clean existing watchlist data for the E2E user (cascade deletes alerts)
+  await prisma.watches.deleteMany({
+    where: { auth_user_id: user.supabase_id },
   });
 
-  // Create 2 SA accounts
-  const [sa1, sa2] = await Promise.all([
-    prisma.tracker_accounts.create({
-      data: {
-        auth_user_id: user.id,
-        store_name: "까르띠에 청담",
-        sa_name: "김SA",
-        notes: "E2E 테스트 계좌 1",
-      },
-    }),
-    prisma.tracker_accounts.create({
-      data: {
-        auth_user_id: user.id,
-        store_name: "까르띠에 롯데",
-        sa_name: "이SA",
-        notes: "E2E 테스트 계좌 2",
-      },
-    }),
-  ]);
-
-  // Create purchases for SA1
-  await prisma.tracker_purchases.createMany({
-    data: [
-      {
-        tracker_account_id: sa1.id,
-        item_name: "러브 브레이슬릿",
-        item_category: "브레이슬릿",
-        amount: 5800000,
-        currency: "KRW",
-        purchase_date: new Date("2025-06-15"),
-        store_location: "청담",
-      },
-      {
-        tracker_account_id: sa1.id,
-        item_name: "나노 링 목걸이",
-        item_category: "목걸이",
-        amount: 3200000,
-        currency: "KRW",
-        purchase_date: new Date("2025-09-20"),
-        store_location: "청담",
-      },
-    ],
+  // Ensure catalog entries exist (upsert by unique constraint)
+  const birkin25 = await prisma.watchable_units.upsert({
+    where: { brand_model_name: { brand: "Hermes", model_name: "Birkin 25" } },
+    create: {
+      brand: "Hermes",
+      product_line: "Birkin",
+      model_name: "Birkin 25",
+    },
+    update: {},
   });
 
-  // Create purchases for SA2
-  await prisma.tracker_purchases.createMany({
-    data: [
-      {
-        tracker_account_id: sa2.id,
-        item_name: "탱크 워치",
-        item_category: "시계",
-        amount: 12000000,
-        currency: "KRW",
-        purchase_date: new Date("2025-11-01"),
-        store_location: "롯데",
-      },
-    ],
+  const kelly28 = await prisma.watchable_units.upsert({
+    where: {
+      brand_model_name: { brand: "Hermes", model_name: "Kelly 28 Sellier" },
+    },
+    create: {
+      brand: "Hermes",
+      product_line: "Kelly",
+      model_name: "Kelly 28 Sellier",
+    },
+    update: {},
   });
 
-  // --- Edge-case account: max-length fields, null optionals ---
-  const edgeAccount = await prisma.tracker_accounts.create({
+  // SKUs — upsert by reference_code (set a stable code for e2e fixtures)
+  const birkin25NoirTogo = await prisma.skus.upsert({
+    where: { reference_code: "E2E-B25-NOIR-TOGO-GHW" },
+    create: {
+      watchable_unit_id: birkin25.id,
+      color: "Noir",
+      leather: "Togo",
+      hardware: "GHW",
+      size: "25",
+      reference_code: "E2E-B25-NOIR-TOGO-GHW",
+    },
+    update: {},
+  });
+
+  const kelly28NoirEpsom = await prisma.skus.upsert({
+    where: { reference_code: "E2E-K28-NOIR-EPSOM-GHW" },
+    create: {
+      watchable_unit_id: kelly28.id,
+      color: "Noir",
+      leather: "Epsom",
+      hardware: "GHW",
+      size: "28",
+      reference_code: "E2E-K28-NOIR-EPSOM-GHW",
+    },
+    update: {},
+  });
+
+  // Drop events — create fresh each run (idempotent via watches cleanup above)
+  const drop1 = await prisma.drop_events.create({
     data: {
-      auth_user_id: user.id,
-      store_name: "A".repeat(255),
-      sa_name: null,
-      notes: null,
+      sku_id: birkin25NoirTogo.id,
+      source_url: "https://www.hermes.com/kr/ko/",
+      detected_at: new Date("2026-04-20T09:15:00Z"),
+      expired_at: new Date("2026-04-20T11:00:00Z"),
     },
   });
 
-  await prisma.tracker_purchases.createMany({
+  const drop2 = await prisma.drop_events.create({
+    data: {
+      sku_id: kelly28NoirEpsom.id,
+      source_url: "https://www.hermes.com/kr/ko/",
+      detected_at: new Date("2026-05-01T10:00:00Z"),
+      // Not expired — live drop
+    },
+  });
+
+  // Watches: 1 per SKU, 1 unit-level (no sku_id)
+  const watch1 = await prisma.watches.create({
+    data: {
+      auth_user_id: user.supabase_id,
+      watchable_unit_id: birkin25.id,
+      sku_id: birkin25NoirTogo.id,
+      notify_push: true,
+      notify_email: false,
+    },
+  });
+
+  const watch2 = await prisma.watches.create({
+    data: {
+      auth_user_id: user.supabase_id,
+      watchable_unit_id: kelly28.id,
+      sku_id: kelly28NoirEpsom.id,
+      notify_push: true,
+      notify_email: true,
+    },
+  });
+
+  // Unit-level watch (any SKU of Birkin 25)
+  await prisma.watches.create({
+    data: {
+      auth_user_id: user.supabase_id,
+      watchable_unit_id: birkin25.id,
+      sku_id: null,
+      notify_push: true,
+      notify_email: false,
+    },
+  });
+
+  // Alerts: past notification for watch1, unread for watch2
+  await prisma.alerts.createMany({
     data: [
-      // Boundary: minimum amount
       {
-        tracker_account_id: edgeAccount.id,
-        item_name: "최소 금액 테스트",
-        amount: 0.01,
-        currency: "USD",
-        purchase_date: new Date("2025-01-01"),
-        item_category: null,
-        store_location: null,
-        notes: null,
-      },
-      // Boundary: maximum amount
-      {
-        tracker_account_id: edgeAccount.id,
-        item_name: "최대 금액 테스트",
-        amount: 9999999999.99,
-        currency: "KRW",
-        purchase_date: new Date("2025-12-31"),
-        item_category: "기타",
-        store_location: null,
-        notes: "N".repeat(1000),
-      },
-      // Different currencies
-      {
-        tracker_account_id: edgeAccount.id,
-        item_name: "EUR purchase",
-        amount: 5000,
-        currency: "EUR",
-        purchase_date: new Date("2025-06-15"),
-        item_category: "가방",
+        watch_id: watch1.id,
+        drop_event_id: drop1.id,
+        channel: "push",
+        sent_at: new Date("2026-04-20T09:15:05Z"),
+        read_at: new Date("2026-04-20T09:30:00Z"),
       },
       {
-        tracker_account_id: edgeAccount.id,
-        item_name: "JPY purchase",
-        amount: 150000,
-        currency: "JPY",
-        purchase_date: new Date("2025-03-10"),
-        item_category: "시계",
+        watch_id: watch2.id,
+        drop_event_id: drop2.id,
+        channel: "push",
+        sent_at: new Date("2026-05-01T10:00:04Z"),
+        read_at: null,
       },
       {
-        tracker_account_id: edgeAccount.id,
-        item_name: "GBP purchase",
-        amount: 3200,
-        currency: "GBP",
-        purchase_date: new Date("2025-09-22"),
-        item_category: "반지",
-      },
-      {
-        tracker_account_id: edgeAccount.id,
-        item_name: "CNY purchase",
-        amount: 42000,
-        currency: "CNY",
-        purchase_date: new Date("2025-04-05"),
-        item_category: "목걸이",
+        watch_id: watch2.id,
+        drop_event_id: drop2.id,
+        channel: "email",
+        sent_at: new Date("2026-05-01T10:00:06Z"),
+        read_at: null,
       },
     ],
   });
 
   console.log(
-    `Done. Created user ${user.id}, 3 accounts, 9 purchases (including edge cases).`,
+    `Done. Created user ${user.supabase_id}, 2 watchable units, 2 SKUs, 3 watches, 2 drop events, 3 alerts.`,
   );
 }
 

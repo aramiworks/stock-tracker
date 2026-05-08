@@ -11,6 +11,7 @@ export const sortOrderSchema = z.enum(["asc", "desc"]).default("desc");
 
 export const brandSchema = z.enum([
   "Hermes",
+  "Cartier",
   "Chanel",
   "Dior",
   "LouisVuitton",

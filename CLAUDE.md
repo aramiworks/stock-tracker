@@ -77,21 +77,16 @@ packages/
 - Every folder has `index.ts` for re-exports
 - Suffixed barrel files mandatory (`.models.tsx`, `.controllers.tsx`, `.views.tsx`, `.lifecycles.ts`)
 
-## Translations (Ditto)
+## Translations
 
-Translations are managed in [Ditto](https://dittowords.com). Project: `stock-tracker`.
+JSON files at `apps/mobile/src/lib/i18n/{locale}/{namespace}.json` are the **source of truth** — hand-edit them directly. One namespace per Experience (`auth.json`, `tracker.json`, `common.json`).
 
-- Ditto Developer IDs follow Figma frame naming (e.g., `tracker-dashboard-home-saCard.statusEligible`)
-- `scripts/ditto-id-map.json` maps Developer IDs → i18next namespace + key
-- `scripts/ditto-split.js` splits the flat Ditto export into namespace files
-
-```bash
-npm run ditto:pull -w apps/mobile   # Pull + split translations from Ditto
+```tsx
+const { t } = useTranslation("auth");
+return <Text>{t("signIn.title")}</Text>;
 ```
 
-JSON files in `apps/mobile/src/lib/i18n/ko/` are git-tracked. After pulling, review the diff and commit.
-
-When adding a new text item: add it in Ditto with a Figma-named Developer ID, then add the mapping in `scripts/ditto-id-map.json`.
+Ditto integration (`scripts/ditto-id-map.json`, `scripts/ditto-split.js`, `npm run ditto:pull`) is **deferred** — kept in the repo but not in the active workflow. See `~/Documents/aramiworks/conventions/design/i18n.md` for when/how to resume.
 
 ## Development
 
@@ -126,12 +121,12 @@ npm run check-types            # Type check all packages
 
 ## Experiences
 
-| Experience | Flows     | Containers   |
-| ---------- | --------- | ------------ |
-| auth       | signIn    | gmailOauth   |
-| tracker    | alerts    | feed         |
-| tracker    | watchlist | list, detail |
-| tracker    | history   | browse       |
+| Experience | Flows        | Containers   |
+| ---------- | ------------ | ------------ |
+| auth       | signIn       | gmailOauth   |
+| tracker    | catalog      | browse       |
+| tracker    | watchlist    | list, detail |
+| tracker    | alertHistory | browse       |
 
 ## Deployment
 

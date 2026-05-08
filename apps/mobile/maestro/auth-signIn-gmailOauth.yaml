@@ -1,5 +1,6 @@
 appId: so.arami.stocktracker.app
-name: Auth - Sign In (Gmail OAuth)
+url: ${MAESTRO_APP_URL}
+name: Auth - Sign In - Gmail OAuth
 tags:
   - baseline
   - unauthenticated

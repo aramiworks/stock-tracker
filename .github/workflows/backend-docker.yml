@@ -111,7 +111,7 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: auth-service
+          SENTRY_PROJECT: stock-tracker-auth-service
         with:
           version: ${{ github.sha }}
           sourcemaps: sourcemaps/dist

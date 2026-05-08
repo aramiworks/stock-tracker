@@ -118,7 +118,7 @@ model parse_errors {
   raw_payload Json
   created_at  DateTime @default(now())
 
-  sku skus? @relation(fields: [sku_id], references: [id])
+  sku skus? @relation(fields: [sku_id], references: [id], onDelete: SetNull)
 
   @@index([brand, created_at])
 }

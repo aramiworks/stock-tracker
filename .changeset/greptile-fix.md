@@ -1,5 +1,5 @@
 ---
-"@stock-tracker/mobile": patch
+"@stock-tracker/prisma": patch
 ---
 
-Fix analytics init failure leaving a permanently rejected promise; wrap all exported analytics functions in try/catch so errors never propagate to callers. Move sign_in_succeeded tracking to after upsertUserProfile to prevent dual success/failure events on upsert failure.
+Add `onDelete: SetNull` to `parse_errors.sku` relation to prevent FK constraint violations when deleting a SKU that has associated parse error rows.

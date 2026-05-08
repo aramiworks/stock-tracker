@@ -26,7 +26,7 @@
 | **Sticky sessions**       | Up to 60 min (custom plan for longer)                                            | Supported (duration not published)                              | **Up to 7 days**                                                             | Up to 30 min (up to 24h on higher tiers)                    |
 | **TLS fingerprint**       | Web Unlocker handles automatically; Scraping Browser has randomized fingerprints | AI-powered routing; highest documented Akamai success rates     | Web Unblocker (AI-managed fingerprints)                                      | Basic residential — no managed unlocker                     |
 | **Country targeting**     | Country/city/ASN                                                                 | Country/city/ZIP/ASN                                            | Country/state/city                                                           | Country/city/ZIP                                            |
-| **Free trial**            | 7-day, $2 credit (business verification required)                                | 7-day (contact sales)                                           | **No free trial**                                                            | **3-day, 100 MB**                                           |
+| **Free trial / PAYG**     | PAYG $4/GB, no monthly minimum; free trial requires signup (details unclear)     | **No free trial**; PAYG from $6/GB (Starter 5 GB @ $30/mo min)  | **No free trial**; PAYG from $7/GB, no monthly minimum                       | **3-day, 100 MB** trial; PAYG $8.50/GB via Wallet           |
 | **Traffic expiry**        | Monthly (unused expires)                                                         | Monthly (unused expires)                                        | **Never expires**                                                            | Monthly (unused expires)                                    |
 | **Anti-bot track record** | Industry leader — Web Unlocker, CAPTCHA solving                                  | Highest documented Akamai/Cloudflare success rates              | Smaller pool — less battle-tested against Akamai                             | Mid-tier — adequate for simpler protections                 |
 
@@ -42,11 +42,11 @@
 
 4. **Sticky sessions.** Essential for maintaining a browsing session across page navigations (product page → add to cart flow) to look human. Oxylabs supports this natively.
 
-5. **Free trial available.** Contact sales for a 7-day trial — sufficient for the INF-1360 bake-test spike without committing money.
+5. **PAYG entry available.** Oxylabs Starter (5 GB @ $6/GB = $30/mo) is the minimum commitment — sufficient for the INF-1360 bake-test spike without locking into a large plan.
 
 ### Why not the others
 
-- **Bright Data:** Close second. Largest global pool and Web Unlocker is best-in-class, but Web Unlocker is priced separately (per-CPM, not per-GB) which complicates cost estimation. The 7-day trial requires business verification + video call. If Oxylabs trial proves insufficient, Bright Data is the fallback.
+- **Bright Data:** Close second. Largest global pool and Web Unlocker is best-in-class, but Web Unlocker is priced separately (per-CPM, not per-GB) which complicates cost estimation. PAYG at $4/GB with no monthly minimum is attractive, but no disclosed KR pool size. If Oxylabs proves insufficient, Bright Data is the fallback.
 
 - **IPRoyal:** Potentially most cost-effective at scale — $1.75/GB at 500 GB+ would put MVP (~215 GB/mo) at ~$376/mo, well under Bright Data PAYG. However, 32M pool is 5× smaller than Oxylabs (higher KR IP exhaustion risk), no free trial, and the 500 GB+ rate may not apply below that threshold (confirm with vendor).
 
@@ -58,8 +58,8 @@
 
 ### Action required from Jace
 
-1. **Sign up for Oxylabs free trial:** Contact sales at https://oxylabs.io/products/free-trial-proxies or email support@oxylabs.io requesting a 7-day residential proxy trial with KR targeting. Mention scraping use case.
-2. After trial provisioning, share these credentials (save to 1Password vault `Openclaw` first):
+1. **Sign up for Oxylabs PAYG (Starter):** Go to https://oxylabs.io/pricing/residential-proxy-pool and select the Starter plan (5 GB @ $6/GB = $30/mo). No free trial is available for residential proxies.
+2. After provisioning, share these credentials (save to 1Password vault `Openclaw` first):
    - Proxy host (e.g., `pr.oxylabs.io`)
    - Proxy port (typically `7777`)
    - Username
@@ -68,7 +68,14 @@
 
 ### Fallback plan
 
-If Oxylabs trial shows <90% success rate against Hermès KR during the INF-1360 bake-test:
+If Oxylabs shows <95% success rate against Hermès KR during the INF-1360 bake-test:
 
-1. Try Bright Data PAYG ($4/GB) with Web Unlocker
-2. If both fail with plain HTTP, escalate to Browser Fetcher path (Playwright + stealth) which has higher bandwidth cost but better anti-bot evasion
+1. Try IPRoyal PAYG ($7/GB, no monthly minimum) — cheaper at scale but smaller KR pool
+2. Try Bright Data PAYG ($4/GB) with Web Unlocker
+3. If all fail with plain HTTP, escalate to Browser Fetcher path (Playwright + stealth) which has higher bandwidth cost but better anti-bot evasion
+
+---
+
+## Decision (2026-05-08)
+
+Jace signed up for **Oxylabs PAYG** (Starter plan, $30/mo for 5 GB). INF-1360 bake-test will run on real spend. If success rate <95%, switch to IPRoyal as fallback.

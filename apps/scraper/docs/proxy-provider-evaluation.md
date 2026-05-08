@@ -70,7 +70,7 @@
 
 If Oxylabs shows <95% success rate against Hermès KR during the INF-1360 bake-test:
 
-1. Try IPRoyal PAYG ($7/GB, no monthly minimum) — cheaper at scale but smaller KR pool
+1. Try IPRoyal PAYG ($7/GB, no monthly minimum) — smaller KR pool; note at ~215 GB this costs ~$1,505/mo vs Bright Data PAYG ~$860/mo (cheaper only at 500 GB+ enterprise rate $1.75/GB)
 2. Try Bright Data PAYG ($4/GB) with Web Unlocker
 3. If all fail with plain HTTP, escalate to Browser Fetcher path (Playwright + stealth) which has higher bandwidth cost but better anti-bot evasion
 

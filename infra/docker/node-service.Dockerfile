@@ -48,6 +48,12 @@ ARG APP_DIR
 ARG ENTRYPOINT_FILE=dist/server.js
 ENV ENTRYPOINT_FILE=${ENTRYPOINT_FILE}
 
+# Sentry release identifier — must match the --release used when uploading
+# source maps in .github/workflows/backend-docker.yml. Read by initSentry()
+# via process.env.SENTRY_RELEASE.
+ARG SENTRY_RELEASE
+ENV SENTRY_RELEASE=${SENTRY_RELEASE}
+
 # Copy the full pruned monorepo (preserves workspace package symlinks)
 COPY --from=builder /app /app
 WORKDIR /app/${APP_DIR}

@@ -78,6 +78,7 @@ jobs:
           echo "PACKAGE_NAME=${{ matrix.package }}" >> "$GITHUB_OUTPUT"
           echo "APP_DIR=${{ matrix.dir }}" >> "$GITHUB_OUTPUT"
           echo "ENTRYPOINT_FILE=${{ matrix.entrypoint }}" >> "$GITHUB_OUTPUT"
+          echo "SENTRY_RELEASE=${{ github.sha }}" >> "$GITHUB_OUTPUT"
           echo "$EOF" >> "$GITHUB_OUTPUT"
 
       - uses: docker/build-push-action@v6
@@ -89,6 +90,31 @@ jobs:
           build-args: ${{ steps.build-args.outputs.args }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # Extract compiled JS + .map files from the just-pushed image so
+      # @sentry/cli can associate them with the release ($GITHUB_SHA).
+      # initSentry() reads SENTRY_RELEASE from env at runtime — these must
+      # match for Sentry to symbolicate stack traces.
+      - name: Extract source maps from image
+        if: matrix.service == 'auth-service'
+        run: |
+          IMAGE="ghcr.io/${{ github.repository_owner }}/stock-tracker-${{ matrix.service }}:${{ github.sha }}"
+          docker pull "$IMAGE"
+          docker create --name extract "$IMAGE"
+          mkdir -p sourcemaps
+          docker cp extract:/app/${{ matrix.dir }}/dist sourcemaps/dist
+          docker rm extract
+
+      - name: Upload source maps to Sentry
+        if: matrix.service == 'auth-service'
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: auth-service
+        with:
+          version: ${{ github.sha }}
+          sourcemaps: sourcemaps/dist
 
   deploy:
     needs: build

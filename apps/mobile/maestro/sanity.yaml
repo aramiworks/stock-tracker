@@ -1,5 +1,12 @@
-url: ${MAESTRO_APP_URL}
+appId: so.arami.stocktracker.app
 name: Sanity Check
+tags:
+  - baseline
+  - smoke
 ---
+# Minimal check: app launches and shows the sign-in screen
 - launchApp
-- assertVisible: "Stock Tracker"
+- extendedWaitUntil:
+    visible:
+      id: "auth-signIn-gmailOauth-screen"
+    timeout: 10000

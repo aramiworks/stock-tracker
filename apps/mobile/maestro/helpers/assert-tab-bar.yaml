@@ -1,0 +1,9 @@
+# Helper: Assert the bottom tab bar is visible with correct tabs
+appId: so.arami.stocktracker.app
+---
+- assertVisible:
+    id: "tab-alerts"
+- assertVisible:
+    id: "tab-watchlist"
+- assertVisible:
+    id: "tab-history"

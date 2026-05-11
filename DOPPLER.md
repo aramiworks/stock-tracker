@@ -60,13 +60,13 @@ For `dev`/`stg`/`prd` configs, populate via the Doppler dashboard with the respe
 
 Required by `apps/scraper` (Trigger.dev v3 restock polling service).
 
-| Var                              | Purpose                                                    |
-| -------------------------------- | ---------------------------------------------------------- |
-| `TRIGGER_PROJECT_ID`             | Trigger.dev project reference (from Trigger.dev dashboard) |
-| `TRIGGER_SECRET_KEY`             | Trigger.dev API secret key                                 |
-| `DATABASE_URL`                   | Supabase Postgres connection string (same as tracker)      |
-| `TRACKER_INGEST_URL`             | URL of tracker-service tRPC endpoint (placeholder for INF-1361) |
-| `TRACKER_INGEST_SERVICE_TOKEN`   | Service-to-service auth token (placeholder for INF-1361 / INF-1356) |
+| Var                            | Purpose                                                             |
+| ------------------------------ | ------------------------------------------------------------------- |
+| `TRIGGER_PROJECT_ID`           | Trigger.dev project reference (from Trigger.dev dashboard)          |
+| `TRIGGER_SECRET_KEY`           | Trigger.dev API secret key                                          |
+| `DATABASE_URL`                 | Supabase Postgres connection string (same as tracker)               |
+| `TRACKER_INGEST_URL`           | URL of tracker-service tRPC endpoint (placeholder for INF-1361)     |
+| `TRACKER_INGEST_SERVICE_TOKEN` | Service-to-service auth token (placeholder for INF-1361 / INF-1356) |
 
 ### Proxy credentials
 

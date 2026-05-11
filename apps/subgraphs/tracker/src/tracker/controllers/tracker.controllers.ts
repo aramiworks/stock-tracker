@@ -37,6 +37,9 @@ export const trackerResolvers = {
         id: args.id,
       });
     },
+    catalogList: async (_: unknown, __: unknown, context: SubgraphContext) => {
+      return context.trackerTrpc.tracker.catalog.list.query();
+    },
     watches: async (_: unknown, __: unknown, context: SubgraphContext) => {
       return context.trackerTrpc.tracker.watchlist.manage.list.query();
     },

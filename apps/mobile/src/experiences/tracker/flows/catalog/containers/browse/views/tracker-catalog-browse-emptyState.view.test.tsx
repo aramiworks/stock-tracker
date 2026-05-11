@@ -3,7 +3,9 @@ import { TrackerCatalogBrowseEmptyStateView } from "./tracker-catalog-browse-emp
 
 describe("TrackerCatalogBrowseEmptyStateView", () => {
   it("renders the catalog empty state with translation keys", () => {
-    const { getByTestId, getByText } = render(<TrackerCatalogBrowseEmptyStateView />);
+    const { getByTestId, getByText } = render(
+      <TrackerCatalogBrowseEmptyStateView />,
+    );
     expect(getByTestId("catalog-empty-state")).toBeTruthy();
     expect(getByText("catalog.empty.title")).toBeTruthy();
     expect(getByText("catalog.empty.body")).toBeTruthy();

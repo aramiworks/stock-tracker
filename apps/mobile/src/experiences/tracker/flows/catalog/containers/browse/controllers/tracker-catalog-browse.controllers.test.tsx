@@ -7,7 +7,8 @@ import {
 import { useTrackerCatalogBrowseStore } from "./tracker-catalog-browse.store";
 import { CATALOG_MOCK_GROUPS } from "../models/tracker-catalog-browse.mock";
 
-let captured: ReturnType<typeof useTrackerCatalogBrowseControllers> | null = null;
+let captured: ReturnType<typeof useTrackerCatalogBrowseControllers> | null =
+  null;
 
 const Probe = () => {
   captured = useTrackerCatalogBrowseControllers();
@@ -24,7 +25,9 @@ const renderControllers = () =>
 describe("TrackerCatalogBrowseControllers", () => {
   beforeEach(() => {
     captured = null;
-    useTrackerCatalogBrowseStore.setState({ selectedUnitIds: new Set<string>() });
+    useTrackerCatalogBrowseStore.setState({
+      selectedUnitIds: new Set<string>(),
+    });
   });
 
   it("exposes screenState=default when mock groups are non-empty", () => {

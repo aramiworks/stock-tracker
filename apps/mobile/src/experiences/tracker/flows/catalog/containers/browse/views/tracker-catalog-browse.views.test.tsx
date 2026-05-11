@@ -10,8 +10,18 @@ const sampleGroups: CatalogGroup[] = [
     brand: "Hermès",
     productLine: "Bolide",
     units: [
-      { id: "u-1", brand: "Hermès", productLine: "Bolide", modelName: "Bolide 27" },
-      { id: "u-2", brand: "Hermès", productLine: "Bolide", modelName: "Bolide 31" },
+      {
+        id: "u-1",
+        brand: "Hermès",
+        productLine: "Bolide",
+        modelName: "Bolide 27",
+      },
+      {
+        id: "u-2",
+        brand: "Hermès",
+        productLine: "Bolide",
+        modelName: "Bolide 31",
+      },
     ],
   },
 ];

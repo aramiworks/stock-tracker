@@ -112,8 +112,7 @@ export const TrackerCatalogBrowseControllers =
     );
   });
 
-TrackerCatalogBrowseControllers.displayName =
-  "TrackerCatalogBrowseControllers";
+TrackerCatalogBrowseControllers.displayName = "TrackerCatalogBrowseControllers";
 
 export const useTrackerCatalogBrowseControllers = () => {
   const context = useContext(ControllersContext);

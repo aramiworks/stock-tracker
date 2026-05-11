@@ -53,7 +53,8 @@ export const TrackerCatalogBrowseViews = memo(
     const { t } = useTranslation("tracker");
 
     const resolveGroupState =
-      getGroupState ?? ((g: CatalogGroup) => defaultGroupState(g, selectedUnitIds));
+      getGroupState ??
+      ((g: CatalogGroup) => defaultGroupState(g, selectedUnitIds));
 
     const content: Record<TrackerCatalogBrowseScreenState, ReactNode> = {
       default: (

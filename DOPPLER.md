@@ -70,15 +70,12 @@ Required by `apps/scraper` (Trigger.dev v3 restock polling service).
 
 ### Proxy credentials
 
-Residential proxy credentials for the restock scraper. Set after Jace provisions the proxy account.
+Residential proxy credentials for the restock scraper (Oxylabs PAYG, provisioned 2026-05-08).
 
-| Var              | Description                                     |
-| ---------------- | ----------------------------------------------- |
-| `PROXY_PROVIDER` | Provider name (e.g., `oxylabs`)                 |
-| `PROXY_HOST`     | Proxy endpoint hostname (e.g., `pr.oxylabs.io`) |
-| `PROXY_PORT`     | Proxy endpoint port (e.g., `7777`)              |
-| `PROXY_USERNAME` | Auth username from provider dashboard           |
-| `PROXY_PASSWORD` | Auth password from provider dashboard           |
-| `PROXY_COUNTRY`  | Target country code (e.g., `KR`)                |
-
-<!-- TODO(INF-1357): set actual values after Jace provisions Oxylabs account -->
+| Var                  | Description                                                                     |
+| -------------------- | ------------------------------------------------------------------------------- |
+| `PROXY_HOST`         | Proxy endpoint hostname (`pr.oxylabs.io`)                                       |
+| `PROXY_PORT`         | Proxy endpoint port (`7777`)                                                    |
+| `PROXY_USERNAME`     | Oxylabs sub-user (base — append `-cc-{country}` at use-time)                    |
+| `PROXY_PASSWORD`     | Auth password (from 1Password: `Openclaw/oxylabs.stock-tracker` → `credential`) |
+| `PROXY_COUNTRY_CODE` | Target country code (`KR`)                                                      |

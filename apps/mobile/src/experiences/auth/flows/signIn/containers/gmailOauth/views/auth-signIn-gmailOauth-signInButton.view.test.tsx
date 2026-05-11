@@ -15,5 +15,4 @@ describe("AuthSignInGmailOauthSignInButtonView", () => {
     fireEvent.press(getByTestId("sign-in-google-button"));
     expect(onPress).toHaveBeenCalledTimes(1);
   });
-
 });

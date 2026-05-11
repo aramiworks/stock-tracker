@@ -1,8 +1,10 @@
 import { memo } from "react";
 import { View, StyleSheet } from "react-native";
-import { Button, Text, ProgressIndicator } from "@aramiworks/ui";
+import { Text } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import { useAuthSignInGmailOauthControllers } from "../controllers/auth-signIn-gmailOauth.controllers";
+import { AuthSignInGmailOauthSignInButtonView } from "./auth-signIn-gmailOauth-signInButton.view";
+import { AuthSignInGmailOauthLoadingStateView } from "./auth-signIn-gmailOauth-loadingState.view";
 
 export const AuthSignInGmailOauthViews = memo(() => {
   const { signInWithGoogle, isSigningIn } =
@@ -31,18 +33,12 @@ export const AuthSignInGmailOauthViews = memo(() => {
       </Text>
       <View style={styles.buttonWrapper}>
         {isSigningIn ? (
-          <ProgressIndicator type="circular" size={32} />
+          <AuthSignInGmailOauthLoadingStateView />
         ) : (
-          <Button
-            variant="elevated"
+          <AuthSignInGmailOauthSignInButtonView
             onPress={signInWithGoogle}
             disabled={isSigningIn}
-            minWidth={200}
-            color="$primary"
-            testID="sign-in-google-button"
-          >
-            {t("signIn.googleButton")}
-          </Button>
+          />
         )}
       </View>
     </View>

@@ -1,5 +1,4 @@
 appId: so.arami.stocktracker.app
-url: ${MAESTRO_APP_URL}
 name: Tracker - Account - Home
 tags:
   - authenticated

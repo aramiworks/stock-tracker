@@ -18,7 +18,8 @@
       "@stock-tracker/validation",
       "@stock-tracker/config",
       "@stock-tracker/eslint-config",
-      "@stock-tracker/typescript-config"
+      "@stock-tracker/typescript-config",
+      "@stock-tracker/scraper"
     ]
   ],
   "linked": [],

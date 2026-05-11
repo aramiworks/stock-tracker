@@ -4,27 +4,29 @@ name: Tracker - Tab Navigation
 tags:
   - authenticated
 ---
-# Cycle the three live bottom tabs (alerts / watchlist / history) and assert
-# each container renders. Account tab is pending under INF-1334 and skipped.
+# Cycle the three live bottom tabs (catalog / watchlist / history) and assert
+# each container renders. INF-1391 reshaped the nav to drop the Alerts tab
+# (parked in `_archived_eligibility`) and lead with Catalog (the Shengsho
+# entry point). Account remains hidden via `href: null`.
 
 - launchApp
 
-# Default landing tab — alerts (재입고 알림)
-- tapOn: "알림"
+# Default landing tab — catalog
+- tapOn: "카탈로그"
 - assertVisible:
-    id: "dashboard-home-screen"
+    id: "catalog-browse-screen"
 
 # Watchlist tab (관심목록)
 - tapOn: "관심목록"
 - assertVisible:
     id: "accounts-list-screen"
 
-# History tab (히스토리)
-- tapOn: "히스토리"
+# History tab (알림내역)
+- tapOn: "알림내역"
 - assertVisible:
     id: "history-browse-screen"
 
-# Cycle back to alerts to confirm bidirectional navigation
-- tapOn: "알림"
+# Cycle back to catalog to confirm bidirectional navigation
+- tapOn: "카탈로그"
 - assertVisible:
-    id: "dashboard-home-screen"
+    id: "catalog-browse-screen"

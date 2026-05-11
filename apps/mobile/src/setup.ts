@@ -88,6 +88,13 @@ jest.mock("@aramiworks/ui", () => {
     YStack: passthrough,
     Skeleton: (props: Record<string, unknown>) =>
       React.createElement(View, { testID: props.testID || "skeleton" }),
+    Checkbox: (props: Record<string, unknown>) =>
+      React.createElement(View, {
+        testID: props.testID,
+        onPress: props.onPress,
+        accessibilityLabel: props.accessibilityLabel,
+        accessibilityState: { checked: props.state === "checked" },
+      }),
     Spacer: () => React.createElement(View),
     EmptyStateTemplate: (props: Record<string, unknown>) =>
       React.createElement(

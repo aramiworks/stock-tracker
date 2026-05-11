@@ -18,6 +18,10 @@ export default function AppLayout() {
     return <Redirect href="/auth/signIn/gmailOauth" />;
   }
 
+  // Shengsho-aligned bottom nav per INF-1391:
+  //   Catalog → Watchlist → History (no Alerts tab)
+  // The Alerts experience is parked under `_archived_eligibility/` until the
+  // Eligibility revival lands.
   return (
     <Tabs
       screenOptions={{
@@ -40,10 +44,10 @@ export default function AppLayout() {
       }}
     >
       <Tabs.Screen
-        name="tracker/alerts"
+        name="tracker/catalog"
         options={{
-          title: t("nav.alerts"),
-          tabBarIcon: ({ focused }) => <TabIcon label="🔔" focused={focused} />,
+          title: t("nav.catalog"),
+          tabBarIcon: ({ focused }) => <TabIcon label="🛍" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -58,6 +62,12 @@ export default function AppLayout() {
         options={{
           title: t("nav.history"),
           tabBarIcon: ({ focused }) => <TabIcon label="📋" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="tracker/alerts"
+        options={{
+          href: null,
         }}
       />
       <Tabs.Screen

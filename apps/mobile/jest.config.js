@@ -26,6 +26,7 @@ module.exports = {
     "!src/**/*.flows.ts",
     "!src/**/*.flow.tsx",
     "!src/**/*.experience.tsx",
+    "!src/**/*.mock.ts",
     "!src/lib/graphql/generated/**",
     "!src/lib/tamagui/tamagui.config.ts",
     "!src/setup.ts",

@@ -18,3 +18,6 @@ export * from "./fetch/BrowserFetcher.js";
 export * from "./fetch/proxy.js";
 export * from "./state/StateBuffer.js";
 export * from "./ingest/trpcClient.js";
+
+// Spike: fetcher bake test (INF-1360)
+export { bakeTestFetchers } from "./spikes/fetcher-bake-test/index.js";

@@ -56,9 +56,9 @@ doppler run -- npm run dev:router
 
 ### Tracker-service ingest auth
 
-| Var                            | Purpose                                                          |
-| ------------------------------ | ---------------------------------------------------------------- |
-| `TRACKER_INGEST_SERVICE_TOKEN` | Shared secret for scraper → tracker service-to-service auth      |
+| Var                            | Purpose                                                     |
+| ------------------------------ | ----------------------------------------------------------- |
+| `TRACKER_INGEST_SERVICE_TOKEN` | Shared secret for scraper → tracker service-to-service auth |
 
 Jace populates this in Doppler. The scraper sends it as `X-Service-Token`; the tracker-service validates it with constant-time comparison.
 

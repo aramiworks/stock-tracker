@@ -58,4 +58,27 @@ export class TrackerCatalogBrowseModels {
       },
     });
   }
+
+  /**
+   * Returns all active watchable units, ordered by brand → product_line →
+   * model_name. The minimal shape (no SKUs, no timestamps) is what the
+   * Shengsho-style catalog browse UI needs to render the grouped grid; the
+   * caller is responsible for grouping by product_line.
+   */
+  findAllActive() {
+    return this.prisma.watchable_units.findMany({
+      where: { active: true },
+      select: {
+        id: true,
+        brand: true,
+        product_line: true,
+        model_name: true,
+      },
+      orderBy: [
+        { brand: "asc" },
+        { product_line: "asc" },
+        { model_name: "asc" },
+      ],
+    });
+  }
 }

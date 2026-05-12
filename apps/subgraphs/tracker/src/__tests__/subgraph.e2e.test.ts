@@ -371,6 +371,57 @@ describe("catalog queries", () => {
     expect(data?.catalog.items.length).toBeGreaterThanOrEqual(2);
   });
 
+  it("returns grouped catalog list anonymously (catalogList)", async () => {
+    const res = await execUnauth(`
+      query {
+        catalogList {
+          brand
+          productLine
+          units {
+            id
+            brand
+            productLine
+            modelName
+          }
+        }
+      }
+    `);
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(Array.isArray(data?.catalogList)).toBe(true);
+    expect(data?.catalogList.length).toBeGreaterThanOrEqual(2);
+
+    type Group = {
+      brand: string;
+      productLine: string;
+      units: { id: string; modelName: string; brand: string }[];
+    };
+    const groups = data?.catalogList as Group[];
+
+    // Outer order: brand ASC, then productLine ASC
+    const flatKeys = groups.map((g) => `${g.brand}|${g.productLine}`);
+    const sortedKeys = [...flatKeys].sort();
+    expect(flatKeys).toEqual(sortedKeys);
+
+    // Each group's units sorted by modelName ASC
+    for (const g of groups) {
+      const names = g.units.map((u) => u.modelName);
+      expect(names).toEqual([...names].sort());
+      // All units in the group share its (brand, productLine)
+      for (const u of g.units) {
+        expect(u.brand).toBe(g.brand);
+      }
+    }
+
+    // Seeded Hermes/Birkin unit appears under Hermes
+    const hermesGroup = groups.find(
+      (g) => g.brand === "Hermes" && g.productLine === "Birkin",
+    );
+    expect(hermesGroup).toBeDefined();
+    expect(hermesGroup!.units.some((u) => u.id === seededUnitId)).toBe(true);
+  });
+
   it("paginates with limit and cursor", async () => {
     const firstPage = await exec(`
       query {

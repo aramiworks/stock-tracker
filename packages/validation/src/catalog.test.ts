@@ -4,6 +4,7 @@ import {
   watchableUnitWithSkusOutputSchema,
   skuOutputSchema,
   catalogBrowseInputSchema,
+  catalogListOutputSchema,
 } from "./catalog.js";
 
 const validUnit = {
@@ -173,5 +174,52 @@ describe("catalogBrowseInputSchema", () => {
     expect(
       catalogBrowseInputSchema.safeParse({ search: "test\x00string" }).success,
     ).toBe(false);
+  });
+});
+
+describe("catalogListOutputSchema", () => {
+  it("accepts an empty array", () => {
+    expect(catalogListOutputSchema.parse([])).toEqual([]);
+  });
+
+  it("accepts a fully-shaped grouped catalog payload", () => {
+    const payload = [
+      {
+        brand: "Hermes",
+        productLine: "Bolide",
+        units: [
+          {
+            id: "11111111-1111-4111-8111-111111111111",
+            brand: "Hermes",
+            productLine: "Bolide",
+            modelName: "Bolide 27",
+          },
+        ],
+      },
+    ];
+    expect(catalogListOutputSchema.parse(payload)).toEqual(payload);
+  });
+
+  it("rejects a unit with a non-uuid id", () => {
+    const payload = [
+      {
+        brand: "Hermes",
+        productLine: "Bolide",
+        units: [
+          {
+            id: "not-a-uuid",
+            brand: "Hermes",
+            productLine: "Bolide",
+            modelName: "Bolide 27",
+          },
+        ],
+      },
+    ];
+    expect(catalogListOutputSchema.safeParse(payload).success).toBe(false);
+  });
+
+  it("rejects a group missing the units array", () => {
+    const payload = [{ brand: "Hermes", productLine: "Bolide" }];
+    expect(catalogListOutputSchema.safeParse(payload).success).toBe(false);
   });
 });

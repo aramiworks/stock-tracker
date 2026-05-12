@@ -67,3 +67,22 @@ export const catalogPageOutputSchema = z.object({
   items: z.array(watchableUnitWithSkusOutputSchema),
   nextCursor: z.string().uuid().nullable(),
 });
+
+// -- Catalog list (grouped by product_line) --------------------------------
+// Minimal WatchableUnit shape used by the Shengsho-style catalog browse UI.
+// No SKUs, no timestamps — just the fields needed to render the grid.
+
+export const catalogListUnitSchema = z.object({
+  id: z.string().uuid(),
+  brand: z.string(),
+  productLine: z.string(),
+  modelName: z.string(),
+});
+
+export const catalogListGroupSchema = z.object({
+  brand: z.string(),
+  productLine: z.string(),
+  units: z.array(catalogListUnitSchema),
+});
+
+export const catalogListOutputSchema = z.array(catalogListGroupSchema);

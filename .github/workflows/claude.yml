@@ -32,7 +32,9 @@ jobs:
           require: write
           username: ${{ github.triggering_actor }}
       - name: Abort if not authorized
-        if: steps.check-permission.outputs.require-result != 'true'
+        if: |
+          steps.check-permission.outputs.require-result != 'true' &&
+          github.triggering_actor != 'claude-arami[bot]'
         run: |
           echo "::error::User ${{ github.triggering_actor }} does not have write permission"
           exit 1

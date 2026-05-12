@@ -1,86 +1,84 @@
 import { gql } from "graphql-tag";
 
 export const trackerTypeDefs = gql`
-  type Account @key(fields: "id") {
+  type WatchableUnit @key(fields: "id") {
     id: ID!
-    storeName: String!
-    saName: String
-    notes: String
-    createdAt: String!
-    purchases: [Purchase!]!
+    brand: String!
+    productLine: String!
+    modelName: String!
+    imageUrl: String
+    active: Boolean!
+    skus: [Sku!]!
   }
 
-  type Purchase @key(fields: "id") {
+  type Sku @key(fields: "id") {
     id: ID!
-    itemName: String!
-    itemCategory: String
-    amount: Float!
-    currency: String!
-    purchaseDate: String!
-    storeLocation: String
-    notes: String
+    color: String!
+    leather: String
+    hardware: String
+    size: String
+    referenceCode: String
+    imageUrl: String
+    active: Boolean!
+  }
+
+  type Watch @key(fields: "id") {
+    id: ID!
+    watchableUnitId: ID!
+    skuId: ID
+    notifyPush: Boolean!
+    notifyEmail: Boolean!
+    active: Boolean!
     createdAt: String!
+    watchableUnit: WatchableUnit!
+    sku: Sku
+  }
+
+  type Alert {
+    id: ID!
+    watchId: ID!
+    channel: String!
+    sentAt: String
+    readAt: String
+    createdAt: String!
+    dropEvent: DropEvent!
+  }
+
+  type DropEvent {
+    id: ID!
+    skuId: ID!
+    sourceUrl: String
+    detectedAt: String!
   }
 
   type DashboardSummary {
-    totalAccounts: Int!
-    totalPurchases: Int!
-    totalSpent: Float!
+    activeWatches: Int!
+    unreadAlerts: Int!
+    recentDrops: Int!
   }
 
-  input CreateAccountInput {
-    storeName: String!
-    saName: String
-    notes: String
+  type CatalogPage {
+    items: [WatchableUnit!]!
+    nextCursor: ID
   }
 
-  input UpdateAccountInput {
+  type AlertFeed {
+    items: [Alert!]!
+    nextCursor: ID
+  }
+
+  input CreateWatchInput {
+    watchableUnitId: ID!
+    skuId: ID
+    notifyPush: Boolean
+    notifyEmail: Boolean
+  }
+
+  input UpdateWatchInput {
     id: ID!
-    storeName: String
-    saName: String
-    notes: String
-  }
-
-  input CreatePurchaseInput {
-    accountId: ID!
-    itemName: String!
-    itemCategory: String
-    amount: Float!
-    currency: String
-    purchaseDate: String!
-    storeLocation: String
-    notes: String
-  }
-
-  input UpdatePurchaseInput {
-    id: ID!
-    itemName: String
-    itemCategory: String
-    amount: Float
-    currency: String
-    purchaseDate: String
-    storeLocation: String
-    notes: String
-  }
-
-  input DateRangeInput {
-    from: String
-    to: String
-  }
-
-  input AmountRangeInput {
-    min: Float
-    max: Float
-  }
-
-  enum AccountSortBy {
-    store_name
-    created_at
-  }
-
-  enum SortOrder {
-    asc
-    desc
+    notifyPush: Boolean
+    notifyEmail: Boolean
+    active: Boolean
   }
 
   extend type Query {
@@ -90,38 +88,42 @@ export const trackerTypeDefs = gql`
     dashboard: DashboardSummary!
 
     """
-    List all accounts for the current user
+    Browse the product catalog
     """
-    accounts(
-      sortBy: AccountSortBy
-      sortOrder: SortOrder
+    catalog(
+      brand: String
+      productLine: String
       search: String
-    ): [Account!]!
+      activeOnly: Boolean
+      cursor: ID
+      limit: Int
+    ): CatalogPage!
 
     """
-    Get a single account by ID
+    Get a single catalog item by ID
     """
-    account(id: ID!): Account
+    catalogItem(id: ID!): WatchableUnit
 
     """
-    Purchase history with optional filtering
+    List the current user's watches
     """
-    purchases(
-      accountId: ID
-      sortOrder: SortOrder
-      dateRange: DateRangeInput
-      amountRange: AmountRangeInput
-      itemCategory: String
-      search: String
-    ): [Purchase!]!
+    watches: [Watch!]!
+
+    """
+    List alerts for the current user
+    """
+    alerts(unreadOnly: Boolean, cursor: ID, limit: Int): AlertFeed!
+
+    """
+    Count of unread alerts
+    """
+    unreadAlertCount: Int!
   }
 
   extend type Mutation {
-    createAccount(input: CreateAccountInput!): Account!
-    updateAccount(input: UpdateAccountInput!): Account!
-    deleteAccount(id: ID!): Boolean!
-    createPurchase(input: CreatePurchaseInput!): Purchase!
-    updatePurchase(input: UpdatePurchaseInput!): Purchase!
-    deletePurchase(id: ID!): Boolean!
+    createWatch(input: CreateWatchInput!): Watch!
+    updateWatch(input: UpdateWatchInput!): Watch!
+    deleteWatch(id: ID!): Boolean!
+    markAlertRead(id: ID!): Boolean!
   }
 `;

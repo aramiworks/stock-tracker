@@ -1,87 +1,79 @@
-import { describe, it, expect } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import { userOutputSchema, userUpsertInputSchema } from "./auth.js";
 
+const validUser = {
+  id: "11111111-1111-4111-8111-111111111111",
+  supabaseId: "22222222-2222-4222-8222-222222222222",
+  email: "user@example.com",
+  displayName: "Jace",
+  createdAt: new Date("2025-01-01T00:00:00Z"),
+  updatedAt: new Date("2025-01-02T00:00:00Z"),
+};
+
 describe("userOutputSchema", () => {
-  it("accepts a valid user output", () => {
-    const result = userOutputSchema.parse({
-      id: "550e8400-e29b-41d4-a716-446655440000",
-      supabaseId: "550e8400-e29b-41d4-a716-446655440001",
-      email: "test@example.com",
-      displayName: "Test User",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    expect(result.email).toBe("test@example.com");
+  it("accepts a fully populated user", () => {
+    expect(userOutputSchema.parse(validUser)).toEqual(validUser);
   });
 
-  it("accepts null displayName", () => {
-    const result = userOutputSchema.parse({
-      id: "550e8400-e29b-41d4-a716-446655440000",
-      supabaseId: "550e8400-e29b-41d4-a716-446655440001",
-      email: "test@example.com",
-      displayName: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    expect(result.displayName).toBeNull();
+  it("accepts a null displayName", () => {
+    expect(
+      userOutputSchema.parse({ ...validUser, displayName: null }).displayName,
+    ).toBeNull();
   });
 
-  it("rejects invalid email", () => {
-    expect(() =>
-      userOutputSchema.parse({
-        id: "550e8400-e29b-41d4-a716-446655440000",
-        supabaseId: "550e8400-e29b-41d4-a716-446655440001",
-        email: "not-an-email",
-        displayName: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    ).toThrow();
+  it("rejects an invalid email", () => {
+    expect(
+      userOutputSchema.safeParse({ ...validUser, email: "not-an-email" })
+        .success,
+    ).toBe(false);
   });
 
-  it("rejects non-UUID id fields", () => {
-    expect(() =>
-      userOutputSchema.parse({
-        id: "not-a-uuid",
-        supabaseId: "550e8400-e29b-41d4-a716-446655440001",
-        email: "test@example.com",
-        displayName: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    ).toThrow();
+  it("rejects an invalid uuid", () => {
+    expect(
+      userOutputSchema.safeParse({ ...validUser, id: "nope" }).success,
+    ).toBe(false);
+  });
+
+  it("rejects a non-Date createdAt", () => {
+    expect(
+      userOutputSchema.safeParse({ ...validUser, createdAt: "2025-01-01" })
+        .success,
+    ).toBe(false);
   });
 });
 
 describe("userUpsertInputSchema", () => {
-  it("accepts a valid email", () => {
-    const result = userUpsertInputSchema.parse({ email: "test@example.com" });
-    expect(result.email).toBe("test@example.com");
-  });
-
-  it("rejects missing email", () => {
-    expect(() => userUpsertInputSchema.parse({})).toThrow();
-  });
-
-  it("accepts optional displayName", () => {
-    const result = userUpsertInputSchema.parse({
-      email: "test@example.com",
-      displayName: "Test User",
+  it("accepts the minimum payload (email only)", () => {
+    expect(userUpsertInputSchema.parse({ email: "user@example.com" })).toEqual({
+      email: "user@example.com",
     });
-    expect(result.displayName).toBe("Test User");
   });
 
-  it("accepts nullable displayName", () => {
-    const result = userUpsertInputSchema.parse({
-      email: "test@example.com",
-      displayName: null,
-    });
-    expect(result.displayName).toBeNull();
+  it("accepts a string displayName", () => {
+    expect(
+      userUpsertInputSchema.parse({
+        email: "user@example.com",
+        displayName: "Jace",
+      }),
+    ).toEqual({ email: "user@example.com", displayName: "Jace" });
   });
 
-  it("rejects invalid email", () => {
-    expect(() =>
-      userUpsertInputSchema.parse({ email: "not-an-email" }),
-    ).toThrow();
+  it("accepts a null displayName", () => {
+    expect(
+      userUpsertInputSchema.parse({
+        email: "user@example.com",
+        displayName: null,
+      }).displayName,
+    ).toBeNull();
+  });
+
+  it("rejects when email is missing", () => {
+    expect(userUpsertInputSchema.safeParse({}).success).toBe(false);
+  });
+
+  it("rejects an invalid email", () => {
+    expect(
+      userUpsertInputSchema.safeParse({ email: "not-an-email" }).success,
+    ).toBe(false);
   });
 });

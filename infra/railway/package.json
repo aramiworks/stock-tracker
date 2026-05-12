@@ -7,7 +7,7 @@
     "setup": "tsx src/setup.ts",
     "setup:develop": "tsx src/setup.ts develop",
     "setup:stage": "tsx src/setup.ts stage",
-    "setup:production": "tsx src/setup.ts production"
+    "setup:master": "tsx src/setup.ts master"
   },
   "dependencies": {
     "graphql": "^16.13.2",

@@ -31,9 +31,8 @@ doppler setup --project stock-tracker --config local
 npm run dev:dashboard
 
 # Or individual services
-doppler run -- npm run dev:api
+doppler run -- npm run dev:subgraph
 doppler run -- npm run dev:router
-doppler run -- docker compose up
 ```
 
 ## Required vars (local config)
@@ -50,8 +49,36 @@ doppler run -- docker compose up
 | `SUPABASE_JWKS_URL`             | `http://localhost:54321/auth/v1/.well-known/jwks.json`    |
 | `GOOGLE_OAUTH_CLIENT_ID`        | GCP web client ID (public, for `config.toml` `env()`)     |
 | `GOOGLE_OAUTH_CLIENT_SECRET`    | GCP web client secret (from 1Password)                    |
-| `TRPC_SERVICE_URL`              | `http://localhost:4000`                                   |
+| `TRPC_AUTH_SERVICE_URL`         | `http://localhost:4030/trpc`                              |
+| `TRPC_TRACKER_SERVICE_URL`      | `http://localhost:4020/trpc`                              |
 | `ALLOWED_ORIGINS`               | `http://localhost:19006,...`                              |
 | `NODE_ENV`                      | `development`                                             |
 
 For `dev`/`stg`/`prd` configs, populate via the Doppler dashboard with the respective Railway + Supabase cloud credentials.
+
+## Scraper vars
+
+Required by `apps/scraper` (Trigger.dev v3 restock polling service).
+
+| Var                            | Purpose                                                             |
+| ------------------------------ | ------------------------------------------------------------------- |
+| `TRIGGER_PROJECT_ID`           | Trigger.dev project reference (from Trigger.dev dashboard)          |
+| `TRIGGER_SECRET_KEY`           | Trigger.dev API secret key                                          |
+| `DATABASE_URL`                 | Supabase Postgres connection string (same as tracker)               |
+| `TRACKER_INGEST_URL`           | URL of tracker-service tRPC endpoint (placeholder for INF-1361)     |
+| `TRACKER_INGEST_SERVICE_TOKEN` | Service-to-service auth token (placeholder for INF-1361 / INF-1356) |
+
+### Proxy credentials
+
+Residential proxy credentials for the restock scraper. Set after Jace provisions the proxy account.
+
+| Var              | Description                                     |
+| ---------------- | ----------------------------------------------- |
+| `PROXY_PROVIDER` | Provider name (e.g., `oxylabs`)                 |
+| `PROXY_HOST`     | Proxy endpoint hostname (e.g., `pr.oxylabs.io`) |
+| `PROXY_PORT`     | Proxy endpoint port (e.g., `7777`)              |
+| `PROXY_USERNAME` | Auth username from provider dashboard           |
+| `PROXY_PASSWORD` | Auth password from provider dashboard           |
+| `PROXY_COUNTRY`  | Target country code (e.g., `KR`)                |
+
+<!-- TODO(INF-1357): set actual values after Jace provisions Oxylabs account -->

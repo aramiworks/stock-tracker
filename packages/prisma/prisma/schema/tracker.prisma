@@ -1,34 +1,124 @@
-model tracker_accounts {
+// Multi-brand luxury restock alert — catalog + alerts
+// Replaces old Cartier purchase tracker schema (accounts/purchases)
+
+// -- Catalog ---------------------------------------------------------------
+
+model watchable_units {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  auth_user_id String   @db.Uuid
-  store_name   String
-  sa_name      String?
-  notes        String?
+  brand        String // e.g. "Hermes", "Chanel", "Dior", "LouisVuitton"
+  product_line String // brand-specific, e.g. "Birkin", "Kelly", "Classic Flap"
+  model_name   String // e.g. "Birkin 25", "Kelly 28 Sellier"
+  image_url    String?
+  active       Boolean  @default(true)
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
-  auth_user         auth_users          @relation(fields: [auth_user_id], references: [id])
-  tracker_purchases tracker_purchases[]
+  skus    skus[]
+  watches watches[]
 
-  @@index([auth_user_id, store_name])
-  @@index([auth_user_id, created_at])
+  @@unique([brand, model_name])
+  @@index([brand, product_line])
+  @@index([active])
 }
 
-model tracker_purchases {
-  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tracker_account_id String   @db.Uuid
-  item_name          String
-  item_category      String?
-  amount             Decimal  @db.Decimal(12, 2)
-  currency           String   @default("KRW")
-  purchase_date      DateTime
-  store_location     String?
-  notes              String?
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+model skus {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  watchable_unit_id String   @db.Uuid
+  color             String // e.g. "Noir", "Gold", "Etoupe"
+  leather           String? // e.g. "Togo", "Epsom", "Swift"
+  hardware          String? // e.g. "GHW", "PHW"
+  size              String? // e.g. "25", "28", "30"
+  reference_code    String?  @unique
+  image_url         String?
+  active            Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 
-  tracker_account tracker_accounts @relation(fields: [tracker_account_id], references: [id], onDelete: Cascade)
+  watchable_unit  watchable_units  @relation(fields: [watchable_unit_id], references: [id])
+  drop_events     drop_events[]
+  watches         watches[]
+  sku_stock_state sku_stock_state?
+  parse_errors    parse_errors[]
 
-  @@index([tracker_account_id, purchase_date])
-  @@index([tracker_account_id, item_category])
+  @@index([watchable_unit_id])
+  @@index([color, leather])
+}
+
+// -- Alerts ----------------------------------------------------------------
+
+model watches {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id      String   @db.Uuid
+  watchable_unit_id String   @db.Uuid
+  sku_id            String?  @db.Uuid
+  notify_push       Boolean  @default(true)
+  notify_email      Boolean  @default(false)
+  active            Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  auth_user      auth_users      @relation(fields: [auth_user_id], references: [supabase_id])
+  watchable_unit watchable_units @relation(fields: [watchable_unit_id], references: [id])
+  sku            skus?           @relation(fields: [sku_id], references: [id])
+  alerts         alerts[]
+
+  @@unique([auth_user_id, watchable_unit_id, sku_id])
+  @@index([auth_user_id, active])
+  @@index([watchable_unit_id])
+}
+
+model drop_events {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku_id      String    @db.Uuid
+  source_url  String?
+  detected_at DateTime  @default(now())
+  expired_at  DateTime?
+
+  sku    skus     @relation(fields: [sku_id], references: [id])
+  alerts alerts[]
+
+  @@index([sku_id, detected_at])
+  @@index([detected_at])
+}
+
+model alerts {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  watch_id      String    @db.Uuid
+  drop_event_id String    @db.Uuid
+  channel       String // "push" | "email"
+  sent_at       DateTime?
+  read_at       DateTime?
+  created_at    DateTime  @default(now())
+
+  watch      watches     @relation(fields: [watch_id], references: [id], onDelete: Cascade)
+  drop_event drop_events @relation(fields: [drop_event_id], references: [id])
+
+  @@index([watch_id, created_at])
+  @@index([drop_event_id])
+}
+
+// -- Scraper state -----------------------------------------------------------
+
+model sku_stock_state {
+  sku_id             String   @id @db.Uuid
+  in_stock           Boolean
+  last_checked       DateTime
+  last_changed       DateTime
+  consecutive_errors Int      @default(0)
+
+  sku skus @relation(fields: [sku_id], references: [id])
+}
+
+model parse_errors {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku_id      String?  @db.Uuid
+  brand       String
+  source_url  String?
+  error_msg   String
+  raw_payload Json
+  created_at  DateTime @default(now())
+
+  sku skus? @relation(fields: [sku_id], references: [id], onDelete: SetNull)
+
+  @@index([brand, created_at])
 }

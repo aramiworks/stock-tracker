@@ -51,7 +51,6 @@ jobs:
               - 'apps/subgraphs/**'
             dockerfiles:
               - 'apps/subgraphs/*/Dockerfile'
-              - 'apps/api/Dockerfile'
               - 'apps/router/Dockerfile'
             stories:
               - 'apps/mobile/src/**/*.story.tsx'
@@ -251,6 +250,8 @@ jobs:
           github-token: ${{ secrets.PKG_READ_TOKEN }}
       - name: Build subgraphs
         run: npx turbo run build --filter='./apps/subgraphs/*'
+      - name: Verify schema.graphql is in sync with source typedefs
+        run: git diff --exit-code -- 'apps/subgraphs/*/schema.graphql'
       - name: Cache Rover CLI
         id: rover-cache
         uses: actions/cache@v4
@@ -261,7 +262,16 @@ jobs:
         if: steps.rover-cache.outputs.cache-hit != 'true'
         run: curl -sSL https://rover.apollo.dev/nix/latest | sh
       - name: Check schema
-        run: ~/.rover/bin/rover subgraph check $APOLLO_GRAPH_REF --schema ./apps/subgraphs/*/schema.graphql --name stock-tracker
+        run: |
+          for schema in ./apps/subgraphs/*/schema.graphql; do
+            subgraph_dir=$(dirname "$schema")
+            subgraph_name=$(basename "$subgraph_dir")
+            echo "Checking $subgraph_name against $APOLLO_GRAPH_REF..."
+            ~/.rover/bin/rover subgraph check "$APOLLO_GRAPH_REF" \
+              --schema "$schema" \
+              --name "$subgraph_name" \
+              --query-count-threshold 1
+          done
         env:
           APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
           APOLLO_GRAPH_REF: ${{ vars.APOLLO_GRAPH_REF }}

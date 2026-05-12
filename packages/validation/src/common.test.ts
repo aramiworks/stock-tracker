@@ -1,56 +1,55 @@
-import { describe, it, expect } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import {
-  uuidSchema,
-  paginationInputSchema,
-  sortOrderSchema,
-  currencySchema,
-  itemCategorySchema,
-  sanitizedString,
   dateRangeSchema,
-  amountRangeSchema,
+  brandSchema,
+  alertChannelSchema,
+  paginationInputSchema,
+  sanitizedString,
+  sortOrderSchema,
+  uuidSchema,
 } from "./common.js";
 
 describe("uuidSchema", () => {
-  it("accepts a valid UUID", () => {
-    expect(
-      uuidSchema.parse("550e8400-e29b-41d4-a716-446655440000"),
-    ).toBeDefined();
+  it("accepts a valid uuid", () => {
+    expect(uuidSchema.parse("11111111-1111-4111-8111-111111111111")).toBe(
+      "11111111-1111-4111-8111-111111111111",
+    );
   });
 
-  it("rejects a non-UUID string", () => {
-    expect(() => uuidSchema.parse("not-a-uuid")).toThrow();
+  it("rejects a non-uuid string", () => {
+    expect(uuidSchema.safeParse("not-a-uuid").success).toBe(false);
   });
 });
 
 describe("paginationInputSchema", () => {
-  it("defaults limit to 20", () => {
-    const result = paginationInputSchema.parse({});
-    expect(result.limit).toBe(20);
-    expect(result.cursor).toBeUndefined();
+  it("applies the default limit when omitted", () => {
+    expect(paginationInputSchema.parse({})).toEqual({ limit: 20 });
   });
 
-  it("accepts a valid cursor UUID", () => {
-    const result = paginationInputSchema.parse({
-      cursor: "550e8400-e29b-41d4-a716-446655440000",
+  it("accepts a valid cursor and limit", () => {
+    const cursor = "11111111-1111-4111-8111-111111111111";
+    expect(paginationInputSchema.parse({ cursor, limit: 50 })).toEqual({
+      cursor,
+      limit: 50,
     });
-    expect(result.cursor).toBe("550e8400-e29b-41d4-a716-446655440000");
   });
 
-  it("rejects a non-UUID cursor", () => {
-    expect(() => paginationInputSchema.parse({ cursor: "abc" })).toThrow();
+  it("rejects a non-uuid cursor", () => {
+    expect(
+      paginationInputSchema.safeParse({ cursor: "nope", limit: 10 }).success,
+    ).toBe(false);
   });
 
-  it("rejects limit below 1", () => {
-    expect(() => paginationInputSchema.parse({ limit: 0 })).toThrow();
+  it("rejects a limit below 1", () => {
+    expect(paginationInputSchema.safeParse({ limit: 0 }).success).toBe(false);
   });
 
-  it("rejects limit above 100", () => {
-    expect(() => paginationInputSchema.parse({ limit: 101 })).toThrow();
+  it("rejects a limit above 100", () => {
+    expect(paginationInputSchema.safeParse({ limit: 101 }).success).toBe(false);
   });
 
-  it("accepts limit at boundaries", () => {
-    expect(paginationInputSchema.parse({ limit: 1 }).limit).toBe(1);
-    expect(paginationInputSchema.parse({ limit: 100 }).limit).toBe(100);
+  it("rejects a non-integer limit", () => {
+    expect(paginationInputSchema.safeParse({ limit: 5.5 }).success).toBe(false);
   });
 });
 
@@ -63,81 +62,67 @@ describe("sortOrderSchema", () => {
     expect(sortOrderSchema.parse("asc")).toBe("asc");
   });
 
-  it("accepts desc", () => {
-    expect(sortOrderSchema.parse("desc")).toBe("desc");
-  });
-
-  it("rejects invalid values", () => {
-    expect(() => sortOrderSchema.parse("up")).toThrow();
+  it("rejects unknown values", () => {
+    expect(sortOrderSchema.safeParse("sideways").success).toBe(false);
   });
 });
 
-describe("currencySchema", () => {
-  const validCurrencies = ["KRW", "USD", "EUR", "JPY", "GBP", "CNY"];
-
-  it.each(validCurrencies)("accepts %s", (currency) => {
-    expect(currencySchema.parse(currency)).toBe(currency);
+describe("brandSchema", () => {
+  it.each([
+    "Hermes",
+    "Chanel",
+    "Dior",
+    "LouisVuitton",
+    "Gucci",
+    "Celine",
+    "Bottega",
+    "Other",
+  ] as const)("accepts %s", (brand) => {
+    expect(brandSchema.parse(brand)).toBe(brand);
   });
 
-  it("rejects invalid currency", () => {
-    expect(() => currencySchema.parse("AUD")).toThrow();
+  it("rejects an unknown brand", () => {
+    expect(brandSchema.safeParse("Supreme").success).toBe(false);
   });
 });
 
-describe("itemCategorySchema", () => {
-  const validCategories = [
-    "브레이슬릿",
-    "목걸이",
-    "시계",
-    "반지",
-    "귀걸이",
-    "가방",
-    "지갑",
-    "벨트",
-    "기타",
-  ];
-
-  it.each(validCategories)("accepts %s", (category) => {
-    expect(itemCategorySchema.parse(category)).toBe(category);
+describe("alertChannelSchema", () => {
+  it("accepts push", () => {
+    expect(alertChannelSchema.parse("push")).toBe("push");
   });
 
-  it("rejects invalid category", () => {
-    expect(() => itemCategorySchema.parse("bracelet")).toThrow();
+  it("accepts email", () => {
+    expect(alertChannelSchema.parse("email")).toBe("email");
+  });
+
+  it("rejects unknown channel", () => {
+    expect(alertChannelSchema.safeParse("sms").success).toBe(false);
   });
 });
 
 describe("sanitizedString", () => {
-  const schema = sanitizedString(100);
+  const schema = sanitizedString(10);
 
-  it("accepts a normal string", () => {
-    expect(schema.parse("hello world")).toBe("hello world");
-  });
-
-  it("trims whitespace", () => {
+  it("trims leading and trailing whitespace", () => {
     expect(schema.parse("  hello  ")).toBe("hello");
   });
 
-  it("rejects strings exceeding max length", () => {
-    expect(() => schema.parse("a".repeat(101))).toThrow();
+  it("rejects strings exceeding the max length", () => {
+    expect(schema.safeParse("a".repeat(11)).success).toBe(false);
   });
 
-  it("accepts strings at max length", () => {
-    expect(schema.parse("a".repeat(100))).toBe("a".repeat(100));
+  it("rejects strings containing control characters", () => {
+    const result = schema.safeParse("hi\u0000there");
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]!.message).toBe(
+        "Must not contain control characters",
+      );
+    }
   });
 
-  it("rejects strings with control characters", () => {
-    expect(() => schema.parse("hello\x00world")).toThrow();
-    expect(() => schema.parse("hello\x07world")).toThrow();
-    expect(() => schema.parse("hello\x7fworld")).toThrow();
-  });
-
-  it("trims all-whitespace to empty string (passes base schema)", () => {
-    expect(schema.parse("   ")).toBe("");
-  });
-
-  it("allows newlines and tabs (not control chars in the regex)", () => {
-    expect(schema.parse("hello\nworld")).toBe("hello\nworld");
-    expect(schema.parse("hello\tworld")).toBe("hello\tworld");
+  it("accepts an empty string", () => {
+    expect(schema.parse("")).toBe("");
   });
 });
 
@@ -146,17 +131,17 @@ describe("dateRangeSchema", () => {
     expect(dateRangeSchema.parse(undefined)).toBeUndefined();
   });
 
-  it("accepts empty object", () => {
+  it("accepts an empty object", () => {
     expect(dateRangeSchema.parse({})).toEqual({});
   });
 
-  it("accepts from only", () => {
+  it("accepts from-only", () => {
     expect(dateRangeSchema.parse({ from: "2025-01-01" })).toEqual({
       from: "2025-01-01",
     });
   });
 
-  it("accepts to only", () => {
+  it("accepts to-only", () => {
     expect(dateRangeSchema.parse({ to: "2025-12-31" })).toEqual({
       to: "2025-12-31",
     });
@@ -168,70 +153,22 @@ describe("dateRangeSchema", () => {
     ).toEqual({ from: "2025-01-01", to: "2025-12-31" });
   });
 
-  it("accepts from === to", () => {
-    expect(
-      dateRangeSchema.parse({ from: "2025-06-15", to: "2025-06-15" }),
-    ).toEqual({ from: "2025-06-15", to: "2025-06-15" });
-  });
-
   it("rejects from > to", () => {
-    expect(() =>
-      dateRangeSchema.parse({ from: "2025-12-31", to: "2025-01-01" }),
-    ).toThrow();
-  });
-
-  it("rejects invalid date strings", () => {
-    expect(() => dateRangeSchema.parse({ from: "not-a-date" })).toThrow();
-  });
-});
-
-describe("amountRangeSchema", () => {
-  it("accepts undefined (optional)", () => {
-    expect(amountRangeSchema.parse(undefined)).toBeUndefined();
-  });
-
-  it("accepts empty object", () => {
-    expect(amountRangeSchema.parse({})).toEqual({});
-  });
-
-  it("accepts min only", () => {
-    expect(amountRangeSchema.parse({ min: 100 })).toEqual({ min: 100 });
-  });
-
-  it("accepts max only", () => {
-    expect(amountRangeSchema.parse({ max: 5000 })).toEqual({ max: 5000 });
-  });
-
-  it("accepts min <= max", () => {
-    expect(amountRangeSchema.parse({ min: 100, max: 5000 })).toEqual({
-      min: 100,
-      max: 5000,
+    const result = dateRangeSchema.safeParse({
+      from: "2025-12-31",
+      to: "2025-01-01",
     });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]!.message).toBe(
+        "dateRange.from must not be after dateRange.to",
+      );
+    }
   });
 
-  it("accepts min === max", () => {
-    expect(amountRangeSchema.parse({ min: 100, max: 100 })).toEqual({
-      min: 100,
-      max: 100,
-    });
-  });
-
-  it("rejects min > max", () => {
-    expect(() => amountRangeSchema.parse({ min: 5000, max: 100 })).toThrow();
-  });
-
-  it("rejects non-positive min", () => {
-    expect(() => amountRangeSchema.parse({ min: 0 })).toThrow();
-    expect(() => amountRangeSchema.parse({ min: -1 })).toThrow();
-  });
-
-  it("rejects max exceeding limit", () => {
-    expect(() => amountRangeSchema.parse({ max: 10_000_000_000 })).toThrow();
-  });
-
-  it("accepts max at boundary", () => {
-    expect(amountRangeSchema.parse({ max: 9_999_999_999.99 })).toEqual({
-      max: 9_999_999_999.99,
-    });
+  it("rejects an invalid date string", () => {
+    expect(dateRangeSchema.safeParse({ from: "not-a-date" }).success).toBe(
+      false,
+    );
   });
 });

@@ -24,6 +24,7 @@ jest.mock("@supabase/supabase-js", () => ({
   createClient: jest.fn(() => ({
     auth: {
       getSession: jest.fn().mockResolvedValue({ data: { session: null } }),
+      getUser: jest.fn().mockResolvedValue({ data: { user: null } }),
       onAuthStateChange: jest.fn(() => ({
         data: { subscription: { unsubscribe: jest.fn() } },
       })),
@@ -73,65 +74,152 @@ jest.mock("react-i18next", () => ({
 // @aramiworks/ui — stub all exported components as simple passthrough
 jest.mock("@aramiworks/ui", () => {
   const { View, Text: RNText } = require("react-native");
+  const React = require("react");
+  const passthrough = (props: Record<string, unknown>) =>
+    React.createElement(View, { testID: props.testID }, props.children);
+  const showConfirmDialog = jest.fn();
   return {
     config: {},
-    Button: (props: Record<string, unknown>) =>
-      require("react").createElement(
+    useConfirmDialog: () => ({
+      showConfirmDialog,
+      ConfirmDialogPortal: () => null,
+    }),
+    XStack: passthrough,
+    YStack: passthrough,
+    Skeleton: (props: Record<string, unknown>) =>
+      React.createElement(View, { testID: props.testID || "skeleton" }),
+    Spacer: () => React.createElement(View),
+    EmptyStateTemplate: (props: Record<string, unknown>) =>
+      React.createElement(
         View,
         { testID: props.testID },
-        require("react").createElement(RNText, null, props.children),
+        props.icon ?? null,
+        React.createElement(RNText, null, props.title),
+        React.createElement(RNText, null, props.body),
+        props.action ?? null,
+      ),
+    Button: (props: Record<string, unknown>) =>
+      React.createElement(
+        View,
+        { testID: props.testID, onPress: props.onPress },
+        React.createElement(RNText, null, props.children),
+      ),
+    Card: (props: Record<string, unknown>) =>
+      React.createElement(
+        View,
+        {
+          testID: props.testID,
+          onPress: props.onPress,
+          onLongPress: props.onLongPress,
+        },
+        props.children,
       ),
     Text: (props: Record<string, unknown>) =>
-      require("react").createElement(RNText, props, props.children),
+      React.createElement(RNText, props, props.children),
     FAB: (props: Record<string, unknown>) =>
-      require("react").createElement(View, {
+      React.createElement(View, {
         testID: props.testID,
         onPress: props.onPress,
+        accessibilityLabel: props.accessibilityLabel,
       }),
     FormField: (props: Record<string, unknown>) =>
-      require("react").createElement(View, {
+      React.createElement(View, {
         testID: props.testID || "form-field",
       }),
     SearchBar: (props: Record<string, unknown>) =>
-      require("react").createElement(View, {
+      React.createElement(View, {
         testID: props.testID || "search-bar",
       }),
     ProgressIndicator: () =>
-      require("react").createElement(View, { testID: "progress-indicator" }),
-    OverviewLayout: (props: Record<string, unknown>) =>
-      require("react").createElement(View, null, props.children),
-    DashboardTemplate: (props: Record<string, unknown>) => {
-      const React = require("react");
-      return React.createElement(
+      React.createElement(View, { testID: "progress-indicator" }),
+    OverviewLayout: passthrough,
+    DashboardTemplate: (props: Record<string, unknown>) =>
+      React.createElement(
         View,
         { testID: props.testID },
         props.topBar ?? null,
         props.children ?? null,
         props.fab ?? null,
-      );
-    },
-    ListTemplate: (props: Record<string, unknown>) => {
-      const React = require("react");
-      return React.createElement(
+      ),
+    ListTemplate: (props: Record<string, unknown>) =>
+      React.createElement(
         View,
         { testID: props.testID },
         props.topBar ?? null,
         props.headerContent ?? null,
         props.children ?? null,
         props.fab ?? null,
-      );
-    },
-    DetailTemplate: (props: Record<string, unknown>) => {
-      const React = require("react");
-      return React.createElement(
+      ),
+    DetailTemplate: (props: Record<string, unknown>) =>
+      React.createElement(
         View,
         { testID: props.testID },
         props.topBar ?? null,
         props.children ?? null,
-      );
-    },
+      ),
+    TopAppBar: (props: Record<string, unknown>) =>
+      React.createElement(
+        View,
+        { testID: props.testID },
+        props.navigationIcon
+          ? React.createElement(View, {
+              testID: `${props.testID}-back`,
+              onPress: props.onNavigationPress,
+            })
+          : null,
+        props.trailingContent ?? null,
+      ),
+    FullScreenDialog: (props: Record<string, unknown>) =>
+      props.visible
+        ? React.createElement(
+            View,
+            { testID: props.testID },
+            props.title ? React.createElement(RNText, null, props.title) : null,
+            React.createElement(View, {
+              testID: props.testID ? `${props.testID}-close` : undefined,
+              onPress: props.onClose,
+            }),
+            React.createElement(View, {
+              testID: props.testID ? `${props.testID}-action` : undefined,
+              onPress: props.actionDisabled ? undefined : props.onAction,
+            }),
+            props.children,
+          )
+        : null,
+    Snackbar: (props: Record<string, unknown>) =>
+      props.visible
+        ? React.createElement(
+            View,
+            { testID: props.testID },
+            React.createElement(RNText, null, props.message),
+            React.createElement(View, {
+              testID: props.testID ? `${props.testID}-dismiss` : undefined,
+              onPress: props.onDismiss,
+            }),
+          )
+        : null,
   };
 });
+
+// mixpanel-react-native
+jest.mock("mixpanel-react-native", () => ({
+  Mixpanel: jest.fn().mockImplementation(() => ({
+    init: jest.fn().mockResolvedValue(undefined),
+    track: jest.fn(),
+    identify: jest.fn(),
+    reset: jest.fn(),
+  })),
+}));
+
+// @react-native-async-storage/async-storage
+jest.mock("@react-native-async-storage/async-storage", () => ({
+  __esModule: true,
+  default: {
+    getItem: jest.fn().mockResolvedValue(null),
+    setItem: jest.fn().mockResolvedValue(undefined),
+    removeItem: jest.fn().mockResolvedValue(undefined),
+  },
+}));
 
 // react-native-url-polyfill
 jest.mock("react-native-url-polyfill/auto", () => {});

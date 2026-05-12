@@ -5,23 +5,32 @@ import { PrismaService } from "@stock-tracker/nestjs-common";
 export class TrackerDashboardHomeModels {
   constructor(private readonly prisma: PrismaService) {}
 
-  getAccountCount(userId: string) {
-    return this.prisma.tracker_accounts.count({
-      where: { auth_user_id: userId },
+  getActiveWatchCount(userId: string) {
+    return this.prisma.watches.count({
+      where: { auth_user_id: userId, active: true },
     });
   }
 
-  getPurchaseCount(userId: string) {
-    return this.prisma.tracker_purchases.count({
-      where: { tracker_account: { auth_user_id: userId } },
+  getUnreadAlertCount(userId: string) {
+    return this.prisma.alerts.count({
+      where: {
+        watch: { auth_user_id: userId },
+        read_at: null,
+      },
     });
   }
 
-  async getTotalSpent(userId: string) {
-    const result = await this.prisma.tracker_purchases.aggregate({
-      where: { tracker_account: { auth_user_id: userId } },
-      _sum: { amount: true },
+  getRecentDropCount(userId: string) {
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    return this.prisma.drop_events.count({
+      where: {
+        detected_at: { gte: oneDayAgo },
+        sku: {
+          watches: {
+            some: { auth_user_id: userId, active: true },
+          },
+        },
+      },
     });
-    return result._sum.amount;
   }
 }

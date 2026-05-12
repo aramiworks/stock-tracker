@@ -1,6 +1,6 @@
 # CLAUDE.md — stock-tracker
 
-Cartier purchase tracker. Turborepo monorepo with Expo mobile app and tRPC/GraphQL backend.
+Multi-brand luxury restock alert app (Hermès Korea first). Turborepo monorepo with Expo mobile app and tRPC/GraphQL backend.
 
 ## Stack
 
@@ -27,21 +27,21 @@ apps/
 │   │   └── (app)/       # Authenticated screens (tab navigator)
 │   ├── src/experiences/  # All logic (EFCV + MCVL)
 │   │   ├── auth/        # Auth experience
-│   │   └── tracker/     # Tracker experience (dashboard, accounts, history)
+│   │   └── tracker/     # Tracker experience (alerts, watchlist, history)
 │   ├── .ondevice/       # Storybook RN config
 │   └── maestro/         # E2E test flows
-├── api/                 # tRPC service (port 4000)
-│   └── src/
-│       ├── trpc/        # tRPC routers (mirrors EFCV)
-│       ├── auth/        # Auth experience (MCVL)
-│       ├── tracker/     # Tracker experience (MCVL + flows)
-│       └── common/      # Env validation, shared utils
+├── services/
+│   ├── auth/            # NestJS auth service (port 4030, /trpc)
+│   └── tracker/         # NestJS tracker service (port 4020, /trpc)
 ├── subgraphs/
-│   └── tracker/         # Apollo subgraph (port 4001)
+│   ├── auth/            # Apollo subgraph (port 4002, dev 4013) → auth-service
+│   │   └── src/
+│   │       ├── auth/    # GraphQL auth resolvers
+│   │       └── clients/ # tRPC client to auth-service
+│   └── tracker/         # Apollo subgraph (port 4001, dev 4011) → tracker-service
 │       └── src/
-│           ├── auth/    # GraphQL auth resolvers → tRPC
-│           ├── tracker/ # GraphQL tracker resolvers → tRPC
-│           └── clients/ # tRPC client to apps/api
+│           ├── tracker/ # GraphQL tracker resolvers
+│           └── clients/ # tRPC client to tracker-service
 ├── router/              # Apollo Router config (JWT, CORS, composition)
 └── storybook/           # Storybook web build (Vercel)
 
@@ -67,7 +67,7 @@ packages/
 - Views → tRPC input/output DTOs (Zod schemas)
 - Lifecycles → Trigger.dev jobs, events, webhooks
 
-**Data flow:** Mobile → Apollo Router (JWT) → Subgraph (GraphQL) → tRPC service → Prisma → Supabase
+**Data flow:** Mobile → Apollo Router (JWT) → auth + tracker subgraphs (GraphQL) → auth-service / tracker-service (tRPC) → Prisma → Supabase
 
 ## Naming
 
@@ -77,29 +77,27 @@ packages/
 - Every folder has `index.ts` for re-exports
 - Suffixed barrel files mandatory (`.models.tsx`, `.controllers.tsx`, `.views.tsx`, `.lifecycles.ts`)
 
-## Translations (Ditto)
+## Translations
 
-Translations are managed in [Ditto](https://dittowords.com). Project: `stock-tracker`.
+JSON files at `apps/mobile/src/lib/i18n/{locale}/{namespace}.json` are the **source of truth** — hand-edit them directly. One namespace per Experience (`auth.json`, `tracker.json`, `common.json`).
 
-- Ditto Developer IDs follow Figma frame naming (e.g., `tracker-dashboard-home-saCard.statusEligible`)
-- `scripts/ditto-id-map.json` maps Developer IDs → i18next namespace + key
-- `scripts/ditto-split.js` splits the flat Ditto export into namespace files
-
-```bash
-npm run ditto:pull -w apps/mobile   # Pull + split translations from Ditto
+```tsx
+const { t } = useTranslation("auth");
+return <Text>{t("signIn.title")}</Text>;
 ```
 
-JSON files in `apps/mobile/src/lib/i18n/ko/` are git-tracked. After pulling, review the diff and commit.
-
-When adding a new text item: add it in Ditto with a Figma-named Developer ID, then add the mapping in `scripts/ditto-id-map.json`.
+Ditto integration (`scripts/ditto-id-map.json`, `scripts/ditto-split.js`, `npm run ditto:pull`) is **deferred** — kept in the repo but not in the active workflow. See `~/Documents/aramiworks/conventions/design/i18n.md` for when/how to resume.
 
 ## Development
 
 ```bash
 npm install                    # Install all dependencies
 npm run dev:mobile             # Start Expo dev server
-npm run dev:api                # Start tRPC service (port 4000)
-npm run dev:subgraph           # Start Apollo subgraph (port 4001)
+npm run dev:auth-service       # Start NestJS auth service (port 4030)
+npm run dev:tracker-service    # Start NestJS tracker service (port 4020)
+npm run dev:subgraph           # Start both Apollo subgraphs (auth + tracker)
+npm run dev:subgraph:auth      # Start auth subgraph only (port 4013 dev)
+npm run dev:subgraph:tracker   # Start tracker subgraph only (port 4011 dev)
 npm run dev:router             # Start Apollo Router (rover dev)
 npm run dev:backend            # Start all backend services
 npm run dev:storybook          # Start Storybook web
@@ -123,20 +121,20 @@ npm run check-types            # Type check all packages
 
 ## Experiences
 
-| Experience | Flows     | Containers   |
-| ---------- | --------- | ------------ |
-| auth       | signIn    | gmailOauth   |
-| tracker    | dashboard | home         |
-| tracker    | accounts  | list, detail |
-| tracker    | history   | browse       |
+| Experience | Flows        | Containers   |
+| ---------- | ------------ | ------------ |
+| auth       | signIn       | gmailOauth   |
+| tracker    | catalog      | browse       |
+| tracker    | watchlist    | list, detail |
+| tracker    | alertHistory | browse       |
 
 ## Deployment
 
 Single trunk (`main`). No `develop` or `stage` branches — see `conventions/git.md`.
 
-| Environment | Trigger          | Mobile         | API (Docker → Railway) | Storybook         |
-| ----------- | ---------------- | -------------- | ---------------------- | ----------------- |
-| local       | `npm run dev:*`  | `expo start`   | `npm run dev:backend`  | `storybook dev`   |
-| develop     | manual (Railway) | EAS Preview    | GHCR → Railway dev     | Vercel Preview    |
-| stage       | manual (Railway) | EAS Preview    | GHCR → Railway staging | Vercel Preview    |
-| production  | push to `main`   | EAS Production | GHCR → Railway prod    | Vercel Production |
+| Environment | Trigger                                   | Mobile         | Backend (Docker → Railway)        | Storybook         |
+| ----------- | ----------------------------------------- | -------------- | --------------------------------- | ----------------- |
+| local       | `npm run dev:*`                           | `expo start`   | `npm run dev:backend`             | `storybook dev`   |
+| develop     | manual (Backend Docker workflow_dispatch) | EAS Preview    | GHCR `:develop` → Railway develop | Vercel Preview    |
+| stage       | manual (Backend Docker workflow_dispatch) | EAS Preview    | GHCR `:stage` → Railway stage     | Vercel Preview    |
+| master      | manual (Backend Docker workflow_dispatch) | EAS Production | GHCR `:master` → Railway master   | Vercel Production |

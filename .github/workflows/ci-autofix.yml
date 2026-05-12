@@ -2,10 +2,8 @@ name: CI Autofix
 
 on:
   workflow_run:
-    workflows: ["CI"]
+    workflows: ["CI", "changeset", "Auto-update PR branches"]
     types: [completed]
-    branches-ignore:
-      - main
 
 jobs:
   autofix:
@@ -15,6 +13,7 @@ jobs:
       issues: write
       actions: read
       id-token: write
+      statuses: read
     uses: aramiworks/.github/.github/workflows/ci-autofix.yml@main
     with:
       format_fix_command: "npx prettier --write '**/*.{ts,tsx,md,json}'"

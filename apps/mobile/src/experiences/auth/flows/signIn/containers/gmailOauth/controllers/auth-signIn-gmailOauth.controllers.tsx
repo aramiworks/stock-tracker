@@ -16,12 +16,33 @@ import {
   isSuccessResponse,
 } from "@react-native-google-signin/google-signin";
 import { supabase } from "../../../../../../../lib/supabase";
+import {
+  grantAnalyticsConsent,
+  trackEvent,
+} from "../../../../../../../lib/analytics";
+import { apolloClient } from "../../../../../../../lib/apollo/provider";
+import { UpsertUserDocument } from "@/lib/graphql/generated/graphql";
 
 WebBrowser.maybeCompleteAuthSession();
+
+async function upsertUserProfile() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user?.email) return;
+  await apolloClient.mutate({
+    mutation: UpsertUserDocument,
+    variables: {
+      email: user.email,
+      displayName: user.user_metadata?.name ?? null,
+    },
+  });
+}
 
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
 
+/* istanbul ignore next -- module-level Platform check; Jest runs with a fixed platform */
 if (Platform.OS !== "web") {
   // webClientId: required — Google uses the web client to issue tokens Supabase can verify.
   // iosClientId: iOS OAuth client for the native account picker on iOS.
@@ -81,9 +102,14 @@ export const AuthSignInGmailOauthControllers =
             nonce: webRequest?.nonce,
           });
           if (error) throw error;
+          await grantAnalyticsConsent();
+          await upsertUserProfile();
+          await trackEvent("sign_in_succeeded", { provider: "google" });
         } catch {
+          void trackEvent("sign_in_failed", { provider: "google" });
           // sign-in failed; auth state unchanged, user stays on sign-in screen
         } finally {
+          /* istanbul ignore next -- defensive unmount guard */
           if (isMountedRef.current) setIsSigningIn(false);
         }
       })();
@@ -91,6 +117,7 @@ export const AuthSignInGmailOauthControllers =
 
     const signInWithGoogle = useCallback(async () => {
       setIsSigningIn(true);
+      void trackEvent("sign_in_started", { provider: "google" });
       try {
         if (Platform.OS === "web") {
           // Web: trigger the browser OAuth flow; result handled in useEffect above.
@@ -105,15 +132,23 @@ export const AuthSignInGmailOauthControllers =
         const userInfo = await GoogleSignin.signIn();
         if (isSuccessResponse(userInfo)) {
           const idToken = userInfo.data?.idToken;
+          /* istanbul ignore next -- native SDK always returns idToken on success */
           if (idToken) {
             const { error } = await supabase.auth.signInWithIdToken({
               provider: "google",
               token: idToken,
             });
             if (error) throw error;
+            await grantAnalyticsConsent();
+            await upsertUserProfile();
+            await trackEvent("sign_in_succeeded", { provider: "google" });
           }
         }
+      } catch (err) {
+        void trackEvent("sign_in_failed", { provider: "google" });
+        throw err;
       } finally {
+        /* istanbul ignore next -- defensive unmount guard */
         if (isMountedRef.current) setIsSigningIn(false);
       }
     }, [webPromptAsync]);

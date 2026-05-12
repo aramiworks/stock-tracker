@@ -5,8 +5,15 @@ import { createLogger, type Logger } from "@stock-tracker/config";
 export class PinoLoggerService implements LoggerService {
   private readonly logger: Logger;
 
-  constructor(service: string) {
-    this.logger = createLogger({ service });
+  constructor(
+    service: string,
+    betterStack?: { token?: string; ingestHost?: string },
+  ) {
+    this.logger = createLogger({
+      service,
+      betterStackToken: betterStack?.token,
+      betterStackIngestHost: betterStack?.ingestHost,
+    });
   }
 
   log(message: string, context?: string) {

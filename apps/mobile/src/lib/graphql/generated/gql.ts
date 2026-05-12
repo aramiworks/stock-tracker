@@ -14,6 +14,7 @@ import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+  "mutation UpsertUser($email: String!, $displayName: String) {\n  upsertUser(email: $email, displayName: $displayName) {\n    id\n    email\n    displayName\n  }\n}": typeof types.UpsertUserDocument;
   "mutation UpdateAccount($input: UpdateAccountInput!) {\n  updateAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}\n\nmutation CreatePurchase($input: CreatePurchaseInput!) {\n  createPurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation UpdatePurchase($input: UpdatePurchaseInput!) {\n  updatePurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}": typeof types.UpdateAccountDocument;
   "mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}": typeof types.CreateAccountDocument;
   "mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}": typeof types.CreateAccountDocument;
@@ -24,6 +25,8 @@ type Documents = {
   "\n  query Purchases(\n    $accountId: ID\n    $sortOrder: SortOrder\n    $dateRange: DateRangeInput\n    $itemCategory: String\n    $search: String\n  ) {\n    purchases(\n      accountId: $accountId\n      sortOrder: $sortOrder\n      dateRange: $dateRange\n      itemCategory: $itemCategory\n      search: $search\n    ) {\n      id\n      itemName\n      itemCategory\n      amount\n      currency\n      purchaseDate\n      storeLocation\n      notes\n      createdAt\n    }\n  }\n": typeof types.PurchasesDocument;
 };
 const documents: Documents = {
+  "mutation UpsertUser($email: String!, $displayName: String) {\n  upsertUser(email: $email, displayName: $displayName) {\n    id\n    email\n    displayName\n  }\n}":
+    types.UpsertUserDocument,
   "mutation UpdateAccount($input: UpdateAccountInput!) {\n  updateAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}\n\nmutation CreatePurchase($input: CreatePurchaseInput!) {\n  createPurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation UpdatePurchase($input: UpdatePurchaseInput!) {\n  updatePurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}":
     types.UpdateAccountDocument,
   "mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}":
@@ -56,6 +59,12 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "mutation UpsertUser($email: String!, $displayName: String) {\n  upsertUser(email: $email, displayName: $displayName) {\n    id\n    email\n    displayName\n  }\n}",
+): (typeof documents)["mutation UpsertUser($email: String!, $displayName: String) {\n  upsertUser(email: $email, displayName: $displayName) {\n    id\n    email\n    displayName\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

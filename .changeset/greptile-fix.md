@@ -1,5 +1,5 @@
 ---
-"@stock-tracker/subgraph-tracker": patch
+"@stock-tracker/mobile": patch
 ---
 
-Fix apiHandle leak when spawnTrackerTestServer fails in test helpers.
+Remove stale `url: ${MAESTRO_APP_URL}` from Maestro flow files left behind after the variable was dropped from config.yaml and sanity.yaml.

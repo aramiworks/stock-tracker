@@ -146,6 +146,32 @@ describe("TrackerHistoryBrowseControllers", () => {
     expect(getByTestId("selected-filter").props.children).toBe("thisMonth");
   });
 
+  it("onFilterSelect to threeMonths updates filter and passes date range to query", () => {
+    const ref = React.createRef<ConsumerHandle>();
+    const { getByTestId } = render(
+      <TrackerHistoryBrowseControllers>
+        <Consumer ref={ref} />
+      </TrackerHistoryBrowseControllers>,
+    );
+    act(() => {
+      ref.current!.onFilterSelect("threeMonths");
+    });
+    expect(getByTestId("selected-filter").props.children).toBe("threeMonths");
+  });
+
+  it("onFilterSelect to thisYear updates filter and passes date range to query", () => {
+    const ref = React.createRef<ConsumerHandle>();
+    const { getByTestId } = render(
+      <TrackerHistoryBrowseControllers>
+        <Consumer ref={ref} />
+      </TrackerHistoryBrowseControllers>,
+    );
+    act(() => {
+      ref.current!.onFilterSelect("thisYear");
+    });
+    expect(getByTestId("selected-filter").props.children).toBe("thisYear");
+  });
+
   it("onSearchChange updates search query", () => {
     const ref = React.createRef<ConsumerHandle>();
     const { getByTestId } = render(

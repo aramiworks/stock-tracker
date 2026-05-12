@@ -7,11 +7,10 @@ on:
 
 permissions:
   pull-requests: write
-  contents: write
+  contents: read
   issues: write
 
 jobs:
   resolve:
-    if: github.event.workflow_run.conclusion == 'success'
     uses: aramiworks/.github/.github/workflows/auto-resolve-conflicts.yml@main
     secrets: inherit

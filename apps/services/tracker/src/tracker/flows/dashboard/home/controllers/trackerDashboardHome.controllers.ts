@@ -6,17 +6,16 @@ export class TrackerDashboardHomeControllers {
   constructor(private readonly models: TrackerDashboardHomeModels) {}
 
   async summary(userId: string) {
-    const [totalAccounts, totalPurchases, totalSpentDecimal] =
-      await Promise.all([
-        this.models.getAccountCount(userId),
-        this.models.getPurchaseCount(userId),
-        this.models.getTotalSpent(userId),
-      ]);
+    const [activeWatches, unreadAlerts, recentDrops] = await Promise.all([
+      this.models.getActiveWatchCount(userId),
+      this.models.getUnreadAlertCount(userId),
+      this.models.getRecentDropCount(userId),
+    ]);
 
     return {
-      totalAccounts,
-      totalPurchases,
-      totalSpent: totalSpentDecimal?.toString() ?? "0",
+      activeWatches,
+      unreadAlerts,
+      recentDrops,
     };
   }
 }

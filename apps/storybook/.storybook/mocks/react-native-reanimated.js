@@ -23,10 +23,17 @@ const runOnUI = (fn) => fn;
 const runOnJS = (fn) => fn;
 const makeMutable = (init) => ({ value: init });
 const interpolate = identity;
-const Extrapolation = { CLAMP: "clamp", EXTEND: "extend", IDENTITY: "identity" };
+const Extrapolation = {
+  CLAMP: "clamp",
+  EXTEND: "extend",
+  IDENTITY: "identity",
+};
 const Extrapolate = { CLAMP: "clamp", EXTEND: "extend", IDENTITY: "identity" };
 const useScrollViewOffset = () => ({ value: 0 });
-const useAnimatedKeyboard = () => ({ height: { value: 0 }, state: { value: 0 } });
+const useAnimatedKeyboard = () => ({
+  height: { value: 0 },
+  state: { value: 0 },
+});
 const useSafeAnimatedRef = () => React.createRef();
 const cancelAnimation = noop;
 const withDecay = identity;
@@ -39,13 +46,32 @@ const ZoomIn = { duration: noop, delay: noop };
 const ZoomOut = { duration: noop, delay: noop };
 const Layout = { duration: noop, delay: noop, springify: noop };
 
+// React DOM does not support array-style props on native DOM elements.
+// Animated components in react-native-reanimated receive style arrays (base
+// style + animated style + user style). Flatten to a plain object before
+// handing off to the DOM so CSSStyleDeclaration doesn't throw.
+const flattenStyle = (style) => {
+  if (!style) return undefined;
+  if (Array.isArray(style)) {
+    return Object.assign({}, ...style.map(flattenStyle).filter(Boolean));
+  }
+  return style;
+};
+const withFlatStyle = (el) =>
+  React.forwardRef(({ style, ...rest }, ref) =>
+    React.createElement(el, { ...rest, style: flattenStyle(style), ref }),
+  );
+
 const Animated = {
-  View: React.forwardRef((props, ref) => React.createElement("div", { ...props, ref })),
-  Text: React.forwardRef((props, ref) => React.createElement("span", { ...props, ref })),
-  Image: React.forwardRef((props, ref) => React.createElement("img", { ...props, ref })),
-  ScrollView: React.forwardRef((props, ref) => React.createElement("div", { ...props, ref })),
-  FlatList: React.forwardRef((props, ref) => React.createElement("div", { ...props, ref })),
-  createAnimatedComponent: (Component) => React.forwardRef((props, ref) => React.createElement(Component, { ...props, ref })),
+  View: withFlatStyle("div"),
+  Text: withFlatStyle("span"),
+  Image: withFlatStyle("img"),
+  ScrollView: withFlatStyle("div"),
+  FlatList: withFlatStyle("div"),
+  createAnimatedComponent: (Component) =>
+    React.forwardRef((props, ref) =>
+      React.createElement(Component, { ...props, ref }),
+    ),
 };
 
 export default Animated;

@@ -1,60 +1,127 @@
-type User @key(fields: "id") {
+type WatchableUnit @key(fields: "id") {
   id: ID!
-  email: String!
-  displayName: String
-  createdAt: String!
+  brand: String!
+  productLine: String!
+  modelName: String!
+  imageUrl: String
+  active: Boolean!
+  skus: [Sku!]!
 }
 
-type Account @key(fields: "id") {
+type Sku @key(fields: "id") {
   id: ID!
-  storeName: String!
-  saName: String
-  notes: String
-  createdAt: String!
-  purchases: [Purchase!]!
+  color: String!
+  leather: String
+  hardware: String
+  size: String
+  referenceCode: String
+  imageUrl: String
+  active: Boolean!
 }
 
-type Purchase @key(fields: "id") {
+type Watch @key(fields: "id") {
   id: ID!
-  itemName: String!
-  itemCategory: String
-  amount: Float!
-  currency: String!
-  purchaseDate: String!
-  storeLocation: String
-  notes: String
+  watchableUnitId: ID!
+  skuId: ID
+  notifyPush: Boolean!
+  notifyEmail: Boolean!
+  active: Boolean!
   createdAt: String!
+  watchableUnit: WatchableUnit!
+  sku: Sku
+}
+
+type Alert {
+  id: ID!
+  watchId: ID!
+  channel: String!
+  sentAt: String
+  readAt: String
+  createdAt: String!
+  dropEvent: DropEvent!
+}
+
+type DropEvent {
+  id: ID!
+  skuId: ID!
+  sourceUrl: String
+  detectedAt: String!
 }
 
 type DashboardSummary {
-  totalAccounts: Int!
-  totalPurchases: Int!
-  totalSpent: Float!
+  activeWatches: Int!
+  unreadAlerts: Int!
+  recentDrops: Int!
 }
 
-type Query {
-  """
-  Current authenticated user
-  """
-  me: User
+type CatalogPage {
+  items: [WatchableUnit!]!
+  nextCursor: ID
+}
 
+type AlertFeed {
+  items: [Alert!]!
+  nextCursor: ID
+}
+
+input CreateWatchInput {
+  watchableUnitId: ID!
+  skuId: ID
+  notifyPush: Boolean
+  notifyEmail: Boolean
+}
+
+input UpdateWatchInput {
+  id: ID!
+  notifyPush: Boolean
+  notifyEmail: Boolean
+  active: Boolean
+}
+
+type Query
+
+extend type Query {
   """
   Dashboard overview for the current user
   """
   dashboard: DashboardSummary!
 
   """
-  List all accounts for the current user
+  Browse the product catalog
   """
-  accounts: [Account!]!
+  catalog(
+    brand: String
+    productLine: String
+    search: String
+    activeOnly: Boolean
+    cursor: ID
+    limit: Int
+  ): CatalogPage!
 
   """
-  Get a single account by ID
+  Get a single catalog item by ID
   """
-  account(id: ID!): Account
+  catalogItem(id: ID!): WatchableUnit
 
   """
-  Purchase history with optional filtering
+  List the current user's watches
   """
-  purchases(accountId: ID): [Purchase!]!
+  watches: [Watch!]!
+
+  """
+  List alerts for the current user
+  """
+  alerts(unreadOnly: Boolean, cursor: ID, limit: Int): AlertFeed!
+
+  """
+  Count of unread alerts
+  """
+  unreadAlertCount: Int!
+}
+
+extend type Mutation {
+  createWatch(input: CreateWatchInput!): Watch!
+  updateWatch(input: UpdateWatchInput!): Watch!
+  deleteWatch(id: ID!): Boolean!
+  markAlertRead(id: ID!): Boolean!
 }

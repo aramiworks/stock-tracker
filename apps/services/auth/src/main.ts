@@ -1,3 +1,4 @@
+import "./instrument.js";
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
@@ -23,7 +24,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env["PORT"] ?? 4010;
+  const port = process.env["PORT"] ?? 4030;
   await app.listen(port);
   logger.log(`auth-service listening on port ${port}`);
 }

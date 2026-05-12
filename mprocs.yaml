@@ -15,25 +15,12 @@ procs:
     stop: "SIGTERM"
     autostart: true
 
-  api:
-    cmd:
-      [
-        "sh",
-        "-c",
-        "lsof -ti :${API_PORT:-4010} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
-      ]
-    cwd: apps/api
-    env:
-      PORT: "4010"
-    stop: "SIGTERM"
-    autostart: true
-
   tracker-service:
     cmd:
       [
         "sh",
         "-c",
-        "lsof -ti :${TRACKER_SERVICE_PORT:-4020} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/main.ts",
+        "lsof -ti :${TRACKER_SERVICE_PORT:-4020} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- node --watch --loader ts-node/esm src/main.ts",
       ]
     cwd: apps/services/tracker
     env:
@@ -41,12 +28,25 @@ procs:
     stop: "SIGTERM"
     autostart: true
 
-  subgraph:
+  auth-service:
     cmd:
       [
         "sh",
         "-c",
-        "lsof -ti :${SUBGRAPH_PORT:-4011} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
+        "lsof -ti :${AUTH_SERVICE_PORT:-4030} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- node --watch --loader ts-node/esm src/main.ts",
+      ]
+    cwd: apps/services/auth
+    env:
+      PORT: "4030"
+    stop: "SIGTERM"
+    autostart: true
+
+  subgraph-tracker:
+    cmd:
+      [
+        "sh",
+        "-c",
+        "lsof -ti :${SUBGRAPH_TRACKER_PORT:-4011} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
       ]
     cwd: apps/subgraphs/tracker
     env:
@@ -55,12 +55,26 @@ procs:
     stop: "SIGTERM"
     autostart: true
 
+  subgraph-auth:
+    cmd:
+      [
+        "sh",
+        "-c",
+        "lsof -ti :${SUBGRAPH_AUTH_PORT:-4013} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
+      ]
+    cwd: apps/subgraphs/auth
+    env:
+      PORT: "4013"
+      TRPC_AUTH_SERVICE_URL: "http://localhost:4030/trpc"
+    stop: "SIGTERM"
+    autostart: true
+
   router:
     cmd:
       [
         "sh",
         "-c",
-        "lsof -ti :${ROUTER_PORT:-4012} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- rover dev --name tracker --url http://localhost:${SUBGRAPH_PORT:-4011} --router-config router.yaml --supergraph-port ${ROUTER_PORT:-4012}",
+        "lsof -ti :${ROUTER_PORT:-4012} | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- rover dev --supergraph-config supergraph.yaml --router-config router.yaml --supergraph-port ${ROUTER_PORT:-4012}",
       ]
     cwd: apps/router
     stop: "SIGTERM"

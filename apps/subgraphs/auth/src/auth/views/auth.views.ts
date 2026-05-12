@@ -1,0 +1,24 @@
+import { gql } from "graphql-tag";
+
+export const authTypeDefs = gql`
+  type User @key(fields: "id") {
+    id: ID!
+    email: String!
+    displayName: String
+    createdAt: String!
+  }
+
+  type Query {
+    """
+    Current authenticated user
+    """
+    me: User
+  }
+
+  type Mutation {
+    """
+    Create or update the authenticated user's profile. Call after sign-in.
+    """
+    upsertUser(email: String!, displayName: String): User!
+  }
+`;

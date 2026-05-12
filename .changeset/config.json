@@ -7,17 +7,19 @@
   "commit": false,
   "fixed": [
     [
-      "@stock-tracker/api",
       "@stock-tracker/mobile",
       "@stock-tracker/router",
       "@stock-tracker/storybook",
       "@stock-tracker/subgraph-tracker",
+      "@stock-tracker/auth-service",
+      "@stock-tracker/tracker-service",
       "@stock-tracker/prisma",
       "@stock-tracker/types",
       "@stock-tracker/validation",
       "@stock-tracker/config",
       "@stock-tracker/eslint-config",
-      "@stock-tracker/typescript-config"
+      "@stock-tracker/typescript-config",
+      "@stock-tracker/scraper"
     ]
   ],
   "linked": [],

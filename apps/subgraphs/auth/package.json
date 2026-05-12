@@ -1,0 +1,42 @@
+{
+  "name": "@stock-tracker/subgraph-auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "npm run print-schema && tsc",
+    "start": "node dist/server.js",
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "print-schema": "tsx scripts/print-schema.ts && prettier --write schema.graphql",
+    "schema:check": "npm run print-schema && git diff --exit-code -- schema.graphql",
+    "test:e2e": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.e2e.config.ts"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.11.0",
+    "@apollo/subgraph": "^2.9.0",
+    "@stock-tracker/auth-service": "*",
+    "@stock-tracker/config": "*",
+    "@stock-tracker/types": "*",
+    "@stock-tracker/validation": "*",
+    "@trpc/client": "^11.1.0",
+    "graphql": "^16.9.0",
+    "graphql-tag": "^2.12.0",
+    "superjson": "^2.2.2"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/typescript": "^4.1.0",
+    "@graphql-codegen/typescript-resolvers": "^4.4.0",
+    "@jest/globals": "^29.7.0",
+    "@stock-tracker/eslint-config": "*",
+    "@stock-tracker/typescript-config": "*",
+    "@types/jest": "^30.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "5.9.2"
+  }
+}

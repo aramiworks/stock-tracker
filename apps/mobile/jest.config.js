@@ -23,13 +23,15 @@ module.exports = {
     "!src/**/*.type.ts",
     "!src/**/*.test.ts",
     "!src/**/*.test.tsx",
+    "!src/**/*.flows.ts",
+    "!src/**/*.flow.tsx",
+    "!src/**/*.experience.tsx",
     "!src/lib/graphql/generated/**",
     "!src/lib/tamagui/tamagui.config.ts",
     "!src/setup.ts",
     "!src/test-utils.tsx",
   ],
-  // TODO: enforce 100% once all coverage gaps are filled
-  // coverageThreshold: {
-  //   global: { branches: 100, functions: 100, lines: 100, statements: 100 },
-  // },
+  coverageThreshold: {
+    global: { branches: 100, functions: 100, lines: 100, statements: 100 },
+  },
 };

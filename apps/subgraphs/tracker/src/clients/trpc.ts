@@ -1,9 +1,7 @@
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
-import type { AppRouter } from "@stock-tracker/api/trpc";
 import type { TrackerAppRouter } from "@stock-tracker/tracker-service/trpc";
 
-export type ApiTrpcClient = ReturnType<typeof createApiTrpcClient>;
 export type TrackerTrpcClient = ReturnType<typeof createTrackerTrpcClient>;
 
 function forwardHeaders(headers: Record<string, string | undefined>) {
@@ -16,20 +14,6 @@ function forwardHeaders(headers: Record<string, string | undefined>) {
     return h;
   };
 }
-
-export const createApiTrpcClient = (
-  headers: Record<string, string | undefined>,
-) => {
-  return createTRPCClient<AppRouter>({
-    links: [
-      httpBatchLink({
-        url: process.env["TRPC_API_URL"] || "http://localhost:4010",
-        transformer: superjson,
-        headers: forwardHeaders(headers),
-      }),
-    ],
-  });
-};
 
 export const createTrackerTrpcClient = (
   headers: Record<string, string | undefined>,

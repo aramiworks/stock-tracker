@@ -1,5 +1,5 @@
 /**
- * Dev seed script — creates realistic Korean luxury brand fixtures for
+ * Dev seed script — creates realistic Hermès Korea restock alert fixtures for
  * local development. Safe to run multiple times (cleans + recreates).
  *
  * Usage: npm run seed:dev -w packages/prisma
@@ -50,402 +50,302 @@ async function main() {
     },
   });
 
-  // Clean existing data for both users
-  await prisma.tracker_accounts.deleteMany({
-    where: { auth_user_id: { in: [user1.id, user2.id] } },
+  // Clean existing watchlist data for both users (cascade deletes alerts)
+  await prisma.watches.deleteMany({
+    where: {
+      auth_user_id: { in: [user1.supabase_id, user2.supabase_id] },
+    },
   });
 
-  // --- User 1: 6 accounts ---
-  const [
-    cartierCheongdam,
-    cartierLotte,
-    hermesDoSan,
-    lvCheongdam,
-    chanelSinse,
-    tiffanyHyundai,
-  ] = await Promise.all([
-    prisma.tracker_accounts.create({
-      data: {
-        auth_user_id: user1.id,
-        store_name: "까르띠에 청담",
-        sa_name: "김SA",
-        notes: "담당 SA 10년차, 연락처 010-1234-5678",
-      },
-    }),
-    prisma.tracker_accounts.create({
-      data: {
-        auth_user_id: user1.id,
-        store_name: "까르띠에 롯데 본점",
-        sa_name: "이SA",
-        notes: "롯데 본점 1층",
-      },
-    }),
-    prisma.tracker_accounts.create({
-      data: {
-        auth_user_id: user1.id,
-        store_name: "에르메스 도산",
-        sa_name: "박SA",
-      },
-    }),
-    prisma.tracker_accounts.create({
-      data: {
-        auth_user_id: user1.id,
-        store_name: "루이비통 청담",
-        sa_name: "정SA",
-        notes: "VIP 라운지 이용 가능",
-      },
-    }),
-    prisma.tracker_accounts.create({
-      data: {
-        auth_user_id: user1.id,
-        store_name: "샤넬 신세계",
-        sa_name: "최SA",
-      },
-    }),
-    prisma.tracker_accounts.create({
-      data: {
-        auth_user_id: user1.id,
-        store_name: "티파니 현대",
-        notes: "SA 미배정",
-      },
-    }),
-  ]);
+  // Clean catalog + drop events (shared data — recreate fresh)
+  await prisma.drop_events.deleteMany({});
+  await prisma.skus.deleteMany({});
+  await prisma.watchable_units.deleteMany({});
 
-  // --- User 2: 2 accounts ---
-  const [vanCleef, bulgari] = await Promise.all([
-    prisma.tracker_accounts.create({
-      data: {
-        auth_user_id: user2.id,
-        store_name: "반클리프 아펠 갤러리아",
-        sa_name: "한SA",
-        notes: "갤러리아 명품관 WEST",
-      },
-    }),
-    prisma.tracker_accounts.create({
-      data: {
-        auth_user_id: user2.id,
-        store_name: "불가리 롯데",
-        sa_name: "윤SA",
-      },
-    }),
-  ]);
+  // --- Catalog: Hermès ---
 
-  // --- Purchases: User 1 ---
-  await prisma.tracker_purchases.createMany({
-    data: [
-      // 까르띠에 청담 — 10 purchases
-      {
-        tracker_account_id: cartierCheongdam.id,
-        item_name: "러브 브레이슬릿 SM",
-        item_category: "브레이슬릿",
-        amount: 5800000,
-        currency: "KRW",
-        purchase_date: new Date("2024-03-15"),
-        store_location: "청담",
-      },
-      {
-        tracker_account_id: cartierCheongdam.id,
-        item_name: "러브 브레이슬릿 다이아",
-        item_category: "브레이슬릿",
-        amount: 12500000,
-        currency: "KRW",
-        purchase_date: new Date("2024-06-20"),
-        store_location: "청담",
-      },
-      {
-        tracker_account_id: cartierCheongdam.id,
-        item_name: "저스트 앵 끌루 브레이슬릿",
-        item_category: "브레이슬릿",
-        amount: 8900000,
-        currency: "KRW",
-        purchase_date: new Date("2024-09-10"),
-        store_location: "청담",
-      },
-      {
-        tracker_account_id: cartierCheongdam.id,
-        item_name: "트리니티 링",
-        item_category: "반지",
-        amount: 2100000,
-        currency: "KRW",
-        purchase_date: new Date("2024-12-25"),
-        store_location: "청담",
-        notes: "크리스마스 선물",
-      },
-      {
-        tracker_account_id: cartierCheongdam.id,
-        item_name: "탱크 프랑세즈 워치",
-        item_category: "시계",
-        amount: 8500000,
-        currency: "KRW",
-        purchase_date: new Date("2025-01-15"),
-        store_location: "청담",
-      },
-      {
-        tracker_account_id: cartierCheongdam.id,
-        item_name: "팬더 드 까르띠에 목걸이",
-        item_category: "목걸이",
-        amount: 15800000,
-        currency: "KRW",
-        purchase_date: new Date("2025-03-08"),
-        store_location: "청담",
-        notes: "특별 주문 제작",
-      },
-      {
-        tracker_account_id: cartierCheongdam.id,
-        item_name: "디아망 레제 귀걸이",
-        item_category: "귀걸이",
-        amount: 4200000,
-        currency: "KRW",
-        purchase_date: new Date("2025-05-01"),
-        store_location: "청담",
-      },
-      {
-        tracker_account_id: cartierCheongdam.id,
-        item_name: "발롱 블루 워치 33mm",
-        item_category: "시계",
-        amount: 50000000,
-        currency: "KRW",
-        purchase_date: new Date("2025-07-20"),
-        store_location: "청담",
-        notes: "다이아몬드 베젤",
-      },
-      {
-        tracker_account_id: cartierCheongdam.id,
-        item_name: "러브 링 클래식",
-        item_category: "반지",
-        amount: 3850000,
-        currency: "KRW",
-        purchase_date: new Date("2025-09-14"),
-        store_location: "청담",
-      },
-      {
-        tracker_account_id: cartierCheongdam.id,
-        item_name: "Santos de Cartier Watch",
-        item_category: "시계",
-        amount: 6200,
-        currency: "USD",
-        purchase_date: new Date("2025-11-28"),
-        notes: "해외 출장 중 구매 (면세)",
-      },
-      // 까르띠에 롯데 — 4 purchases
-      {
-        tracker_account_id: cartierLotte.id,
-        item_name: "아뮬레뜨 드 까르띠에 목걸이",
-        item_category: "목걸이",
-        amount: 3600000,
-        currency: "KRW",
-        purchase_date: new Date("2024-05-20"),
-        store_location: "롯데 본점",
-      },
-      {
-        tracker_account_id: cartierLotte.id,
-        item_name: "C 드 까르띠에 지갑",
-        item_category: "지갑",
-        amount: 790000,
-        currency: "KRW",
-        purchase_date: new Date("2024-11-11"),
-        store_location: "롯데 본점",
-        notes: "빼빼로데이 선물",
-      },
-      {
-        tracker_account_id: cartierLotte.id,
-        item_name: "러브 브레이슬릿 옐로우골드",
-        item_category: "브레이슬릿",
-        amount: 9800000,
-        currency: "KRW",
-        purchase_date: new Date("2025-02-14"),
-        store_location: "롯데 본점",
-        notes: "발렌타인 구매",
-      },
-      {
-        tracker_account_id: cartierLotte.id,
-        item_name: "저스트 앵 끌루 링",
-        item_category: "반지",
-        amount: 3200000,
-        currency: "KRW",
-        purchase_date: new Date("2025-08-01"),
-        store_location: "롯데 본점",
-      },
-      // 에르메스 도산 — 4 purchases
-      {
-        tracker_account_id: hermesDoSan.id,
-        item_name: "버킨 25 토고",
-        item_category: "가방",
-        amount: 15900000,
-        currency: "KRW",
-        purchase_date: new Date("2024-07-10"),
-        store_location: "도산",
-        notes: "대기 6개월",
-      },
-      {
-        tracker_account_id: hermesDoSan.id,
-        item_name: "켈리 28 에프솜",
-        item_category: "가방",
-        amount: 18200000,
-        currency: "KRW",
-        purchase_date: new Date("2025-01-05"),
-        store_location: "도산",
-      },
-      {
-        tracker_account_id: hermesDoSan.id,
-        item_name: "H 벨트 리버서블",
-        item_category: "벨트",
-        amount: 1280000,
-        currency: "KRW",
-        purchase_date: new Date("2025-04-18"),
-        store_location: "도산",
-      },
-      {
-        tracker_account_id: hermesDoSan.id,
-        item_name: "Birkin 30 Togo",
-        item_category: "가방",
-        amount: 12800,
-        currency: "USD",
-        purchase_date: new Date("2025-10-05"),
-        notes: "파리 본점 구매",
-      },
-      // 루이비통 청담 — 4 purchases
-      {
-        tracker_account_id: lvCheongdam.id,
-        item_name: "카퓌신 MM",
-        item_category: "가방",
-        amount: 7900000,
-        currency: "KRW",
-        purchase_date: new Date("2024-04-25"),
-        store_location: "청담",
-      },
-      {
-        tracker_account_id: lvCheongdam.id,
-        item_name: "탕뷔르 워치",
-        item_category: "시계",
-        amount: 22000000,
-        currency: "KRW",
-        purchase_date: new Date("2024-10-15"),
-        store_location: "청담",
-      },
-      {
-        tracker_account_id: lvCheongdam.id,
-        item_name: "지피 월릿",
-        item_category: "지갑",
-        amount: 1350000,
-        currency: "KRW",
-        purchase_date: new Date("2025-06-01"),
-        store_location: "청담",
-      },
-      {
-        tracker_account_id: lvCheongdam.id,
-        item_name: "LV Pont 9",
-        item_category: "가방",
-        amount: 3100,
-        currency: "EUR",
-        purchase_date: new Date("2025-12-20"),
-        notes: "유럽 여행 중 구매",
-      },
-      // 샤넬 신세계 — 3 purchases
-      {
-        tracker_account_id: chanelSinse.id,
-        item_name: "클래식 플랩 미듐",
-        item_category: "가방",
-        amount: 13900000,
-        currency: "KRW",
-        purchase_date: new Date("2024-08-30"),
-        store_location: "신세계 본점",
-      },
-      {
-        tracker_account_id: chanelSinse.id,
-        item_name: "까멜리아 귀걸이",
-        item_category: "귀걸이",
-        amount: 850000,
-        currency: "KRW",
-        purchase_date: new Date("2025-03-20"),
-        store_location: "신세계 본점",
-      },
-      {
-        tracker_account_id: chanelSinse.id,
-        item_name: "프리미에르 워치",
-        item_category: "시계",
-        amount: 7500000,
-        currency: "KRW",
-        purchase_date: new Date("2025-10-10"),
-        store_location: "신세계 본점",
-      },
-      // 티파니 현대 — 2 purchases
-      {
-        tracker_account_id: tiffanyHyundai.id,
-        item_name: "T1 링 내로우",
-        item_category: "반지",
-        amount: 2400000,
-        currency: "KRW",
-        purchase_date: new Date("2025-02-28"),
-        store_location: "현대 압구정",
-      },
-      {
-        tracker_account_id: tiffanyHyundai.id,
-        item_name: "리턴 투 티파니 목걸이",
-        item_category: "목걸이",
-        amount: 380000,
-        currency: "KRW",
-        purchase_date: new Date("2025-07-07"),
-        store_location: "현대 압구정",
-      },
-    ],
+  const birkin25 = await prisma.watchable_units.create({
+    data: {
+      brand: "Hermes",
+      product_line: "Birkin",
+      model_name: "Birkin 25",
+    },
   });
 
-  // --- Purchases: User 2 ---
-  await prisma.tracker_purchases.createMany({
+  const birkin30 = await prisma.watchable_units.create({
+    data: {
+      brand: "Hermes",
+      product_line: "Birkin",
+      model_name: "Birkin 30",
+    },
+  });
+
+  const kelly28 = await prisma.watchable_units.create({
+    data: {
+      brand: "Hermes",
+      product_line: "Kelly",
+      model_name: "Kelly 28 Sellier",
+    },
+  });
+
+  const kelly32 = await prisma.watchable_units.create({
+    data: {
+      brand: "Hermes",
+      product_line: "Kelly",
+      model_name: "Kelly 32 Retourne",
+    },
+  });
+
+  const lindy26 = await prisma.watchable_units.create({
+    data: {
+      brand: "Hermes",
+      product_line: "Lindy",
+      model_name: "Lindy 26",
+    },
+  });
+
+  // --- SKUs: Birkin 25 ---
+
+  const birkin25NoirTogo = await prisma.skus.create({
+    data: {
+      watchable_unit_id: birkin25.id,
+      color: "Noir",
+      leather: "Togo",
+      hardware: "GHW",
+      size: "25",
+    },
+  });
+
+  const birkin25EtoupeTogo = await prisma.skus.create({
+    data: {
+      watchable_unit_id: birkin25.id,
+      color: "Etoupe",
+      leather: "Togo",
+      hardware: "PHW",
+      size: "25",
+    },
+  });
+
+  await prisma.skus.create({
+    data: {
+      watchable_unit_id: birkin25.id,
+      color: "Gold",
+      leather: "Epsom",
+      hardware: "GHW",
+      size: "25",
+    },
+  });
+
+  // --- SKUs: Birkin 30 ---
+
+  const birkin30NoirTogo = await prisma.skus.create({
+    data: {
+      watchable_unit_id: birkin30.id,
+      color: "Noir",
+      leather: "Togo",
+      hardware: "GHW",
+      size: "30",
+    },
+  });
+
+  await prisma.skus.create({
+    data: {
+      watchable_unit_id: birkin30.id,
+      color: "Etoupe",
+      leather: "Swift",
+      hardware: "PHW",
+      size: "30",
+    },
+  });
+
+  // --- SKUs: Kelly 28 ---
+
+  const kelly28NoirEpsom = await prisma.skus.create({
+    data: {
+      watchable_unit_id: kelly28.id,
+      color: "Noir",
+      leather: "Epsom",
+      hardware: "GHW",
+      size: "28",
+    },
+  });
+
+  await prisma.skus.create({
+    data: {
+      watchable_unit_id: kelly28.id,
+      color: "Rouge H",
+      leather: "Togo",
+      hardware: "GHW",
+      size: "28",
+    },
+  });
+
+  // --- SKUs: Kelly 32 ---
+
+  const kelly32EtoupeTogoRHW = await prisma.skus.create({
+    data: {
+      watchable_unit_id: kelly32.id,
+      color: "Etoupe",
+      leather: "Togo",
+      hardware: "RHW",
+      size: "32",
+    },
+  });
+
+  // --- SKUs: Lindy 26 ---
+
+  const lindy26EtoupeSwift = await prisma.skus.create({
+    data: {
+      watchable_unit_id: lindy26.id,
+      color: "Etoupe",
+      leather: "Swift",
+      hardware: "PHW",
+      size: "26",
+    },
+  });
+
+  // --- Drop events (recent restocks) ---
+
+  const drop1 = await prisma.drop_events.create({
+    data: {
+      sku_id: birkin25NoirTogo.id,
+      source_url: "https://www.hermes.com/kr/ko/",
+      detected_at: new Date("2026-04-20T09:15:00Z"),
+      expired_at: new Date("2026-04-20T11:00:00Z"),
+    },
+  });
+
+  const drop2 = await prisma.drop_events.create({
+    data: {
+      sku_id: kelly28NoirEpsom.id,
+      source_url: "https://www.hermes.com/kr/ko/",
+      detected_at: new Date("2026-04-22T10:30:00Z"),
+      expired_at: new Date("2026-04-22T12:00:00Z"),
+    },
+  });
+
+  await prisma.drop_events.create({
+    data: {
+      sku_id: birkin30NoirTogo.id,
+      source_url: "https://www.hermes.com/kr/ko/",
+      detected_at: new Date("2026-05-01T08:45:00Z"),
+      // Not expired yet — still live
+    },
+  });
+
+  const drop4 = await prisma.drop_events.create({
+    data: {
+      sku_id: birkin25EtoupeTogo.id,
+      source_url: "https://www.hermes.com/kr/ko/",
+      detected_at: new Date("2026-05-03T14:00:00Z"),
+    },
+  });
+
+  // --- User 1 watches: Birkin 25 (two SKUs) + Kelly 28 Noir + Birkin 30 (unit-level) ---
+
+  const watch1u1 = await prisma.watches.create({
+    data: {
+      auth_user_id: user1.supabase_id,
+      watchable_unit_id: birkin25.id,
+      sku_id: birkin25NoirTogo.id,
+      notify_push: true,
+      notify_email: false,
+    },
+  });
+
+  const watch2u1 = await prisma.watches.create({
+    data: {
+      auth_user_id: user1.supabase_id,
+      watchable_unit_id: birkin25.id,
+      sku_id: birkin25EtoupeTogo.id,
+      notify_push: true,
+      notify_email: true,
+    },
+  });
+
+  const watch3u1 = await prisma.watches.create({
+    data: {
+      auth_user_id: user1.supabase_id,
+      watchable_unit_id: kelly28.id,
+      sku_id: kelly28NoirEpsom.id,
+      notify_push: true,
+      notify_email: false,
+    },
+  });
+
+  // Unit-level watch (any SKU of Birkin 30)
+  await prisma.watches.create({
+    data: {
+      auth_user_id: user1.supabase_id,
+      watchable_unit_id: birkin30.id,
+      sku_id: null,
+      notify_push: true,
+      notify_email: false,
+    },
+  });
+
+  // --- User 2 watches: Kelly 32 + Lindy 26 ---
+
+  await prisma.watches.create({
+    data: {
+      auth_user_id: user2.supabase_id,
+      watchable_unit_id: kelly32.id,
+      sku_id: kelly32EtoupeTogoRHW.id,
+      notify_push: true,
+      notify_email: false,
+    },
+  });
+
+  await prisma.watches.create({
+    data: {
+      auth_user_id: user2.supabase_id,
+      watchable_unit_id: lindy26.id,
+      sku_id: lindy26EtoupeSwift.id,
+      notify_push: true,
+      notify_email: true,
+    },
+  });
+
+  // --- Alerts: past drop events notified to matching watches ---
+
+  await prisma.alerts.createMany({
     data: [
-      // 반클리프 아펠 갤러리아 — 3 purchases
+      // drop1 (Birkin 25 Noir Togo) → watch1u1
       {
-        tracker_account_id: vanCleef.id,
-        item_name: "알함브라 빈티지 목걸이",
-        item_category: "목걸이",
-        amount: 5900000,
-        currency: "KRW",
-        purchase_date: new Date("2024-06-15"),
-        store_location: "갤러리아",
+        watch_id: watch1u1.id,
+        drop_event_id: drop1.id,
+        channel: "push",
+        sent_at: new Date("2026-04-20T09:15:05Z"),
+        read_at: new Date("2026-04-20T09:20:00Z"),
+      },
+      // drop2 (Kelly 28 Noir Epsom) → watch3u1
+      {
+        watch_id: watch3u1.id,
+        drop_event_id: drop2.id,
+        channel: "push",
+        sent_at: new Date("2026-04-22T10:30:08Z"),
+        read_at: null,
+      },
+      // drop4 (Birkin 25 Etoupe Togo) → watch2u1 — both push and email
+      {
+        watch_id: watch2u1.id,
+        drop_event_id: drop4.id,
+        channel: "push",
+        sent_at: new Date("2026-05-03T14:00:04Z"),
+        read_at: null,
       },
       {
-        tracker_account_id: vanCleef.id,
-        item_name: "스위트 알함브라 귀걸이",
-        item_category: "귀걸이",
-        amount: 3800000,
-        currency: "KRW",
-        purchase_date: new Date("2025-01-20"),
-        store_location: "갤러리아",
-      },
-      {
-        tracker_account_id: vanCleef.id,
-        item_name: "Alhambra Bracelet 5 Motifs",
-        item_category: "브레이슬릿",
-        amount: 6300,
-        currency: "USD",
-        purchase_date: new Date("2025-08-15"),
-        notes: "뉴욕 구매",
-      },
-      // 불가리 롯데 — 2 purchases
-      {
-        tracker_account_id: bulgari.id,
-        item_name: "세르펜티 바이퍼 링",
-        item_category: "반지",
-        amount: 4500000,
-        currency: "KRW",
-        purchase_date: new Date("2024-09-01"),
-        store_location: "롯데 본점",
-      },
-      {
-        tracker_account_id: bulgari.id,
-        item_name: "비제로원 목걸이",
-        item_category: "목걸이",
-        amount: 820000,
-        currency: "JPY",
-        purchase_date: new Date("2025-05-10"),
-        notes: "도쿄 긴자 구매",
+        watch_id: watch2u1.id,
+        drop_event_id: drop4.id,
+        channel: "email",
+        sent_at: new Date("2026-05-03T14:00:06Z"),
+        read_at: null,
       },
     ],
   });
 
   console.log(
-    `Done. Created 2 users, 8 accounts, 32 purchases spanning all categories.`,
+    "Done. Created 2 users, 5 watchable units, 9 SKUs, 6 watches, 4 drop events, 4 alerts.",
   );
 }
 

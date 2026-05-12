@@ -6,16 +6,18 @@ authentication:
       jwks:
         - url: ${env.SUPABASE_JWKS_URL}
 
-# Map JWT claims to headers for subgraphs
+# Rhai script extracts JWT claims (sub → x-user-id, role → x-user-role) and
+# sets them as headers on every outgoing subgraph request.
+# from_context only supports top-level context keys (no nested field access),
+# so a Rhai script is required to extract individual claims.
+rhai:
+  scripts: "./rhai"
+  main: "main.rhai"
+
+# Propagate non-JWT headers to all subgraphs
 headers:
   all:
     request:
-      - insert:
-          name: x-user-id
-          from_context: "apollo_authentication::JWT::claims.sub"
-      - insert:
-          name: x-user-role
-          from_context: "apollo_authentication::JWT::claims.role"
       - propagate:
           named: x-request-id
       - propagate:
@@ -29,7 +31,7 @@ cors:
     - http://localhost:8094
     - http://localhost:4012
     - http://localhost:19006
-    - ${env.ALLOWED_ORIGINS}
+    - ${env.CORS_ORIGIN:-http://localhost:8081}
   allow_headers:
     - authorization
     - content-type
@@ -39,7 +41,7 @@ cors:
 
 supergraph:
   introspection: true
-  listen: 0.0.0.0:4002
+  listen: 0.0.0.0:${env.ROUTER_PORT:-4002}
 
 homepage:
   enabled: false

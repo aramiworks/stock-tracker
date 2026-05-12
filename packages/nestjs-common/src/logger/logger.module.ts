@@ -8,13 +8,16 @@ import { PinoLoggerService } from "./pino-logger.service.js";
 @Global()
 @Module({})
 export class LoggerModule {
-  static forService(serviceName: string) {
+  static forService(
+    serviceName: string,
+    betterStack?: { token?: string; ingestHost?: string },
+  ) {
     return {
       module: LoggerModule,
       providers: [
         {
           provide: PinoLoggerService,
-          useFactory: () => new PinoLoggerService(serviceName),
+          useFactory: () => new PinoLoggerService(serviceName, betterStack),
         },
       ],
       exports: [PinoLoggerService],

@@ -5,7 +5,7 @@
  * Uses serviceInstanceDeploy (not deploymentRedeploy) to pick up the latest
  * service instance config instead of replaying old deployment snapshots.
  *
- * Usage: RAILWAY_API_TOKEN=xxx tsx src/redeploy.ts <develop|stage|production>
+ * Usage: RAILWAY_API_TOKEN=xxx tsx src/redeploy.ts <develop|stage|master>
  */
 import { gql } from "graphql-request";
 import {

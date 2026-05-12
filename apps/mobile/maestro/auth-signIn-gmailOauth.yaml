@@ -1,0 +1,35 @@
+appId: so.arami.stocktracker.app
+name: Auth - Sign In - Gmail OAuth
+tags:
+  - baseline
+  - unauthenticated
+---
+# Verifies the sign-in screen renders correctly.
+# Gmail OAuth cannot be completed in automation (Google blocks WebView sign-in
+# from non-browser contexts). This flow validates the unauthenticated UI only.
+# Authenticated flows use session injection via helpers/launch-authenticated.yaml.
+
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "auth-signIn-gmailOauth-screen"
+    timeout: 10000
+
+# Title and subtitle
+- assertVisible:
+    id: "auth-signIn-title"
+- assertVisible: "Stock Tracker"
+- assertVisible:
+    id: "auth-signIn-subtitle"
+- assertVisible: "Sign In"
+
+# Google sign-in button
+- assertVisible:
+    id: "sign-in-google-button"
+- assertVisible: "Sign in with Google"
+
+# Tap the button — should show loading indicator (no navigation since OAuth
+# requires a real Google session, but the button should respond)
+- tapOn:
+    id: "sign-in-google-button"
+- waitForAnimationToEnd

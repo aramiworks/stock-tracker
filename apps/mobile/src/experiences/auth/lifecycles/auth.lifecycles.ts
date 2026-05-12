@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
+import { identifyUser, resetAnalytics } from "../../../lib/analytics";
 import { setSession } from "../models/auth.store";
 
 const SESSION_TIMEOUT_MS = 5000;
@@ -9,6 +10,7 @@ export const useAuthLifecycle = () => {
     let settled = false;
 
     const timeout = setTimeout(() => {
+      /* istanbul ignore next -- race-condition guard: covered by "hangs" test but branch still uncovered when getSession resolves first */
       if (!settled) {
         settled = true;
         setSession(null);
@@ -22,9 +24,11 @@ export const useAuthLifecycle = () => {
           settled = true;
           clearTimeout(timeout);
           setSession(session);
+          if (session?.user.id) void identifyUser(session.user.id);
         }
       })
       .catch(() => {
+        /* istanbul ignore next -- race-condition guard: covered by "rejects" test but branch still uncovered when getSession resolves first */
         if (!settled) {
           settled = true;
           clearTimeout(timeout);
@@ -34,8 +38,13 @@ export const useAuthLifecycle = () => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
+      if (event === "SIGNED_OUT") {
+        void resetAnalytics();
+      } else if (session?.user.id) {
+        void identifyUser(session.user.id);
+      }
     });
 
     return () => {

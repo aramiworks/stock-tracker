@@ -1,10 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { Injectable } from "@nestjs/common";
+import * as Sentry from "@sentry/node";
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import superjson from "superjson";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { PinoLoggerService } from "../logger/pino-logger.service.js";
+import { getEfcvFromTrpcPath } from "../sentry/efcv-from-trpc-path.js";
 
 export interface TrpcContext {
   prisma: PrismaService;
@@ -111,8 +113,35 @@ export class TrpcBaseService {
     });
   }
 
+  /**
+   * Sentry per-procedure scoping: tags the active scope with EFCV derived
+   * from the procedure path, plus requestId and userId, and captures any
+   * thrown error before re-throwing. No-ops when Sentry isn't initialised.
+   */
+  get sentryCapture() {
+    return this.t.middleware(async ({ ctx, path, next }) => {
+      return Sentry.withScope(async (scope) => {
+        const { experience, flow, container } = getEfcvFromTrpcPath(path);
+        scope.setTags({
+          procedure: path,
+          ...(experience && { experience }),
+          ...(flow && { flow }),
+          ...(container && { container }),
+          ...(ctx.requestId && { requestId: ctx.requestId }),
+        });
+        if (ctx.userId) scope.setUser({ id: ctx.userId });
+        try {
+          return await next();
+        } catch (err) {
+          Sentry.captureException(err);
+          throw err;
+        }
+      });
+    });
+  }
+
   get publicProcedure() {
-    return this.t.procedure.use(this.logRequest);
+    return this.t.procedure.use(this.sentryCapture).use(this.logRequest);
   }
 
   get protectedProcedure() {

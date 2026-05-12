@@ -29,9 +29,9 @@ export const ENVIRONMENTS: Record<string, EnvironmentConfig> = {
     nodeEnv: "staging",
     dopplerConfig: "stage",
   },
-  production: {
-    railwayEnvName: "production",
-    imageTag: "latest",
+  master: {
+    railwayEnvName: "master",
+    imageTag: "master",
     nodeEnv: "production",
     dopplerConfig: "master",
   },
@@ -39,12 +39,38 @@ export const ENVIRONMENTS: Record<string, EnvironmentConfig> = {
 
 export const SERVICES: ServiceDef[] = [
   {
-    name: "api",
-    image: "ghcr.io/aramiworks/stock-tracker-api",
-    port: 4000,
+    name: "auth-service",
+    image: "ghcr.io/aramiworks/stock-tracker-auth-service",
+    port: 4030,
     healthcheckPath: "/health",
     startCommand: "npm run start",
-    envVars: ["DATABASE_URL"],
+    envVars: [
+      "DATABASE_URL",
+      "SUPABASE_URL",
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ],
+  },
+  {
+    name: "tracker-service",
+    image: "ghcr.io/aramiworks/stock-tracker-tracker-service",
+    port: 4020,
+    healthcheckPath: "/health",
+    startCommand: "npm run start",
+    envVars: [
+      "DATABASE_URL",
+      "SUPABASE_URL",
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ],
+  },
+  {
+    name: "subgraph-auth",
+    image: "ghcr.io/aramiworks/stock-tracker-subgraph-auth",
+    port: 4002,
+    // No healthcheckPath — Apollo Server startStandaloneServer has no /health endpoint
+    startCommand: "npm run start",
+    envVars: ["TRPC_AUTH_SERVICE_URL"],
   },
   {
     name: "subgraph-tracker",
@@ -52,7 +78,7 @@ export const SERVICES: ServiceDef[] = [
     port: 4001,
     // No healthcheckPath — Apollo Server startStandaloneServer has no /health endpoint
     startCommand: "npm run start",
-    envVars: ["DATABASE_URL", "TRPC_SERVICE_URL"],
+    envVars: ["TRPC_TRACKER_SERVICE_URL"],
   },
   {
     name: "router",

@@ -1,0 +1,31 @@
+appId: so.arami.stocktracker.app
+name: Tracker - Account - Home
+tags:
+  - authenticated
+---
+- launchApp
+- assertVisible:
+    id: "dashboard-home-screen"
+- tapOn:
+    id: "profile-avatar"
+- assertVisible:
+    id: "account-home-screen"
+- assertVisible:
+    id: "account-home-top-bar"
+- assertVisible: "계정"
+- assertVisible:
+    id: "account-info-card"
+- assertVisible: "이메일"
+- assertVisible: "가입일"
+- assertVisible:
+    id: "sign-out-button"
+- assertVisible: "로그아웃"
+- assertVisible:
+    id: "version-footer"
+- tapOn:
+    id: "sign-out-button"
+- assertVisible:
+    id: "auth-signIn-gmailOauth-screen"
+- assertVisible:
+    id: "sign-in-google-button"
+- assertVisible: "Sign in with Google"

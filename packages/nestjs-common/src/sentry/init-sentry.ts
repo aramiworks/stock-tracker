@@ -14,6 +14,12 @@ export interface InitSentryOptions {
   environment?: string;
   /** Defaults to 0.1 — same as the convention. */
   tracesSampleRate?: number;
+  /**
+   * Sentry release identifier. Must match the release the source maps were
+   * uploaded under (Backend Docker workflow uploads with `--release=$GITHUB_SHA`).
+   * Defaults to `process.env.SENTRY_RELEASE`.
+   */
+  release?: string;
 }
 
 /**
@@ -34,6 +40,7 @@ export function initSentry(options: InitSentryOptions): void {
     dsn,
     environment: options.environment ?? process.env["NODE_ENV"],
     tracesSampleRate: options.tracesSampleRate ?? 0.1,
+    release: options.release ?? process.env["SENTRY_RELEASE"],
     initialScope: {
       tags: { service: options.service },
     },

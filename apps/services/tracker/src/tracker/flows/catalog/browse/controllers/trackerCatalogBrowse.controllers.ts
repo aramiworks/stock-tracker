@@ -60,4 +60,51 @@ export class TrackerCatalogBrowseControllers {
     }
     return mapUnit(unit);
   }
+
+  /**
+   * Returns all active watchable units grouped by (brand, product_line).
+   * Outer array is sorted brand ASC then product_line ASC; each `units`
+   * array is sorted model_name ASC. The Prisma `orderBy` already returns
+   * rows in that order, so grouping is a single linear pass.
+   *
+   * No auth required — anonymous-readable so users can browse before
+   * signing in.
+   */
+  async listGrouped() {
+    const units = await this.models.findAllActive();
+    const groups: {
+      brand: string;
+      productLine: string;
+      units: {
+        id: string;
+        brand: string;
+        productLine: string;
+        modelName: string;
+      }[];
+    }[] = [];
+    let current: (typeof groups)[number] | undefined;
+
+    for (const u of units) {
+      if (
+        !current ||
+        current.brand !== u.brand ||
+        current.productLine !== u.product_line
+      ) {
+        current = {
+          brand: u.brand,
+          productLine: u.product_line,
+          units: [],
+        };
+        groups.push(current);
+      }
+      current.units.push({
+        id: u.id,
+        brand: u.brand,
+        productLine: u.product_line,
+        modelName: u.model_name,
+      });
+    }
+
+    return groups;
+  }
 }

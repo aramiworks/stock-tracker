@@ -62,6 +62,26 @@ export const trackerTypeDefs = gql`
     nextCursor: ID
   }
 
+  """
+  Minimal WatchableUnit shape returned by Query.catalogList — used for the
+  Shengsho-style catalog browse UI which doesn't need SKUs or timestamps.
+  """
+  type CatalogListUnit {
+    id: ID!
+    brand: String!
+    productLine: String!
+    modelName: String!
+  }
+
+  """
+  A group of catalog units sharing the same (brand, productLine).
+  """
+  type CatalogListGroup {
+    brand: String!
+    productLine: String!
+    units: [CatalogListUnit!]!
+  }
+
   type AlertFeed {
     items: [Alert!]!
     nextCursor: ID
@@ -103,6 +123,12 @@ export const trackerTypeDefs = gql`
     Get a single catalog item by ID
     """
     catalogItem(id: ID!): WatchableUnit
+
+    """
+    Anonymous-readable catalog grouped by (brand, productLine). Used by the
+    Shengsho-style catalog browse UI so users can browse before signing in.
+    """
+    catalogList: [CatalogListGroup!]!
 
     """
     List the current user's watches

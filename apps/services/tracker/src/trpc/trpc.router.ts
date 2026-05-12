@@ -31,6 +31,14 @@ export class TrpcRouter {
     });
 
     const catalogRouter = this.trpc.router({
+      // Anonymous-readable grouped catalog for the Shengsho-style browse UI.
+      // Returns all active watchable_units grouped by product_line so
+      // unauthenticated users can browse before signing in.
+      list: this.trpc.publicProcedure
+        .output(trackerCatalogBrowseViews.listGrouped.output)
+        .query(async () => {
+          return this.catalogBrowseControllers.listGrouped();
+        }),
       browse: this.trpc.router({
         list: this.trpc.protectedProcedure
           .input(trackerCatalogBrowseViews.list.input)

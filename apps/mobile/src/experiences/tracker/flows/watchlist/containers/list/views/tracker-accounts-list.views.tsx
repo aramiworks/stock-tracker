@@ -1,5 +1,11 @@
 import { memo, useState, type ReactNode } from "react";
-import { Pressable, View, RefreshControl, StyleSheet, Text } from "react-native";
+import {
+  Pressable,
+  View,
+  RefreshControl,
+  StyleSheet,
+  Text,
+} from "react-native";
 import {
   FAB,
   ListTemplate,

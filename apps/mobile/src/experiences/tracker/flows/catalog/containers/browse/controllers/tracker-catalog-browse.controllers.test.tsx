@@ -23,7 +23,9 @@ const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
   typeof useSuspenseQuery
 >;
 
-function setQueryData(groups: typeof CATALOG_MOCK_GROUPS = CATALOG_MOCK_GROUPS) {
+function setQueryData(
+  groups: typeof CATALOG_MOCK_GROUPS = CATALOG_MOCK_GROUPS,
+) {
   mockedUseSuspenseQuery.mockReturnValue({
     data: { catalogList: groups },
     refetch: mockRefetch,

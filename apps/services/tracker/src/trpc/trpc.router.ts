@@ -8,6 +8,8 @@ import { TrackerWatchlistManageControllers } from "../tracker/flows/watchlist/ma
 import { trackerWatchlistManageViews } from "../tracker/flows/watchlist/manage/views/index.js";
 import { TrackerAlertsFeedControllers } from "../tracker/flows/alerts/feed/controllers/index.js";
 import { trackerAlertsFeedViews } from "../tracker/flows/alerts/feed/views/index.js";
+import { TrackerIngestDropEventControllers } from "../tracker/flows/ingest/dropEvent/controllers/index.js";
+import { trackerIngestDropEventViews } from "../tracker/flows/ingest/dropEvent/views/index.js";
 
 @Injectable()
 export class TrpcRouter {
@@ -19,6 +21,7 @@ export class TrpcRouter {
     private readonly catalogBrowseControllers: TrackerCatalogBrowseControllers,
     private readonly watchlistManageControllers: TrackerWatchlistManageControllers,
     private readonly alertsFeedControllers: TrackerAlertsFeedControllers,
+    private readonly ingestDropEventControllers: TrackerIngestDropEventControllers,
   ) {
     const dashboardRouter = this.trpc.router({
       home: this.trpc.router({
@@ -105,12 +108,24 @@ export class TrpcRouter {
       }),
     });
 
+    const ingestRouter = this.trpc.router({
+      dropEvent: this.trpc.router({
+        upsert: this.trpc.serviceProcedure
+          .input(trackerIngestDropEventViews.upsert.input)
+          .output(trackerIngestDropEventViews.upsert.output)
+          .mutation(async ({ input }) => {
+            return this.ingestDropEventControllers.upsert(input);
+          }),
+      }),
+    });
+
     this.appRouter = this.trpc.router({
       tracker: this.trpc.router({
         dashboard: dashboardRouter,
         catalog: catalogRouter,
         watchlist: watchlistRouter,
         alerts: alertsRouter,
+        ingest: ingestRouter,
       }),
     });
   }

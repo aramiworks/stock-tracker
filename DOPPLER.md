@@ -54,6 +54,14 @@ doppler run -- npm run dev:router
 | `ALLOWED_ORIGINS`               | `http://localhost:19006,...`                              |
 | `NODE_ENV`                      | `development`                                             |
 
+### Tracker-service ingest auth
+
+| Var                            | Purpose                                                          |
+| ------------------------------ | ---------------------------------------------------------------- |
+| `TRACKER_INGEST_SERVICE_TOKEN` | Shared secret for scraper → tracker service-to-service auth      |
+
+Jace populates this in Doppler. The scraper sends it as `X-Service-Token`; the tracker-service validates it with constant-time comparison.
+
 For `dev`/`stg`/`prd` configs, populate via the Doppler dashboard with the respective Railway + Supabase cloud credentials.
 
 ## Scraper vars

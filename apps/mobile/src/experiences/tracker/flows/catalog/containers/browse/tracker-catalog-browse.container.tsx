@@ -1,10 +1,11 @@
-import { memo } from "react";
+import { memo, Suspense } from "react";
 import { TrackerCatalogBrowseModels } from "./models";
 import {
   TrackerCatalogBrowseControllers,
   useTrackerCatalogBrowseControllers,
 } from "./controllers";
 import { TrackerCatalogBrowseViews } from "./views";
+import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
 
 const ConnectedViews = memo(() => {
   const controllers = useTrackerCatalogBrowseControllers();
@@ -25,14 +26,26 @@ const ConnectedViews = memo(() => {
 ConnectedViews.displayName = "TrackerCatalogBrowseConnectedViews";
 
 export const TrackerCatalogBrowseContainer = memo(() => {
-  // TODO(INF-1393): wrap in <QueryErrorBoundary> + <Suspense> once the tRPC
-  // `catalog.list` query is wired (mirrors watchlist/list + history/browse).
   return (
-    <TrackerCatalogBrowseModels>
-      <TrackerCatalogBrowseControllers>
-        <ConnectedViews />
-      </TrackerCatalogBrowseControllers>
-    </TrackerCatalogBrowseModels>
+    <QueryErrorBoundary
+      fallback={
+        /* istanbul ignore next -- error boundary fallback */ () => (
+          <TrackerCatalogBrowseViews screenState="error" />
+        )
+      }
+    >
+      <Suspense
+        fallback={
+          /* istanbul ignore next -- Suspense fallback (Figma 842:83) */ <TrackerCatalogBrowseViews screenState="loading" />
+        }
+      >
+        <TrackerCatalogBrowseModels>
+          <TrackerCatalogBrowseControllers>
+            <ConnectedViews />
+          </TrackerCatalogBrowseControllers>
+        </TrackerCatalogBrowseModels>
+      </Suspense>
+    </QueryErrorBoundary>
   );
 });
 

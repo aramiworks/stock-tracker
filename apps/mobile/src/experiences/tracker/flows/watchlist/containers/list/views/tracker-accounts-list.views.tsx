@@ -1,5 +1,5 @@
 import { memo, useState, type ReactNode } from "react";
-import { View, RefreshControl, StyleSheet } from "react-native";
+import { Pressable, View, RefreshControl, StyleSheet, Text } from "react-native";
 import {
   FAB,
   ListTemplate,
@@ -80,6 +80,11 @@ type TrackerAccountsListViewsProps = {
   onSortByToggle?: () => void;
   isRefreshing?: boolean;
   onRefresh?: () => void;
+  /**
+   * Shengsho-strict entry point for the catalog browse screen (INF-1391).
+   * Rendered as a "+ 추가" action on the TopAppBar.
+   */
+  onAddProductsPress?: () => void;
 };
 
 export const TrackerAccountsListViews = memo(
@@ -96,6 +101,7 @@ export const TrackerAccountsListViews = memo(
     onSortByToggle,
     isRefreshing = false,
     onRefresh,
+    onAddProductsPress,
   }: TrackerAccountsListViewsProps) => {
     const { t } = useTranslation("tracker");
     const [showAccountModal, setShowAccountModal] = useState(false);
@@ -187,6 +193,21 @@ export const TrackerAccountsListViews = memo(
         </>
       ) : undefined;
 
+    const addProductsButton = onAddProductsPress ? (
+      <Pressable
+        onPress={onAddProductsPress}
+        accessibilityRole="button"
+        accessibilityLabel={t("watchlist.list.addProducts", "+ 추가")}
+        testID="watchlist-add-products-button"
+        style={styles.addProductsButton}
+        hitSlop={8}
+      >
+        <Text style={styles.addProductsLabel}>
+          {t("watchlist.list.addProducts", "+ 추가")}
+        </Text>
+      </Pressable>
+    ) : undefined;
+
     return (
       <>
         <ListTemplate
@@ -195,6 +216,7 @@ export const TrackerAccountsListViews = memo(
             <TopAppBar
               type="small"
               title={t("accounts.list.title")}
+              trailingContent={addProductsButton}
               testID="accounts-list-title"
             />
           }
@@ -233,5 +255,15 @@ const styles = StyleSheet.create({
   },
   spacer12: {
     height: 12,
+  },
+  addProductsButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  addProductsLabel: {
+    fontFamily: "Inter",
+    fontWeight: "600",
+    fontSize: 15,
+    color: "#1A1A1A",
   },
 });

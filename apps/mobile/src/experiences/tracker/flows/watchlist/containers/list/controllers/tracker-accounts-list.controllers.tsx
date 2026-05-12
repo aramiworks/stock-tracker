@@ -125,6 +125,10 @@ export const TrackerAccountsListControllers =
       [router],
     );
 
+    const onAddProductsPress = useCallback(() => {
+      router.push("/tracker/catalog/browse");
+    }, [router]);
+
     const onSearchChange = useCallback((query: string) => {
       setSearchQuery(query);
     }, []);
@@ -147,6 +151,7 @@ export const TrackerAccountsListControllers =
       onSortByToggle,
       isRefreshing,
       onRefresh,
+      onAddProductsPress,
     };
 
     return (

@@ -5,21 +5,28 @@ tags:
   - authenticated
 ---
 # Verifies the Shengsho-style catalog/browse container renders product-line
-# groups and per-row checkboxes respond to taps. INF-1391.
+# groups (sourced from tRPC `catalog.list` via the tracker subgraph — INF-1393)
+# and per-row checkboxes respond to taps.
 #
-# Selection is mocked in client state until the tRPC `catalog.list` query lands
-# (INF-1393), so this flow asserts UI behaviour, not server state.
+# Catalog is no longer a top-level tab (INF-1391 Shengsho-strict nav); the
+# entry point is the "+ 추가" action on the Watchlist screen.
 
 - runFlow: helpers/launch-authenticated.yaml
 
-# Land on Catalog tab (default first tab in the new Shengsho nav).
-- tapOn: "카탈로그"
+# Watchlist is the default landing tab.
+- assertVisible:
+    id: "accounts-list-screen"
+
+# Enter the catalog via the "+ 추가" header action.
+- tapOn:
+    id: "watchlist-add-products-button"
 - assertVisible:
     id: "catalog-browse-screen"
 - assertVisible:
     id: "catalog-browse-title"
 
-# Verify at least three of the seeded Hermès groups render.
+# Verify at least three of the seeded Hermès groups render (real data from
+# packages/prisma/prisma/seed-catalog.ts).
 - assertVisible:
     id: "catalog-group-Hermès-Bolide"
 - assertVisible:

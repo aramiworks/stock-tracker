@@ -3,13 +3,15 @@ import {
   createContext,
   useContext,
   useCallback,
+  useMemo,
   useState,
   startTransition,
   type ReactNode,
 } from "react";
+import { useSuspenseQuery } from "@apollo/client/react";
+import { CATALOG_LIST_QUERY } from "@/lib/graphql/queries";
 import { useTrackerCatalogBrowseStore } from "./tracker-catalog-browse.store";
 import {
-  CATALOG_MOCK_GROUPS,
   type CatalogGroup,
   type GroupSelectionState,
   type TrackerCatalogBrowseControllersOutput,
@@ -17,8 +19,24 @@ import {
 } from "../models";
 import { useTrackerCatalogBrowseLifecycle } from "../lifecycles";
 
-// TODO(INF-1393): Replace mocks with `useSuspenseQuery(CATALOG_LIST_QUERY)` once
-// the tracker subgraph exposes `catalog.list` ({ brand, productLine, units }[]).
+/**
+ * GraphQL response shape for `query CatalogList` (see
+ * `apps/subgraphs/tracker/src/tracker/views/tracker.views.ts`). Hand-written
+ * because the mobile codegen pipeline has pre-existing drift; once that drift
+ * is resolved we can swap to `graphql(...)`-generated types.
+ */
+interface CatalogListQueryData {
+  catalogList: Array<{
+    brand: string;
+    productLine: string;
+    units: Array<{
+      id: string;
+      brand: string;
+      productLine: string;
+      modelName: string;
+    }>;
+  }>;
+}
 
 const ControllersContext =
   createContext<TrackerCatalogBrowseControllersOutput | null>(null);
@@ -51,17 +69,25 @@ export const TrackerCatalogBrowseControllers =
     const setUnits = useTrackerCatalogBrowseStore((s) => s.setUnits);
 
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [groups] = useState<CatalogGroup[]>(CATALOG_MOCK_GROUPS);
 
-    useTrackerCatalogBrowseLifecycle();
+    const { data, refetch } =
+      useSuspenseQuery<CatalogListQueryData>(CATALOG_LIST_QUERY);
+
+    useTrackerCatalogBrowseLifecycle(refetch);
+
+    const groups = useMemo<CatalogGroup[]>(
+      // istanbul ignore next -- `useSuspenseQuery` always resolves data before
+      // we render; the `?? []` guard is purely defensive against partial data.
+      () => data?.catalogList ?? [],
+      [data?.catalogList],
+    );
 
     const onRefresh = useCallback(() => {
       setIsRefreshing(true);
       startTransition(() => {
-        // TODO(INF-1393): swap for refetch() from useSuspenseQuery once backend lands.
-        setTimeout(() => setIsRefreshing(false), 250);
+        void refetch().finally(() => setIsRefreshing(false));
       });
-    }, []);
+    }, [refetch]);
 
     const getGroupState = useCallback(
       (group: CatalogGroup) => computeGroupState(group, selectedUnitIds),
@@ -70,7 +96,7 @@ export const TrackerCatalogBrowseControllers =
 
     const onToggleUnit = useCallback(
       async (unitId: string) => {
-        // TODO(INF-1393): call `watch.create` / `watch.delete` mutations here.
+        // TODO(INF-1393 follow-up): call `watch.create` / `watch.delete` mutations here.
         toggleUnit(unitId);
       },
       [toggleUnit],
@@ -90,7 +116,6 @@ export const TrackerCatalogBrowseControllers =
       [selectedUnitIds, setUnits],
     );
 
-    /* istanbul ignore next -- empty branch becomes reachable in INF-1393 once groups come from useSuspenseQuery; today CATALOG_MOCK_GROUPS is always non-empty */
     const screenState: TrackerCatalogBrowseScreenState =
       groups.length > 0 ? "default" : "empty";
 

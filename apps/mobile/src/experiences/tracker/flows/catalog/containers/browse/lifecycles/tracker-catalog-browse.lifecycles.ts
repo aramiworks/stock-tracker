@@ -1,14 +1,12 @@
-import { useEffect } from "react";
+import { useRefetchOnFocus } from "@/shared/hooks/use-refetch-on-focus";
 
 /**
  * Container-level lifecycle for `tracker/catalog/browse`.
  *
- * TODO(INF-1393): once the tRPC `catalog.list` query is wired via Apollo, pass
- * `refetch` and call `useRefetchOnFocus(refetch)` (matches the watchlist/list
- * + history/browse pattern).
+ * Refetches `catalog.list` whenever the screen regains focus — mirrors the
+ * watchlist/list + history/browse pattern. Backend query is anonymous-allowed
+ * at the router so this fires whether or not a JWT is present.
  */
-export const useTrackerCatalogBrowseLifecycle = () => {
-  useEffect(() => {
-    // no-op while running on mock data
-  }, []);
+export const useTrackerCatalogBrowseLifecycle = (refetch: () => void) => {
+  useRefetchOnFocus(refetch);
 };

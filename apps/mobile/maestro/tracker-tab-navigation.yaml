@@ -4,29 +4,34 @@ name: Tracker - Tab Navigation
 tags:
   - authenticated
 ---
-# Cycle the three live bottom tabs (catalog / watchlist / history) and assert
-# each container renders. INF-1391 reshaped the nav to drop the Alerts tab
-# (parked in `_archived_eligibility`) and lead with Catalog (the Shengsho
-# entry point). Account remains hidden via `href: null`.
+# Shengsho-strict 2-tab nav (INF-1391 — Jace decision). Bottom bar collapses to
+# Watchlist + History. Catalog is no longer a top-level tab — it's reached via
+# the "+ 추가" entry point on the Watchlist screen.
 
-- launchApp
+- runFlow: helpers/launch-authenticated.yaml
 
-# Default landing tab — catalog
-- tapOn: "카탈로그"
-- assertVisible:
-    id: "catalog-browse-screen"
-
-# Watchlist tab (관심목록)
-- tapOn: "관심목록"
+# Watchlist tab is the default landing tab.
 - assertVisible:
     id: "accounts-list-screen"
+
+# Exactly the two configured tabs render — Catalog must NOT be visible in the
+# bottom bar (it's `href: null` per (app)/_layout.tsx).
+- assertVisible: "관심목록"
+- assertVisible: "알림내역"
+- assertNotVisible: "카탈로그"
 
 # History tab (알림내역)
 - tapOn: "알림내역"
 - assertVisible:
     id: "history-browse-screen"
 
-# Cycle back to catalog to confirm bidirectional navigation
-- tapOn: "카탈로그"
+# Back to watchlist
+- tapOn: "관심목록"
+- assertVisible:
+    id: "accounts-list-screen"
+
+# Catalog is reachable via the "+ 추가" entry point on the watchlist header.
+- tapOn:
+    id: "watchlist-add-products-button"
 - assertVisible:
     id: "catalog-browse-screen"

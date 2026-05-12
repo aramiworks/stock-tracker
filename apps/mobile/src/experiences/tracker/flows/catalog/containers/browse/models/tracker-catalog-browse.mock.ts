@@ -1,7 +1,7 @@
 import type { CatalogGroup } from "./tracker-catalog-browse.type";
 
 /**
- * Mock catalog grouped by `{ brand, productLine }`.
+ * Storybook + unit-test fixture for the catalog browse screen.
  *
  * Mirrors the seeded catalog in `packages/prisma/prisma/seed-catalog.ts`:
  * - 12 Hermès product lines (NO Birkin/Kelly): Bolide, Constance, 24/24,
@@ -10,10 +10,11 @@ import type { CatalogGroup } from "./tracker-catalog-browse.type";
  * - 1 Cartier product line: Tank Must (4 SKUs)
  *
  * IDs are deterministic UUIDs so React keys stay stable across hot reloads
- * and Maestro test runs.
+ * and snapshot/Maestro test runs.
  *
- * TODO(INF-1393): delete this file once the tRPC `catalog.list` query lands —
- * the controllers will then source groups from `useSuspenseQuery`.
+ * Runtime data now comes from the tRPC `catalog.list` query via the tracker
+ * subgraph (INF-1393); this fixture stays for offline storybook rendering and
+ * for controller/view unit tests that don't want to spin up an Apollo client.
  */
 export const CATALOG_MOCK_GROUPS: CatalogGroup[] = [
   {

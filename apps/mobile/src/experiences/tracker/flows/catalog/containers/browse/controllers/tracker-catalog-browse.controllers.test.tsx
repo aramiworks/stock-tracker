@@ -1,11 +1,35 @@
 import { render, act } from "@testing-library/react-native";
 import { Text } from "react-native";
+
+const mockRefetch = jest.fn().mockResolvedValue(undefined);
+
+jest.mock("@apollo/client/react", () => ({
+  useSuspenseQuery: jest.fn(),
+}));
+
+jest.mock("../lifecycles", () => ({
+  useTrackerCatalogBrowseLifecycle: jest.fn(),
+}));
+
+import { useSuspenseQuery } from "@apollo/client/react";
 import {
   TrackerCatalogBrowseControllers,
   useTrackerCatalogBrowseControllers,
 } from "./tracker-catalog-browse.controllers";
 import { useTrackerCatalogBrowseStore } from "./tracker-catalog-browse.store";
 import { CATALOG_MOCK_GROUPS } from "../models/tracker-catalog-browse.mock";
+
+const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+  typeof useSuspenseQuery
+>;
+
+function setQueryData(groups: typeof CATALOG_MOCK_GROUPS = CATALOG_MOCK_GROUPS) {
+  mockedUseSuspenseQuery.mockReturnValue({
+    data: { catalogList: groups },
+    refetch: mockRefetch,
+    // The rest of the useSuspenseQuery return is unused by the controllers — cast wide.
+  } as unknown as ReturnType<typeof useSuspenseQuery>);
+}
 
 let captured: ReturnType<typeof useTrackerCatalogBrowseControllers> | null =
   null;
@@ -25,15 +49,25 @@ const renderControllers = () =>
 describe("TrackerCatalogBrowseControllers", () => {
   beforeEach(() => {
     captured = null;
+    mockRefetch.mockClear();
+    mockedUseSuspenseQuery.mockReset();
+    setQueryData();
     useTrackerCatalogBrowseStore.setState({
       selectedUnitIds: new Set<string>(),
     });
   });
 
-  it("exposes screenState=default when mock groups are non-empty", () => {
+  it("exposes screenState=default when catalog.list returns groups", () => {
     renderControllers();
     expect(captured?.screenState).toBe("default");
-    expect(captured?.groups).toBe(CATALOG_MOCK_GROUPS);
+    expect(captured?.groups).toEqual(CATALOG_MOCK_GROUPS);
+  });
+
+  it("exposes screenState=empty when catalog.list returns no groups", () => {
+    setQueryData([]);
+    renderControllers();
+    expect(captured?.screenState).toBe("empty");
+    expect(captured?.groups).toEqual([]);
   });
 
   it("getGroupState returns 'none' when no units selected", () => {
@@ -86,17 +120,16 @@ describe("TrackerCatalogBrowseControllers", () => {
     expect(captured?.getGroupState(group)).toBe("all");
   });
 
-  it("onRefresh sets isRefreshing then resets it", async () => {
-    jest.useFakeTimers();
+  it("onRefresh triggers refetch via startTransition", async () => {
     renderControllers();
-    act(() => {
-      captured?.onRefresh();
-    });
-    expect(captured?.isRefreshing).toBe(true);
     await act(async () => {
-      jest.advanceTimersByTime(300);
+      captured?.onRefresh();
+      // Flush microtasks so the startTransition-scheduled state update lands
+      // and the refetch promise resolves before assertions.
+      await Promise.resolve();
+      await Promise.resolve();
     });
+    expect(mockRefetch).toHaveBeenCalled();
     expect(captured?.isRefreshing).toBe(false);
-    jest.useRealTimers();
   });
 });

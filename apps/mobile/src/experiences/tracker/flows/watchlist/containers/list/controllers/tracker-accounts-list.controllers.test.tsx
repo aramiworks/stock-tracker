@@ -109,6 +109,7 @@ const Consumer = forwardRef<ConsumerHandle>((_props, ref) => {
       <Text testID="sort-by">{ctx.sortBy}</Text>
       <Text testID="refreshing">{String(ctx.isRefreshing)}</Text>
       <Pressable testID="sa-press" onPress={() => ctx.onSaPress("acc-1")} />
+      <Pressable testID="add-products-press" onPress={ctx.onAddProductsPress} />
     </>
   );
 });
@@ -277,6 +278,16 @@ describe("TrackerAccountsListControllers", () => {
     );
     fireEvent.press(getByTestId("sa-press"));
     expect(mockPush).toHaveBeenCalledWith("/tracker/accounts/detail/acc-1");
+  });
+
+  it("onAddProductsPress navigates to catalog browse (INF-1391 entry point)", () => {
+    const { getByTestId } = render(
+      <TrackerAccountsListControllers>
+        <Consumer />
+      </TrackerAccountsListControllers>,
+    );
+    fireEvent.press(getByTestId("add-products-press"));
+    expect(mockPush).toHaveBeenCalledWith("/tracker/catalog/browse");
   });
 
   it("onCreateAccount calls mutation", async () => {

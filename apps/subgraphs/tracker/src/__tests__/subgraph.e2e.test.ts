@@ -684,6 +684,235 @@ describe("markAlertRead mutation", () => {
   });
 });
 
+describe("watchlist queries + mutations (INF-1415)", () => {
+  const WATCHLIST_USER_ID = "00000000-0000-0000-0000-000000000002";
+
+  beforeAll(async () => {
+    await prisma.auth_users.upsert({
+      where: { id: WATCHLIST_USER_ID },
+      update: {},
+      create: {
+        id: WATCHLIST_USER_ID,
+        supabase_id: WATCHLIST_USER_ID,
+        email: "watchlist-e2e@test.local",
+      },
+    });
+  });
+
+  afterAll(async () => {
+    await prisma.watches.deleteMany({
+      where: { auth_user_id: WATCHLIST_USER_ID },
+    });
+    await prisma.auth_users.deleteMany({
+      where: { id: WATCHLIST_USER_ID },
+    });
+  });
+
+  function execAs(query: string, variables?: Record<string, unknown>) {
+    return executeAs({
+      server,
+      query,
+      variables,
+      trackerUrl,
+      userId: WATCHLIST_USER_ID,
+    });
+  }
+
+  it("happy-path: add -> list -> detail -> remove", async () => {
+    // Add
+    const addRes = await execAs(
+      `
+        mutation Add($id: ID!) {
+          watchlistAdd(watchableUnitId: $id) {
+            id
+            watchableUnitId
+            brand
+            productLine
+            modelName
+            notifyPush
+            notifyEmail
+            state
+            lastRestockedAt
+          }
+        }
+      `,
+      { id: seededUnitId },
+    );
+    const addData = getData(addRes);
+    expect(addData.errors).toBeUndefined();
+    expect(addData.data?.watchlistAdd.watchableUnitId).toBe(seededUnitId);
+    expect(addData.data?.watchlistAdd.brand).toBe("Hermes");
+    expect(addData.data?.watchlistAdd.notifyPush).toBe(true);
+    expect(addData.data?.watchlistAdd.notifyEmail).toBe(true);
+
+    // Add again -> idempotent (same id returned)
+    const addAgainRes = await execAs(
+      `
+        mutation Add($id: ID!) {
+          watchlistAdd(watchableUnitId: $id) {
+            id
+          }
+        }
+      `,
+      { id: seededUnitId },
+    );
+    const addAgainData = getData(addAgainRes);
+    expect(addAgainData.errors).toBeUndefined();
+    expect(addAgainData.data?.watchlistAdd.id).toBe(
+      addData.data?.watchlistAdd.id,
+    );
+
+    // List
+    const listRes = await execAs(`
+        query {
+          watchlist {
+            brand
+            productLine
+            entries {
+              id
+              watchableUnitId
+              modelName
+              state
+              lastRestockedAt
+            }
+          }
+        }
+      `);
+    const listData = getData(listRes);
+    expect(listData.errors).toBeUndefined();
+    expect(listData.data?.watchlist.length).toBeGreaterThanOrEqual(1);
+    const hermesGroup = listData.data?.watchlist.find(
+      (g: { brand: string; productLine: string }) =>
+        g.brand === "Hermes" && g.productLine === "Birkin",
+    );
+    expect(hermesGroup).toBeDefined();
+    expect(
+      hermesGroup.entries.some(
+        (e: { watchableUnitId: string }) => e.watchableUnitId === seededUnitId,
+      ),
+    ).toBe(true);
+
+    // Detail
+    const detailRes = await execAs(
+      `
+        query Detail($id: ID!) {
+          watchlistDetail(watchableUnitId: $id) {
+            entry {
+              id
+              watchableUnitId
+              brand
+              modelName
+              state
+            }
+            skus {
+              id
+              color
+              inStock
+              lastChecked
+            }
+            dropEvents {
+              id
+              skuId
+              sourceUrl
+              detectedAt
+            }
+          }
+        }
+      `,
+      { id: seededUnitId },
+    );
+    const detailData = getData(detailRes);
+    expect(detailData.errors).toBeUndefined();
+    expect(detailData.data?.watchlistDetail.entry.watchableUnitId).toBe(
+      seededUnitId,
+    );
+    expect(detailData.data?.watchlistDetail.skus.length).toBeGreaterThanOrEqual(
+      1,
+    );
+    expect(
+      detailData.data?.watchlistDetail.dropEvents.some(
+        (d: { id: string }) => d.id === seededDropEventId,
+      ),
+    ).toBe(true);
+
+    // Remove
+    const removeRes = await execAs(
+      `
+        mutation Remove($id: ID!) {
+          watchlistRemove(watchableUnitId: $id) {
+            removed
+          }
+        }
+      `,
+      { id: seededUnitId },
+    );
+    const removeData = getData(removeRes);
+    expect(removeData.errors).toBeUndefined();
+    expect(removeData.data?.watchlistRemove.removed).toBe(true);
+
+    // Remove again -> idempotent (removed: false)
+    const removeAgainRes = await execAs(
+      `
+        mutation Remove($id: ID!) {
+          watchlistRemove(watchableUnitId: $id) {
+            removed
+          }
+        }
+      `,
+      { id: seededUnitId },
+    );
+    const removeAgainData = getData(removeAgainRes);
+    expect(removeAgainData.errors).toBeUndefined();
+    expect(removeAgainData.data?.watchlistRemove.removed).toBe(false);
+  });
+
+  it("returns empty list for users with no entries", async () => {
+    const res = await execAs(`
+      query {
+        watchlist {
+          brand
+          productLine
+          entries {
+            id
+          }
+        }
+      }
+    `);
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.watchlist).toEqual([]);
+  });
+
+  it("rejects watchlist query without auth", async () => {
+    const res = await execUnauth(`
+      query {
+        watchlist {
+          brand
+        }
+      }
+    `);
+    const { errors } = getData(res);
+    expect(errors).toBeDefined();
+    expect(errors!.length).toBeGreaterThan(0);
+  });
+
+  it("rejects watchlistAdd without auth", async () => {
+    const res = await execUnauth(
+      `
+        mutation Add($id: ID!) {
+          watchlistAdd(watchableUnitId: $id) {
+            id
+          }
+        }
+      `,
+      { id: seededUnitId },
+    );
+    const { errors } = getData(res);
+    expect(errors).toBeDefined();
+    expect(errors!.length).toBeGreaterThan(0);
+  });
+});
+
 describe("error propagation", () => {
   it("includes error info on unauthorized queries", async () => {
     const res = await execUnauth(`

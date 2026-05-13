@@ -59,6 +59,35 @@ export class TrpcRouter {
     });
 
     const watchlistRouter = this.trpc.router({
+      // INF-1415: Hermès-style watchlist procedures.
+      // `list`/`detail`/`add`/`remove` operate at the watchable_unit level
+      // (sku_id IS NULL on the underlying `watches` row) and return the
+      // grouped/derived shape consumed by the watchlist UI. The legacy
+      // `manage.*` procedures below remain for SKU-scoped watch CRUD used
+      // by tests and pre-INF-1415 callers.
+      list: this.trpc.protectedProcedure
+        .output(trackerWatchlistManageViews.listGrouped.output)
+        .query(async ({ ctx }) => {
+          return this.watchlistManageControllers.listGrouped(ctx.userId);
+        }),
+      detail: this.trpc.protectedProcedure
+        .input(trackerWatchlistManageViews.detail.input)
+        .output(trackerWatchlistManageViews.detail.output)
+        .query(async ({ ctx, input }) => {
+          return this.watchlistManageControllers.detail(input, ctx.userId);
+        }),
+      add: this.trpc.protectedProcedure
+        .input(trackerWatchlistManageViews.add.input)
+        .output(trackerWatchlistManageViews.add.output)
+        .mutation(async ({ ctx, input }) => {
+          return this.watchlistManageControllers.add(input, ctx.userId);
+        }),
+      remove: this.trpc.protectedProcedure
+        .input(trackerWatchlistManageViews.remove.input)
+        .output(trackerWatchlistManageViews.remove.output)
+        .mutation(async ({ ctx, input }) => {
+          return this.watchlistManageControllers.remove(input, ctx.userId);
+        }),
       manage: this.trpc.router({
         list: this.trpc.protectedProcedure
           .output(trackerWatchlistManageViews.list.output)

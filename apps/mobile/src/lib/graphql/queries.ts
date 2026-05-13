@@ -99,6 +99,68 @@ export const CATALOG_LIST_QUERY = gql`
   }
 `;
 
+/**
+ * Watchlist list — protected query landed by INF-1415 on the tracker subgraph.
+ * Returns groups keyed by (brand, productLine). Mirrors `CATALOG_LIST_QUERY`'s
+ * use of raw `gql` rather than `graphql(...)` because the mobile codegen pipeline
+ * has pre-existing drift against the pivoted GraphQL schema.
+ */
+export const WATCHLIST_LIST_QUERY = gql`
+  query WatchlistList {
+    watchlist {
+      brand
+      productLine
+      entries {
+        id
+        watchableUnitId
+        brand
+        productLine
+        modelName
+        state
+        lastRestockedAt
+      }
+    }
+  }
+`;
+
+/**
+ * Watchlist detail — protected query landed by INF-1415 on the tracker subgraph.
+ * Returns the watchlist entry, every SKU under the watchable unit with its
+ * latest in-stock signal, and recent drop events. Throws on the server when
+ * the user does not have a unit-level watch on this watchable_unit_id.
+ */
+export const WATCHLIST_DETAIL_QUERY = gql`
+  query WatchlistDetail($watchableUnitId: ID!) {
+    watchlistDetail(watchableUnitId: $watchableUnitId) {
+      entry {
+        id
+        watchableUnitId
+        brand
+        productLine
+        modelName
+        state
+        lastRestockedAt
+      }
+      skus {
+        id
+        color
+        leather
+        hardware
+        size
+        referenceCode
+        inStock
+        lastChecked
+      }
+      dropEvents {
+        id
+        skuId
+        sourceUrl
+        detectedAt
+      }
+    }
+  }
+`;
+
 export const PURCHASES_QUERY = graphql(`
   query Purchases(
     $accountId: ID

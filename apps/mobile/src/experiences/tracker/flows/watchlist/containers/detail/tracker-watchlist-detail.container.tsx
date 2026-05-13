@@ -27,9 +27,10 @@ type Props = {
 /**
  * Shengsho-style watchlist detail container.
  *
- * Stack-pushed from the list container on row tap. Backend integration lives
- * in INF-1415; until that lands the controller resolves against
- * `WATCHLIST_DETAIL_MOCK` keyed by `watchableUnitId`.
+ * Stack-pushed from the list container on row tap. Resolves against the
+ * protected `watchlistDetail(watchableUnitId)` GraphQL query landed by
+ * INF-1415. `WATCHLIST_DETAIL_MOCK` is retained for Storybook + view-layer
+ * unit tests.
  */
 export const TrackerWatchlistDetailContainer = memo<Props>(
   ({ watchableUnitId }) => {

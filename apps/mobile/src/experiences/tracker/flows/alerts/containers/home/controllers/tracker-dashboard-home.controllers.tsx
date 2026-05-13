@@ -84,8 +84,13 @@ export const TrackerDashboardHomeControllers =
       totalSpend >= GOAL_AMOUNT ? "eligible" : "notEligible";
 
     const onSaPress = useCallback(
-      (id: string) => {
-        router.push(`/tracker/accounts/detail/${id}`);
+      // The legacy `/tracker/accounts/detail/[id]` route was removed in PR #388
+      // (INF-1414). The alerts/home dashboard is parked under `_archived_eligibility`
+      // until the Eligibility revival lands — it isn't reachable from the current
+      // 2-tab nav (Watchlist | History). Point at the live watchlist root as a
+      // sentinel so the typed-routes check stays clean.
+      (_id: string) => {
+        router.push("/tracker/watchlist");
       },
       [router],
     );

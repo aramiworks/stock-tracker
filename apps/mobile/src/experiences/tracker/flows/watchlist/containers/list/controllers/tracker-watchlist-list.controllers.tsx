@@ -9,14 +9,39 @@ import {
   type ReactNode,
 } from "react";
 import { useRouter } from "expo-router";
-import { WATCHLIST_LIST_MOCK_GROUPS } from "../models/tracker-watchlist-list.mock";
+import { useSuspenseQuery } from "@apollo/client/react";
+import { WATCHLIST_LIST_QUERY } from "@/lib/graphql/queries";
 import type {
   WatchlistGroup,
   WatchlistEntry,
+  WatchableState,
   TrackerWatchlistListControllersOutput,
   TrackerWatchlistListScreenState,
 } from "../models/tracker-watchlist-list.type";
 import { useTrackerWatchlistListLifecycle } from "../lifecycles/tracker-watchlist-list.lifecycles";
+
+/**
+ * GraphQL response shape for `query WatchlistList` (see
+ * `apps/subgraphs/tracker/schema.graphql`). Hand-written because the mobile
+ * codegen pipeline has pre-existing drift; once that drift is resolved we can
+ * swap to `graphql(...)`-generated types. Mirrors the catalog/browse pattern
+ * (see `tracker-catalog-browse.controllers.tsx`).
+ */
+interface WatchlistListQueryData {
+  watchlist: Array<{
+    brand: string;
+    productLine: string;
+    entries: Array<{
+      id: string;
+      watchableUnitId: string;
+      brand: string;
+      productLine: string;
+      modelName: string;
+      state: WatchableState;
+      lastRestockedAt: string | null;
+    }>;
+  }>;
+}
 
 const ControllersContext =
   createContext<TrackerWatchlistListControllersOutput | null>(null);
@@ -29,28 +54,23 @@ export const TrackerWatchlistListControllers =
   memo<TrackerWatchlistListControllersProps>(({ children }) => {
     const router = useRouter();
     const [isRefreshing, setIsRefreshing] = useState(false);
-    // Bumping this state in onRefresh forces the memoised mock to re-resolve
-    // and gives us a stable "refresh fired" hook for tests. Once INF-1415 lands
-    // this becomes Apollo's `refetch()`.
-    const [refreshTick, setRefreshTick] = useState(0);
 
-    // TODO(INF-1415): Replace mock with `useSuspenseQuery(WATCHLIST_LIST_QUERY)`.
-    const groups = useMemo<WatchlistGroup[]>(() => {
-      void refreshTick;
-      return WATCHLIST_LIST_MOCK_GROUPS;
-    }, [refreshTick]);
-
-    const refetch = useCallback(() => {
-      setRefreshTick((t) => t + 1);
-    }, []);
+    const { data, refetch } =
+      useSuspenseQuery<WatchlistListQueryData>(WATCHLIST_LIST_QUERY);
 
     useTrackerWatchlistListLifecycle(refetch);
+
+    const groups = useMemo<WatchlistGroup[]>(
+      // istanbul ignore next -- `useSuspenseQuery` always resolves data before
+      // we render; the `?? []` guard is purely defensive against partial data.
+      () => data?.watchlist ?? [],
+      [data?.watchlist],
+    );
 
     const onRefresh = useCallback(() => {
       setIsRefreshing(true);
       startTransition(() => {
-        refetch();
-        setIsRefreshing(false);
+        void refetch().finally(() => setIsRefreshing(false));
       });
     }, [refetch]);
 

@@ -2,6 +2,7 @@ import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useRelativeTimeFormatter } from "@/shared/hooks/use-relative-time";
+import { stateColors } from "@/shared/tokens";
 import type { DetailDropEvent } from "../models/tracker-watchlist-detail.type";
 
 type Props = {
@@ -9,8 +10,8 @@ type Props = {
 };
 
 const KIND_COLOR: Record<DetailDropEvent["kind"], string> = {
-  restocked: "#34c759",
-  out_of_stock: "#ff2d55",
+  restocked: stateColors.green,
+  out_of_stock: stateColors.red,
 };
 
 const KIND_I18N: Record<DetailDropEvent["kind"], string> = {

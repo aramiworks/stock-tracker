@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
+import { stateColors } from "@/shared/tokens";
 import type { WatchableState } from "../models/tracker-watchlist-list.type";
 
 type Props = {
@@ -11,16 +12,16 @@ type Props = {
 /**
  * State pill atom — 22px tall, 11px radius, 8px dot + 12pt Medium label.
  *
- *   in_stock      → #34c759 (state/green — iOS systemGreen, design hand-off)
- *   out_of_stock  → #ff2d55 (accent/red — existing token)
- *   unknown       → #808080 (text/muted)
+ *   in_stock      → stateColors.green  (iOS systemGreen, design hand-off)
+ *   out_of_stock  → stateColors.red    (Cartier red)
+ *   unknown       → stateColors.muted  (neutral grey)
  *
  * Spec: design hand-off for INF-1414 (frames 845-2 / 845-69 / 846-2).
  */
 const COLORS: Record<WatchableState, string> = {
-  in_stock: "#34c759",
-  out_of_stock: "#ff2d55",
-  unknown: "#808080",
+  in_stock: stateColors.green,
+  out_of_stock: stateColors.red,
+  unknown: stateColors.muted,
 };
 
 const I18N_KEY: Record<WatchableState, string> = {

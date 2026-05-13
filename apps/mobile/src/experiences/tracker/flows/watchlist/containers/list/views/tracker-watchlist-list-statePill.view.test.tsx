@@ -14,7 +14,10 @@ describe("TrackerWatchlistListStatePillView", () => {
 
   it("honors a custom testID override", () => {
     const { getByTestId } = render(
-      <TrackerWatchlistListStatePillView state="in_stock" testID="custom-pill" />,
+      <TrackerWatchlistListStatePillView
+        state="in_stock"
+        testID="custom-pill"
+      />,
     );
     expect(getByTestId("custom-pill")).toBeTruthy();
   });

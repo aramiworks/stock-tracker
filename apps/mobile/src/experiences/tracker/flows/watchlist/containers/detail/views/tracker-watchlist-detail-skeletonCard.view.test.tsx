@@ -3,9 +3,7 @@ import { TrackerWatchlistDetailSkeletonCardView } from "./tracker-watchlist-deta
 
 describe("TrackerWatchlistDetailSkeletonCardView", () => {
   it("renders the detail skeleton placeholder", () => {
-    const { getByTestId } = render(
-      <TrackerWatchlistDetailSkeletonCardView />,
-    );
+    const { getByTestId } = render(<TrackerWatchlistDetailSkeletonCardView />);
     expect(getByTestId("watchlist-detail-skeleton")).toBeTruthy();
   });
 });

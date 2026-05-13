@@ -4,7 +4,10 @@ import { TrackerWatchlistListGroupHeaderView } from "./tracker-watchlist-list-gr
 describe("TrackerWatchlistListGroupHeaderView", () => {
   it("renders brand and product-line labels", () => {
     const { getByTestId, getByText } = render(
-      <TrackerWatchlistListGroupHeaderView brand="Hermès" productLine="Bolide" />,
+      <TrackerWatchlistListGroupHeaderView
+        brand="Hermès"
+        productLine="Bolide"
+      />,
     );
     expect(getByTestId("watchlist-group-Hermès-Bolide")).toBeTruthy();
     expect(getByText("Hermès")).toBeTruthy();

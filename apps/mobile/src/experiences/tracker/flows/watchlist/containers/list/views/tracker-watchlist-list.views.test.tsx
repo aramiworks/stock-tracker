@@ -56,10 +56,7 @@ describe("TrackerWatchlistListViews", () => {
 
   it("hides the '+ 추가' header action when onAddProductsPress is absent", () => {
     const { queryByTestId } = render(
-      <TrackerWatchlistListViews
-        screenState="default"
-        groups={sampleGroups}
-      />,
+      <TrackerWatchlistListViews screenState="default" groups={sampleGroups} />,
     );
     expect(queryByTestId("watchlist-add-products-button")).toBeNull();
   });

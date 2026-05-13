@@ -1,9 +1,6 @@
 jest.mock("./models/tracker-watchlist-detail.models", () => ({
-  TrackerWatchlistDetailModels: ({
+  TrackerWatchlistDetailModels: ({ children }: { children: React.ReactNode }) =>
     children,
-  }: {
-    children: React.ReactNode;
-  }) => children,
 }));
 
 jest.mock("./controllers/tracker-watchlist-detail.controllers", () => ({

@@ -1,0 +1,53 @@
+appId: so.arami.stocktracker.app
+url: ${MAESTRO_APP_URL}
+name: Tracker - Catalog - Browse
+tags:
+  - authenticated
+---
+# Verifies the Shengsho-style catalog/browse container renders product-line
+# groups (sourced from tRPC `catalog.list` via the tracker subgraph — INF-1393)
+# and per-row checkboxes respond to taps.
+#
+# Catalog is no longer a top-level tab (INF-1391 Shengsho-strict nav); the
+# entry point is the "+ 추가" action on the Watchlist screen.
+
+- runFlow: helpers/launch-authenticated.yaml
+
+# Watchlist is the default landing tab.
+- assertVisible:
+    id: "accounts-list-screen"
+
+# Enter the catalog via the "+ 추가" header action.
+- tapOn:
+    id: "watchlist-add-products-button"
+- assertVisible:
+    id: "catalog-browse-screen"
+- assertVisible:
+    id: "catalog-browse-title"
+
+# Verify at least three of the seeded Hermès groups render (real data from
+# packages/prisma/prisma/seed-catalog.ts).
+- assertVisible:
+    id: "catalog-group-Hermès-Bolide"
+- assertVisible:
+    id: "catalog-group-Hermès-Evelyne"
+- assertVisible:
+    id: "catalog-group-Hermès-Picotin"
+
+# Cartier Tank Must group also renders.
+- assertVisible:
+    id: "catalog-group-Cartier-Tank Must"
+
+# Tap the first Bolide row checkbox; tapping the row toggles selection.
+- tapOn:
+    id: "catalog-row-11111111-1111-1111-1111-000000000001"
+- waitForAnimationToEnd
+
+# Tap the Bolide group master checkbox; should fold all Bolide units into watchlist.
+- tapOn:
+    id: "catalog-group-Hermès-Bolide-checkbox"
+- waitForAnimationToEnd
+
+# Sanity: catalog screen still mounted (no crash from toggle handlers).
+- assertVisible:
+    id: "catalog-browse-screen"

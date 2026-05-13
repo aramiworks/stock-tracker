@@ -33,4 +33,6 @@ export type TrackerAccountsListControllersOutput = {
   onSortByToggle: () => void;
   isRefreshing: boolean;
   onRefresh: () => void;
+  /** Navigate to the catalog browse screen (Shengsho-strict entry point — INF-1391). */
+  onAddProductsPress: () => void;
 };

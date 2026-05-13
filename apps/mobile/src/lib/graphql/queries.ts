@@ -75,6 +75,30 @@ export const ACCOUNT_QUERY = graphql(`
   }
 `);
 
+/**
+ * Anonymous-readable catalog grouped by (brand, productLine). Backed by the
+ * tracker subgraph `Query.catalogList` (INF-1393), which proxies to tRPC
+ * `catalog.list` in apps/services/tracker. No JWT required at the router.
+ *
+ * Uses raw `gql` (not `graphql(...)`) because the codegen pipeline has pre-existing
+ * drift against the pivoted GraphQL schema (legacy account/purchase ops in
+ * `*.graphql` SDL). Typed via a hand-written interface in the consumer.
+ */
+export const CATALOG_LIST_QUERY = gql`
+  query CatalogList {
+    catalogList {
+      brand
+      productLine
+      units {
+        id
+        brand
+        productLine
+        modelName
+      }
+    }
+  }
+`;
+
 export const PURCHASES_QUERY = graphql(`
   query Purchases(
     $accountId: ID

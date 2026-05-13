@@ -1,0 +1,52 @@
+import { memo, Suspense } from "react";
+import { TrackerCatalogBrowseModels } from "./models";
+import {
+  TrackerCatalogBrowseControllers,
+  useTrackerCatalogBrowseControllers,
+} from "./controllers";
+import { TrackerCatalogBrowseViews } from "./views";
+import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
+
+const ConnectedViews = memo(() => {
+  const controllers = useTrackerCatalogBrowseControllers();
+  return (
+    <TrackerCatalogBrowseViews
+      screenState={controllers.screenState}
+      groups={controllers.groups}
+      selectedUnitIds={controllers.selectedUnitIds}
+      getGroupState={controllers.getGroupState}
+      onToggleUnit={controllers.onToggleUnit}
+      onToggleGroup={controllers.onToggleGroup}
+      isRefreshing={controllers.isRefreshing}
+      onRefresh={controllers.onRefresh}
+    />
+  );
+});
+
+ConnectedViews.displayName = "TrackerCatalogBrowseConnectedViews";
+
+export const TrackerCatalogBrowseContainer = memo(() => {
+  return (
+    <QueryErrorBoundary
+      fallback={
+        /* istanbul ignore next -- error boundary fallback */ () => (
+          <TrackerCatalogBrowseViews screenState="error" />
+        )
+      }
+    >
+      <Suspense
+        fallback={
+          /* istanbul ignore next -- Suspense fallback (Figma 842:83) */ <TrackerCatalogBrowseViews screenState="loading" />
+        }
+      >
+        <TrackerCatalogBrowseModels>
+          <TrackerCatalogBrowseControllers>
+            <ConnectedViews />
+          </TrackerCatalogBrowseControllers>
+        </TrackerCatalogBrowseModels>
+      </Suspense>
+    </QueryErrorBoundary>
+  );
+});
+
+TrackerCatalogBrowseContainer.displayName = "TrackerCatalogBrowseContainer";

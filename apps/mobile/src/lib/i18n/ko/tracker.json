@@ -91,6 +91,7 @@
           "title": "상품 삭제"
         }
       },
+      "addProducts": "+ 추가",
       "title": "관심 목록"
     }
   },
@@ -136,9 +137,18 @@
       }
     }
   },
+  "catalog": {
+    "title": "카탈로그",
+    "groupSubtitle": "전체",
+    "empty": {
+      "title": "표시할 품목이 없습니다",
+      "body": "잠시 후 다시 시도해주세요"
+    }
+  },
   "nav": {
     "alerts": "알림",
+    "catalog": "카탈로그",
     "watchlist": "관심목록",
-    "history": "히스토리"
+    "history": "알림내역"
   }
 }

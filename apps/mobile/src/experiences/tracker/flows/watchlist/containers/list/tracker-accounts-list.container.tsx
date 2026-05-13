@@ -22,6 +22,7 @@ const ConnectedViews = memo(() => {
       onSortByToggle={controllers.onSortByToggle}
       isRefreshing={controllers.isRefreshing}
       onRefresh={controllers.onRefresh}
+      onAddProductsPress={controllers.onAddProductsPress}
     />
   );
 });

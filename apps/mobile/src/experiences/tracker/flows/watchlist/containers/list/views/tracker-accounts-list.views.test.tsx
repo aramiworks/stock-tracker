@@ -223,6 +223,31 @@ describe("TrackerAccountsListViews", () => {
     fireEvent.press(getByTestId("empty-state"));
     expect(getByTestId("account-form-modal")).toBeTruthy();
   });
+
+  it("renders the '+ 추가' header action when onAddProductsPress is provided (INF-1391)", () => {
+    const onAddProductsPress = jest.fn();
+    const { getByTestId } = render(
+      <TrackerAccountsListViews
+        screenState="default"
+        accounts={[account("a")]}
+        onAddProductsPress={onAddProductsPress}
+      />,
+    );
+    const btn = getByTestId("watchlist-add-products-button");
+    expect(btn).toBeTruthy();
+    fireEvent.press(btn);
+    expect(onAddProductsPress).toHaveBeenCalledTimes(1);
+  });
+
+  it("hides the '+ 추가' header action when onAddProductsPress is absent", () => {
+    const { queryByTestId } = render(
+      <TrackerAccountsListViews
+        screenState="default"
+        accounts={[account("a")]}
+      />,
+    );
+    expect(queryByTestId("watchlist-add-products-button")).toBeNull();
+  });
 });
 
 // Silence unused React warning from the import used for JSX.

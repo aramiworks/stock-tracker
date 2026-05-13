@@ -18,6 +18,12 @@ export default function AppLayout() {
     return <Redirect href="/auth/signIn/gmailOauth" />;
   }
 
+  // Shengsho-strict bottom nav per INF-1391 (Jace decision):
+  //   Watchlist → History (2 tabs only)
+  // Catalog is reached via the "+ Add products" entry point on the Watchlist
+  // screen — it is a stack route under `tracker/catalog/browse/`, not a tab.
+  // The Alerts experience is parked under `_archived_eligibility/` until the
+  // Eligibility revival lands.
   return (
     <Tabs
       screenOptions={{
@@ -40,13 +46,6 @@ export default function AppLayout() {
       }}
     >
       <Tabs.Screen
-        name="tracker/alerts"
-        options={{
-          title: t("nav.alerts"),
-          tabBarIcon: ({ focused }) => <TabIcon label="🔔" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
         name="tracker/watchlist"
         options={{
           title: t("nav.watchlist"),
@@ -58,6 +57,18 @@ export default function AppLayout() {
         options={{
           title: t("nav.history"),
           tabBarIcon: ({ focused }) => <TabIcon label="📋" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="tracker/catalog"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="tracker/alerts"
+        options={{
+          href: null,
         }}
       />
       <Tabs.Screen

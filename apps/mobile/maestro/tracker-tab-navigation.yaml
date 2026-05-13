@@ -4,27 +4,34 @@ name: Tracker - Tab Navigation
 tags:
   - authenticated
 ---
-# Cycle the three live bottom tabs (alerts / watchlist / history) and assert
-# each container renders. Account tab is pending under INF-1334 and skipped.
+# Shengsho-strict 2-tab nav (INF-1391 — Jace decision). Bottom bar collapses to
+# Watchlist + History. Catalog is no longer a top-level tab — it's reached via
+# the "+ 추가" entry point on the Watchlist screen.
 
-- launchApp
+- runFlow: helpers/launch-authenticated.yaml
 
-# Default landing tab — alerts (재입고 알림)
-- tapOn: "알림"
+# Watchlist tab is the default landing tab.
 - assertVisible:
-    id: "dashboard-home-screen"
+    id: "accounts-list-screen"
 
-# Watchlist tab (관심목록)
+# Exactly the two configured tabs render — Catalog must NOT be visible in the
+# bottom bar (it's `href: null` per (app)/_layout.tsx).
+- assertVisible: "관심목록"
+- assertVisible: "알림내역"
+- assertNotVisible: "카탈로그"
+
+# History tab (알림내역)
+- tapOn: "알림내역"
+- assertVisible:
+    id: "history-browse-screen"
+
+# Back to watchlist
 - tapOn: "관심목록"
 - assertVisible:
     id: "accounts-list-screen"
 
-# History tab (히스토리)
-- tapOn: "히스토리"
+# Catalog is reachable via the "+ 추가" entry point on the watchlist header.
+- tapOn:
+    id: "watchlist-add-products-button"
 - assertVisible:
-    id: "history-browse-screen"
-
-# Cycle back to alerts to confirm bidirectional navigation
-- tapOn: "알림"
-- assertVisible:
-    id: "dashboard-home-screen"
+    id: "catalog-browse-screen"

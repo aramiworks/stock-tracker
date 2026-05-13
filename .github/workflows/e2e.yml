@@ -146,6 +146,14 @@ jobs:
           bash /tmp/maestro-install.sh
           rm /tmp/maestro-install.sh
 
+      - name: Start virtual display (Xvfb)
+        if: steps.check-flows.outputs.has_flows == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          Xvfb :99 -screen 0 1280x800x24 &
+          echo "DISPLAY=:99" >> "$GITHUB_ENV"
+
       - name: Wait for server
         if: steps.check-flows.outputs.has_flows == 'true'
         run: npx wait-on http://localhost:8080 --timeout 30000

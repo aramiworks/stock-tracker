@@ -105,9 +105,14 @@ jobs:
           docker cp extract:/app/${{ matrix.dir }}/dist sourcemaps/dist
           docker rm extract
 
+      # set_commits: skip → checkout is shallow (no commit history for --auto)
+      # finalize: false   → finalize hits transient 504s; symbolication uses
+      #                     debug IDs in the bundle, no finalize required
+      # continue-on-error → Sentry telemetry must never block the deploy job
       - name: Upload source maps to Sentry
         if: matrix.service == 'auth-service'
         uses: getsentry/action-release@v1
+        continue-on-error: true
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
@@ -115,6 +120,8 @@ jobs:
         with:
           version: ${{ github.sha }}
           sourcemaps: sourcemaps/dist
+          set_commits: skip
+          finalize: false
 
   deploy:
     needs: build

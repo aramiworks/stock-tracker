@@ -123,3 +123,22 @@ model parse_errors {
 
   @@index([brand, created_at])
 }
+
+// -- Spike: fetcher bake test (INF-1360) --------------------------------------
+
+model fetcher_bake_results {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fetcher        String // "http" | "browser"
+  url            String
+  status         Int
+  latency_ms     Int
+  success        Boolean
+  blocked        Boolean
+  error_msg      String?
+  content_length Int
+  run_id         String
+  created_at     DateTime @default(now())
+
+  @@index([run_id, fetcher])
+  @@index([created_at])
+}

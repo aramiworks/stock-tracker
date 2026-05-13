@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomUUID, timingSafeEqual } from "node:crypto";
 import { Injectable } from "@nestjs/common";
 import * as Sentry from "@sentry/node";
 import { initTRPC, TRPCError } from "@trpc/server";
@@ -12,6 +12,7 @@ export interface TrpcContext {
   prisma: PrismaService;
   userId: string | undefined;
   userRole: string | undefined;
+  serviceToken: string | undefined;
   requestId: string;
 }
 
@@ -53,10 +54,11 @@ export class TrpcBaseService {
     // networking). Never expose this port publicly.
     const userId = req.headers["x-user-id"] as string | undefined;
     const userRole = req.headers["x-user-role"] as string | undefined;
+    const serviceToken = req.headers["x-service-token"] as string | undefined;
     const requestId =
       (req.headers["x-request-id"] as string | undefined) || randomUUID();
 
-    return { prisma: this.prisma, userId, userRole, requestId };
+    return { prisma: this.prisma, userId, userRole, serviceToken, requestId };
   };
 
   get router() {
@@ -150,5 +152,35 @@ export class TrpcBaseService {
 
   get adminProcedure() {
     return this.protectedProcedure.use(this.enforceRole("service_role"));
+  }
+
+  /**
+   * Builds a middleware that validates `X-Service-Token` against the given
+   * expected token using constant-time comparison.
+   */
+  enforceServiceToken(expectedToken: string) {
+    const expected = Buffer.from(expectedToken);
+    return this.t.middleware(async ({ ctx, next }) => {
+      const raw = (ctx as TrpcContext & { serviceToken?: string }).serviceToken;
+      if (!raw) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+      const provided = Buffer.from(raw);
+      if (
+        expected.length !== provided.length ||
+        !timingSafeEqual(expected, provided)
+      ) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+      return next();
+    });
+  }
+
+  /**
+   * Creates a procedure authenticated via X-Service-Token (service-to-service).
+   * Requires the expected token at construction time.
+   */
+  buildServiceProcedure(expectedToken: string) {
+    return this.publicProcedure.use(this.enforceServiceToken(expectedToken));
   }
 }

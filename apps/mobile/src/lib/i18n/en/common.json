@@ -1,0 +1,32 @@
+{
+  "add": "Add",
+  "cancel": "Cancel",
+  "confirm": {
+    "deleteAccount": {
+      "message": "Delete this SA account? All purchase history will also be removed.",
+      "title": "Delete account"
+    },
+    "deletePurchase": {
+      "message": "Delete this purchase?",
+      "messageWithName": "Delete {{name}}?",
+      "title": "Delete purchase"
+    }
+  },
+  "delete": "Delete",
+  "edit": "Edit",
+  "error": {
+    "network": "Could not load data",
+    "networkSubtitle": "Check your network connection and try again"
+  },
+  "retry": "Try again",
+  "save": "Save",
+  "relativeTime": {
+    "justNow": "just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "weeksAgo": "{{count}}w ago",
+    "monthsAgo": "{{count}}mo ago",
+    "unknown": "—"
+  }
+}

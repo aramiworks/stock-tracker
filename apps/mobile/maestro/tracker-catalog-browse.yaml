@@ -15,7 +15,7 @@ tags:
 
 # Watchlist is the default landing tab.
 - assertVisible:
-    id: "accounts-list-screen"
+    id: "watchlist-list-screen"
 
 # Enter the catalog via the "+ 추가" header action.
 - tapOn:

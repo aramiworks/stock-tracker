@@ -1,0 +1,55 @@
+{
+  "watchlist": {
+    "title": "Watchlist",
+    "actions": {
+      "add": "+ Add"
+    },
+    "state": {
+      "inStock": "In stock",
+      "outOfStock": "Out of stock",
+      "unknown": "Checking"
+    },
+    "empty": {
+      "title": "Your watchlist is empty",
+      "body": "Add models from the catalog to receive restock alerts.",
+      "cta": "+ Add"
+    },
+    "detail": {
+      "title": "Product detail",
+      "back": "←",
+      "sections": {
+        "stock": "Current stock",
+        "history": "Restock history"
+      },
+      "events": {
+        "restocked": "Restocked",
+        "outOfStock": "Out of stock"
+      },
+      "history": {
+        "empty": {
+          "title": "No alert history yet",
+          "body": "Restock and out-of-stock events will appear here once detected."
+        }
+      }
+    }
+  },
+  "history": {
+    "browse": {
+      "title": "Alert history"
+    }
+  },
+  "catalog": {
+    "title": "Catalog",
+    "groupSubtitle": "All",
+    "empty": {
+      "title": "Nothing to show",
+      "body": "Please try again shortly"
+    }
+  },
+  "nav": {
+    "alerts": "Alerts",
+    "catalog": "Catalog",
+    "watchlist": "Watchlist",
+    "history": "History"
+  }
+}

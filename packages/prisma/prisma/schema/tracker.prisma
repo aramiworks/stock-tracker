@@ -68,11 +68,12 @@ model watches {
 }
 
 model drop_events {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  sku_id      String    @db.Uuid
-  source_url  String?
-  detected_at DateTime  @default(now())
-  expired_at  DateTime?
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku_id          String    @db.Uuid
+  source_url      String?
+  detected_at     DateTime  @default(now())
+  expired_at      DateTime?
+  idempotency_key String?   @unique
 
   sku    skus     @relation(fields: [sku_id], references: [id])
   alerts alerts[]

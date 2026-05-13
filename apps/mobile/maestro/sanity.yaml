@@ -1,4 +1,4 @@
-appId: so.arami.stocktracker.app
+url: ${MAESTRO_APP_URL}
 name: Sanity Check
 tags:
   - baseline

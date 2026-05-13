@@ -1,5 +1,5 @@
 # Helper: Assert the bottom tab bar is visible with correct tabs
-appId: so.arami.stocktracker.app
+url: ${MAESTRO_APP_URL}
 ---
 - assertVisible:
     id: "tab-alerts"

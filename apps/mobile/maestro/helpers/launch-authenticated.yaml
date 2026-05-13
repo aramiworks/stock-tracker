@@ -1,18 +1,18 @@
-# Helper: Launch app in authenticated state
-# Requires: MAESTRO_TEST_TOKEN env var set for Supabase test user
+# Helper: Launch app in authenticated state (web target)
 #
 # Gmail OAuth cannot be fully automated in Maestro (Google blocks WebView-based
-# sign-in from automated tools). Instead, authenticated flows rely on a pre-seeded
-# Supabase session token injected via deep link or AsyncStorage manipulation.
+# sign-in from automated tools). Instead, authenticated flows rely on a Supabase
+# session injected into the served `dist/index.html`'s localStorage by
+# `scripts/e2e-inject-session.mjs` BEFORE Maestro runs. By the time `launchApp`
+# navigates to `${MAESTRO_APP_URL}`, the session is already present and Supabase
+# auth hydrates as signed-in.
 #
 # Usage: runFlow helpers/launch-authenticated.yaml
 # Prerequisites:
 #   1. A test user exists in Supabase auth (see fixtures/README.md)
-#   2. The app is built with E2E_MODE=true (enables session injection endpoint)
+#   2. `node scripts/e2e-inject-session.mjs` has run against `apps/mobile/dist/`
 
-appId: so.arami.stocktracker.app
+url: ${MAESTRO_APP_URL}
 ---
-- launchApp:
-    arguments:
-      e2eToken: ${MAESTRO_TEST_TOKEN}
+- launchApp
 - waitForAnimationToEnd

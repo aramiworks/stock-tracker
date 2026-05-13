@@ -137,18 +137,14 @@ jobs:
         working-directory: apps/mobile
         run: npx serve@latest dist -p 8080 &
 
-      - name: Install Maestro CLI
+      - name: Install Maestro CLI (pinned for web driver stability)
         if: steps.check-flows.outputs.has_flows == 'true'
+        env:
+          MAESTRO_VERSION: 2.5.1
         run: |
           curl -fsSL -o /tmp/maestro-install.sh "https://get.maestro.mobile.dev"
           bash /tmp/maestro-install.sh
           rm /tmp/maestro-install.sh
-
-      - name: Start virtual display
-        if: steps.check-flows.outputs.has_flows == 'true'
-        run: |
-          Xvfb :99 -screen 0 1280x720x24 &
-          echo "DISPLAY=:99" >> "$GITHUB_ENV"
 
       - name: Wait for server
         if: steps.check-flows.outputs.has_flows == 'true'

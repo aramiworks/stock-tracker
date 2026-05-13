@@ -84,6 +84,73 @@ type AlertFeed {
   nextCursor: ID
 }
 
+"""
+A single entry in the user's watchlist (one watchable_unit they're tracking).
+`state` is derived from per-SKU stock state; `lastRestockedAt` is the most
+recent drop_event across the unit's SKUs.
+"""
+type WatchlistEntry {
+  id: ID!
+  watchableUnitId: ID!
+  brand: String!
+  productLine: String!
+  modelName: String!
+  imageUrl: String
+  notifyPush: Boolean!
+  notifyEmail: Boolean!
+  createdAt: String!
+  state: WatchlistState!
+  lastRestockedAt: String
+}
+
+enum WatchlistState {
+  in_stock
+  out_of_stock
+  unknown
+}
+
+"""
+Group of watchlist entries sharing the same (brand, productLine).
+"""
+type WatchlistGroup {
+  brand: String!
+  productLine: String!
+  entries: [WatchlistEntry!]!
+}
+
+"""
+Per-SKU view for the watchlist detail screen — includes the latest stock
+state when known so the UI can render per-variant availability.
+"""
+type WatchlistDetailSku {
+  id: ID!
+  color: String!
+  leather: String
+  hardware: String
+  size: String
+  referenceCode: String
+  imageUrl: String
+  inStock: Boolean
+  lastChecked: String
+}
+
+type WatchlistDetailDropEvent {
+  id: ID!
+  skuId: ID!
+  sourceUrl: String
+  detectedAt: String!
+}
+
+type WatchlistDetail {
+  entry: WatchlistEntry!
+  skus: [WatchlistDetailSku!]!
+  dropEvents: [WatchlistDetailDropEvent!]!
+}
+
+type WatchlistRemoveResult {
+  removed: Boolean!
+}
+
 input CreateWatchInput {
   watchableUnitId: ID!
   skuId: ID
@@ -135,6 +202,19 @@ extend type Query {
   watches: [Watch!]!
 
   """
+  The current user's watchlist grouped by (brand, productLine). Each entry
+  includes a derived stock `state` and the latest `lastRestockedAt`.
+  """
+  watchlist: [WatchlistGroup!]!
+
+  """
+  Detail view for a single watchlist entry — entry + per-SKU stock state +
+  recent drop events for the unit. Throws if the user does not have a
+  unit-level watch on this watchable_unit_id.
+  """
+  watchlistDetail(watchableUnitId: ID!): WatchlistDetail!
+
+  """
   List alerts for the current user
   """
   alerts(unreadOnly: Boolean, cursor: ID, limit: Int): AlertFeed!
@@ -150,4 +230,16 @@ extend type Mutation {
   updateWatch(input: UpdateWatchInput!): Watch!
   deleteWatch(id: ID!): Boolean!
   markAlertRead(id: ID!): Boolean!
+
+  """
+  Add a watchable_unit to the current user's watchlist. Idempotent: re-adding
+  an existing entry is a no-op (returns the existing entry).
+  """
+  watchlistAdd(watchableUnitId: ID!): WatchlistEntry!
+
+  """
+  Remove a watchable_unit from the current user's watchlist. Idempotent:
+  returns { removed: false } if no entry existed.
+  """
+  watchlistRemove(watchableUnitId: ID!): WatchlistRemoveResult!
 }

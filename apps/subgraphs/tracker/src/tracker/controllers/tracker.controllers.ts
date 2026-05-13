@@ -43,6 +43,18 @@ export const trackerResolvers = {
     watches: async (_: unknown, __: unknown, context: SubgraphContext) => {
       return context.trackerTrpc.tracker.watchlist.manage.list.query();
     },
+    watchlist: async (_: unknown, __: unknown, context: SubgraphContext) => {
+      return context.trackerTrpc.tracker.watchlist.list.query();
+    },
+    watchlistDetail: async (
+      _: unknown,
+      args: { watchableUnitId: string },
+      context: SubgraphContext,
+    ) => {
+      return context.trackerTrpc.tracker.watchlist.detail.query({
+        watchableUnitId: args.watchableUnitId,
+      });
+    },
     alerts: async (
       _: unknown,
       args: { unreadOnly?: boolean; cursor?: string; limit?: number },
@@ -118,6 +130,24 @@ export const trackerResolvers = {
           id: args.id,
         });
       return result.success;
+    },
+    watchlistAdd: async (
+      _: unknown,
+      args: { watchableUnitId: string },
+      context: SubgraphContext,
+    ) => {
+      return context.trackerTrpc.tracker.watchlist.add.mutate({
+        watchableUnitId: args.watchableUnitId,
+      });
+    },
+    watchlistRemove: async (
+      _: unknown,
+      args: { watchableUnitId: string },
+      context: SubgraphContext,
+    ) => {
+      return context.trackerTrpc.tracker.watchlist.remove.mutate({
+        watchableUnitId: args.watchableUnitId,
+      });
     },
   },
   WatchableUnit: {

@@ -96,7 +96,7 @@ jobs:
       # initSentry() reads SENTRY_RELEASE from env at runtime — these must
       # match for Sentry to symbolicate stack traces.
       - name: Extract source maps from image
-        if: matrix.service == 'auth-service'
+        if: matrix.service == 'auth-service' || matrix.service == 'tracker-service'
         run: |
           IMAGE="ghcr.io/${{ github.repository_owner }}/stock-tracker-${{ matrix.service }}:${{ github.sha }}"
           docker pull "$IMAGE"
@@ -110,13 +110,13 @@ jobs:
       #                     debug IDs in the bundle, no finalize required
       # continue-on-error → Sentry telemetry must never block the deploy job
       - name: Upload source maps to Sentry
-        if: matrix.service == 'auth-service'
+        if: matrix.service == 'auth-service' || matrix.service == 'tracker-service'
         uses: getsentry/action-release@v1
         continue-on-error: true
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: stock-tracker-auth-service
+          SENTRY_PROJECT: stock-tracker-${{ matrix.service }}
         with:
           version: ${{ github.sha }}
           sourcemaps: sourcemaps/dist

@@ -107,16 +107,15 @@ export const TrackerWatchlistDetailControllers =
         // (the scraper detected stock appearing), so `kind` is always
         // "restocked" until the backend models explicit out-of-stock events.
         const skuById = new Map(skus.map((s) => [s.id, s]));
-        const dropEvents: DetailDropEvent[] = data.watchlistDetail.dropEvents.map(
-          (evt) => ({
+        const dropEvents: DetailDropEvent[] =
+          data.watchlistDetail.dropEvents.map((evt) => ({
             id: evt.id,
             kind: "restocked",
             skuDescriptor:
               /* istanbul ignore next -- defensive: every drop event has a sku */
               skuById.get(evt.skuId)?.descriptor ?? "",
             occurredAt: evt.detectedAt,
-          }),
-        );
+          }));
 
         return {
           entry: data.watchlistDetail.entry,

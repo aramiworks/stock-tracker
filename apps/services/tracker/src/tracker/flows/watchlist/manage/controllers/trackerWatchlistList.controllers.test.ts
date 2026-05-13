@@ -76,7 +76,15 @@ function makeUnitWatch(overrides: Partial<UnitWatchRow> = {}): UnitWatchRow {
 
 function createControllers(
   watches: UnitWatchRow[],
-  dropEventsByUnit: Record<string, { id: string; sku_id: string; source_url: string | null; detected_at: Date }[]> = {},
+  dropEventsByUnit: Record<
+    string,
+    {
+      id: string;
+      sku_id: string;
+      source_url: string | null;
+      detected_at: Date;
+    }[]
+  > = {},
 ) {
   const models = {
     findAllUnitWatchesForUser: jest.fn(async () => watches),

@@ -54,7 +54,12 @@ const baseWatch = {
 
 function createControllers(opts: {
   watch?: typeof baseWatch | null;
-  dropEvents?: { id: string; sku_id: string; source_url: string | null; detected_at: Date }[];
+  dropEvents?: {
+    id: string;
+    sku_id: string;
+    source_url: string | null;
+    detected_at: Date;
+  }[];
 }) {
   const models = {
     findUnitWatch: jest.fn(async () => opts.watch ?? null),
@@ -79,10 +84,7 @@ describe("TrackerWatchlistManageControllers.detail", () => {
       dropEvents: [drop],
     });
 
-    const result = await controllers.detail(
-      { watchableUnitId: "wu-1" },
-      "u-1",
-    );
+    const result = await controllers.detail({ watchableUnitId: "wu-1" }, "u-1");
 
     expect(result.entry).toMatchObject({
       id: "w-1",
@@ -133,10 +135,7 @@ describe("TrackerWatchlistManageControllers.detail", () => {
       dropEvents: [],
     });
 
-    const result = await controllers.detail(
-      { watchableUnitId: "wu-1" },
-      "u-1",
-    );
+    const result = await controllers.detail({ watchableUnitId: "wu-1" }, "u-1");
     expect(result.entry.lastRestockedAt).toBeNull();
     expect(result.dropEvents).toEqual([]);
   });
@@ -150,10 +149,7 @@ describe("TrackerWatchlistManageControllers.detail", () => {
       },
     };
     const { controllers } = createControllers({ watch: watchNoState });
-    const result = await controllers.detail(
-      { watchableUnitId: "wu-1" },
-      "u-1",
-    );
+    const result = await controllers.detail({ watchableUnitId: "wu-1" }, "u-1");
     expect(result.skus[0]!.inStock).toBeNull();
     expect(result.skus[0]!.lastChecked).toBeNull();
   });
@@ -217,10 +213,7 @@ describe("TrackerWatchlistManageControllers.remove", () => {
     } as unknown as TrackerWatchlistManageModels;
     const controllers = new TrackerWatchlistManageControllers(models);
 
-    const result = await controllers.remove(
-      { watchableUnitId: "wu-1" },
-      "u-1",
-    );
+    const result = await controllers.remove({ watchableUnitId: "wu-1" }, "u-1");
     expect(result).toEqual({ removed: true });
     expect(models.deleteUnitWatch).toHaveBeenCalledWith("u-1", "wu-1");
   });
@@ -231,10 +224,7 @@ describe("TrackerWatchlistManageControllers.remove", () => {
     } as unknown as TrackerWatchlistManageModels;
     const controllers = new TrackerWatchlistManageControllers(models);
 
-    const result = await controllers.remove(
-      { watchableUnitId: "wu-1" },
-      "u-1",
-    );
+    const result = await controllers.remove({ watchableUnitId: "wu-1" }, "u-1");
     expect(result).toEqual({ removed: false });
   });
 });

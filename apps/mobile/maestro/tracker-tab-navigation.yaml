@@ -12,7 +12,7 @@ tags:
 
 # Watchlist tab is the default landing tab.
 - assertVisible:
-    id: "accounts-list-screen"
+    id: "watchlist-list-screen"
 
 # Exactly the two configured tabs render — Catalog must NOT be visible in the
 # bottom bar (it's `href: null` per (app)/_layout.tsx).
@@ -28,7 +28,7 @@ tags:
 # Back to watchlist
 - tapOn: "관심목록"
 - assertVisible:
-    id: "accounts-list-screen"
+    id: "watchlist-list-screen"
 
 # Catalog is reachable via the "+ 추가" entry point on the watchlist header.
 - tapOn:

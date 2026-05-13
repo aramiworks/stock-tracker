@@ -1,0 +1,47 @@
+appId: so.arami.stocktracker.app
+url: ${MAESTRO_APP_URL}
+name: Tracker - Watchlist - List
+tags:
+  - authenticated
+---
+# Verifies the Shengsho-style watchlist/list container (INF-1414):
+#   - landing tab renders the watchlist screen + title
+#   - product-line groups render with brand + line headers
+#   - per-row entries are tappable and push the detail route
+#   - "+ 추가" header action navigates to the catalog browse screen
+#
+# Mock-resolved until INF-1415 wires the real `watchlist.list` tRPC + GraphQL.
+
+- runFlow: helpers/launch-authenticated.yaml
+
+# Watchlist is the default landing tab.
+- assertVisible:
+    id: "watchlist-list-screen"
+- assertVisible:
+    id: "watchlist-list-title"
+
+# Mock fixtures render: Hermès Bolide group + Hermès Constance + Cartier Tank Must.
+- assertVisible: "Bolide"
+- assertVisible: "Constance"
+- assertVisible: "Tank Must"
+- assertVisible: "Bolide 27"
+- assertVisible: "Bolide 31"
+- assertVisible: "Constance 18"
+- assertVisible: "Tank Must Large Steel"
+
+# Tap the first Bolide row → pushes /tracker/watchlist/[id].
+- tapOn:
+    id: "watchlist-row-11111111-1111-1111-1111-000000000001"
+- assertVisible:
+    id: "watchlist-detail-screen"
+
+# Back to list.
+- back
+- assertVisible:
+    id: "watchlist-list-screen"
+
+# "+ 추가" header action navigates to catalog/browse.
+- tapOn:
+    id: "watchlist-add-products-button"
+- assertVisible:
+    id: "catalog-browse-screen"

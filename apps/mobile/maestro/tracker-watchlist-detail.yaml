@@ -1,0 +1,52 @@
+appId: so.arami.stocktracker.app
+url: ${MAESTRO_APP_URL}
+name: Tracker - Watchlist - Detail
+tags:
+  - authenticated
+---
+# Verifies the Shengsho-style watchlist/detail container (INF-1414):
+#   - dynamic route renders for a known mock watchableUnitId
+#   - hero (brand + product line + model name) shows
+#   - stock + history section headings show
+#   - back navigation returns to the list
+#
+# Mock-resolved until INF-1415 wires the real `watchlist.detail` tRPC + GraphQL.
+
+- runFlow: helpers/launch-authenticated.yaml
+
+# Land on the watchlist tab.
+- assertVisible:
+    id: "watchlist-list-screen"
+
+# Tap Hermès Bolide 27 (single SKU, full drop history in the mock).
+- tapOn:
+    id: "watchlist-row-11111111-1111-1111-1111-000000000001"
+- assertVisible:
+    id: "watchlist-detail-screen"
+- assertVisible:
+    id: "watchlist-detail-title"
+
+# Hero renders.
+- assertVisible: "Bolide 27"
+- assertVisible: "Hermès"
+
+# Section headings render (Korean copy from tracker.json).
+- assertVisible: "현재 재고"
+- assertVisible: "재입고 이력"
+
+# Tap a row with an empty drop history to confirm the empty state copy lands.
+- back
+- assertVisible:
+    id: "watchlist-list-screen"
+- tapOn:
+    id: "watchlist-row-22222222-2222-2222-2222-000000000001"
+- assertVisible:
+    id: "watchlist-detail-screen"
+- assertVisible: "Tank Must Large Steel"
+- assertVisible:
+    id: "watchlist-detail-history-empty"
+
+# Back navigation returns to the list.
+- back
+- assertVisible:
+    id: "watchlist-list-screen"

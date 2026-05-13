@@ -29,6 +29,20 @@
     }
   },
   "watchlist": {
+    "title": "관심목록",
+    "actions": {
+      "add": "+ 추가"
+    },
+    "state": {
+      "inStock": "재입고됨",
+      "outOfStock": "품절",
+      "unknown": "확인중"
+    },
+    "empty": {
+      "title": "관심목록이 비어있습니다",
+      "body": "카탈로그에서 모델을 추가하면 재입고 알림을 받을 수 있어요.",
+      "cta": "+ 추가"
+    },
     "detail": {
       "errorState": {
         "retry": "다시 시도",
@@ -39,7 +53,21 @@
       "deleteAction": "삭제",
       "editAction": "편집",
       "restockHistory": "재입고 이력",
-      "title": "상품 상세"
+      "title": "상품 상세",
+      "sections": {
+        "stock": "현재 재고",
+        "history": "재입고 이력"
+      },
+      "events": {
+        "restocked": "재입고",
+        "outOfStock": "품절"
+      },
+      "history": {
+        "empty": {
+          "title": "아직 알림 기록이 없습니다",
+          "body": "재입고나 품절이 감지되면 여기에 기록됩니다."
+        }
+      }
     },
     "form": {
       "add": {

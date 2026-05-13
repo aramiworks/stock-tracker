@@ -19,5 +19,14 @@
     "networkSubtitle": "네트워크 연결을 확인하고 다시 시도해주세요"
   },
   "retry": "다시 시도",
-  "save": "저장"
+  "save": "저장",
+  "relativeTime": {
+    "justNow": "방금",
+    "minutesAgo": "{{count}}분 전",
+    "hoursAgo": "{{count}}시간 전",
+    "daysAgo": "{{count}}일 전",
+    "weeksAgo": "{{count}}주 전",
+    "monthsAgo": "{{count}}달 전",
+    "unknown": "—"
+  }
 }

@@ -3,10 +3,7 @@ import type {
   WatchlistEntry,
 } from "../../list/models/tracker-watchlist-list.type";
 
-export type TrackerWatchlistDetailScreenState =
-  | "default"
-  | "loading"
-  | "error";
+export type TrackerWatchlistDetailScreenState = "default" | "loading" | "error";
 
 /**
  * A scrape-observed SKU under a watchable unit. Each unit can have multiple

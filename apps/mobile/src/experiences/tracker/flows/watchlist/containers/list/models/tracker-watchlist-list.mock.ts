@@ -35,7 +35,9 @@ export const WATCHLIST_LIST_MOCK_GROUPS: WatchlistGroup[] = [
         modelName: "Bolide 31",
         state: "out_of_stock",
         // 4 hours ago
-        lastRestockedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+        lastRestockedAt: new Date(
+          Date.now() - 4 * 60 * 60 * 1000,
+        ).toISOString(),
       },
     ],
   },

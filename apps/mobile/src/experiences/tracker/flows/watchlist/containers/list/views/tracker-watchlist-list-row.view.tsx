@@ -49,7 +49,9 @@ export const TrackerWatchlistListRowView = memo(({ entry, onPress }: Props) => {
           <Text style={styles.name} numberOfLines={1}>
             {entry.modelName}
           </Text>
-          <Text style={styles.meta}>{formatRelative(entry.lastRestockedAt)}</Text>
+          <Text style={styles.meta}>
+            {formatRelative(entry.lastRestockedAt)}
+          </Text>
         </View>
         <View style={styles.right}>
           <TrackerWatchlistListStatePillView

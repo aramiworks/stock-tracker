@@ -4,9 +4,10 @@ interface TrackerWatchlistListModelsProps {
   children: ReactNode;
 }
 
-export const TrackerWatchlistListModels =
-  memo<TrackerWatchlistListModelsProps>(({ children }) => {
+export const TrackerWatchlistListModels = memo<TrackerWatchlistListModelsProps>(
+  ({ children }) => {
     return <>{children}</>;
-  });
+  },
+);
 
 TrackerWatchlistListModels.displayName = "TrackerWatchlistListModels";

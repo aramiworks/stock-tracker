@@ -46,7 +46,9 @@ export const WATCHLIST_DETAIL_MOCK: Record<string, WatchlistDetailPayload> = {
         id: "drop-3",
         kind: "restocked",
         skuDescriptor: "토고 · 골드 금장",
-        occurredAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        occurredAt: new Date(
+          Date.now() - 3 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
       },
     ],
   },

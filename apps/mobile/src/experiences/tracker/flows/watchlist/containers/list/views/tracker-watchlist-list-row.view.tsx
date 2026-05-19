@@ -21,7 +21,7 @@ type Props = {
  *
  * Right column:
  *   StatePill                @ middle-right
- *   chevron "›"              @ far right (12pt, #c5c5c5)
+ *   chevron "›"              @ far right (18pt, #808080)
  *
  * Tapping the row pushes `/tracker/watchlist/[id]`. Spec: design hand-off
  * INF-1414 (frames 845-2 / 846-2). Per-state variants covered by mock:
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: "400",
     fontSize: 18,
-    color: "#c5c5c5",
+    color: "#808080",
     marginLeft: 4,
   },
   divider: {

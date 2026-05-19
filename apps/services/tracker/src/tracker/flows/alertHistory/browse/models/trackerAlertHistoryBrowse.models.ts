@@ -24,11 +24,7 @@ export class TrackerAlertHistoryBrowseModels {
    * Fetch up to `limit + 1` drop events the given user is watching. The
    * controller uses the extra row as a peek to compute `nextCursor`.
    */
-  findForUser(params: {
-    userId: string;
-    limit: number;
-    cursor: Date | null;
-  }) {
+  findForUser(params: { userId: string; limit: number; cursor: Date | null }) {
     return this.prisma.drop_events.findMany({
       where: {
         ...(params.cursor && { detected_at: { lt: params.cursor } }),

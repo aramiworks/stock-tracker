@@ -51,9 +51,7 @@ describe("TrackerAlertHistoryBrowseModels.findForUser", () => {
         };
       };
     };
-    expect(
-      unitClause.sku.watchable_unit.watches.some.auth_user_id,
-    ).toBe("u-1");
+    expect(unitClause.sku.watchable_unit.watches.some.auth_user_id).toBe("u-1");
     expect(unitClause.sku.watchable_unit.watches.some.active).toBe(true);
     expect(unitClause.sku.watchable_unit.watches.some.sku_id).toBeNull();
 
@@ -86,7 +84,9 @@ describe("TrackerAlertHistoryBrowseModels.findForUser", () => {
     await models.findForUser({ userId: "u-1", limit: 20, cursor: null });
 
     const args = findMany.mock.calls[0]![0]!;
-    expect((args.where as { detected_at?: unknown }).detected_at).toBeUndefined();
+    expect(
+      (args.where as { detected_at?: unknown }).detected_at,
+    ).toBeUndefined();
   });
 
   it("applies WHERE detected_at < cursor when cursor is provided", async () => {

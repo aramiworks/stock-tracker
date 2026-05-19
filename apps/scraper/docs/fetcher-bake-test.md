@@ -104,6 +104,7 @@ runId: bake-YYYYMMDD
 **Preliminary (smoke):** HttpFetcher alone cannot scrape product pages — Akamai blocks 100% of requests even with Chrome 131 TLS fingerprinting + Oxylabs residential proxies. BrowserFetcher is the likely winner but needs a re-test with Chromium properly installed.
 
 **Next steps:**
+
 1. Re-run smoke with Chromium installed to validate BrowserFetcher
 2. If BrowserFetcher passes product pages, run full 24h bake to measure sustained success rate
 3. Final decision after full bake data

@@ -9,7 +9,12 @@ type Props = {
 /**
  * Watchlist empty state — mirrors Figma 845-69.
  *
- * Vertical stack: title 16pt Semi Bold, body 14pt #808080, "+ 추가" CTA below.
+ * Vertical stack:
+ *   - 64×64 circular icon (bg #f2f2f2) with "+" glyph (32pt Semi Bold #808080)
+ *   - title  17pt Semi Bold #1a1a1a, centered
+ *   - body   14pt #808080, centered
+ *   - 160×44 pill CTA — bg #ff2d55, radius 22, white "+ 추가" 15pt Semi Bold
+ *
  * Tapping the CTA dispatches to the Shengsho catalog browse screen (the same
  * destination the top-app-bar "+ 추가" action reaches).
  */
@@ -18,6 +23,9 @@ export const TrackerWatchlistListEmptyStateView = memo(
     const { t } = useTranslation("tracker");
     return (
       <View style={styles.container} testID="watchlist-empty-state">
+        <View style={styles.icon} testID="watchlist-empty-icon">
+          <Text style={styles.iconGlyph}>+</Text>
+        </View>
         <Text style={styles.title}>{t("watchlist.empty.title")}</Text>
         <Text style={styles.body}>{t("watchlist.empty.body")}</Text>
         {onAddPress && (
@@ -41,30 +49,50 @@ TrackerWatchlistListEmptyStateView.displayName =
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 64,
+    paddingTop: 160,
+    paddingBottom: 64,
     alignItems: "center",
+  },
+  icon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "#f2f2f2",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconGlyph: {
+    fontFamily: "Inter",
+    fontWeight: "600",
+    fontSize: 32,
+    color: "#808080",
+    lineHeight: 36,
   },
   title: {
     fontFamily: "Inter",
     fontWeight: "600",
-    fontSize: 16,
+    fontSize: 17,
     color: "#1a1a1a",
+    marginTop: 24,
+    textAlign: "center",
   },
   body: {
     fontFamily: "Inter",
     fontWeight: "400",
     fontSize: 14,
     color: "#808080",
-    marginTop: 6,
+    marginTop: 8,
     textAlign: "center",
     paddingHorizontal: 24,
   },
   cta: {
-    marginTop: 24,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-    backgroundColor: "#1a1a1a",
+    marginTop: 32,
+    width: 160,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#ff2d55",
+    alignItems: "center",
+    justifyContent: "center",
   },
   ctaLabel: {
     fontFamily: "Inter",

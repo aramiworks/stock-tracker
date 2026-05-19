@@ -131,6 +131,6 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: "600",
     fontSize: 15,
-    color: "#1a1a1a",
+    color: "#ff2d55",
   },
 });

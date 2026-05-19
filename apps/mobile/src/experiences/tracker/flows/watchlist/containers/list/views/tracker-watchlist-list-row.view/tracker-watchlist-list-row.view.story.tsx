@@ -40,7 +40,7 @@ const meta: Meta<typeof TrackerWatchlistListRowView> = {
     layout: "centered",
     design: {
       type: "figma",
-      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=845-2",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=845-10",
     },
   },
   args: { entry: IN_STOCK },

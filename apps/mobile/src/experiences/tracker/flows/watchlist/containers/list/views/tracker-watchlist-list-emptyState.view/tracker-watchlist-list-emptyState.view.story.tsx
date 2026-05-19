@@ -18,8 +18,11 @@ const meta: Meta<typeof TrackerWatchlistListEmptyStateView> = {
 export default meta;
 type Story = StoryObj<typeof TrackerWatchlistListEmptyStateView>;
 
+// Default matches the Figma 845-69 layout: icon + title + body + pill CTA.
+// The no-CTA variant only renders when the container omits onAddPress
+// (e.g. when the catalog destination is unreachable).
+export const Default: Story = { args: { onAddPress: () => {} } };
 export const NoCta: Story = { args: {} };
-export const WithCta: Story = { args: { onAddPress: () => {} } };
 
 export const Overview: Story = {
   render: () => (
@@ -27,14 +30,14 @@ export const Overview: Story = {
       viewName="tracker-watchlist-list-emptyState.view"
       variants={[
         {
-          name: "no-cta",
-          render: () => <TrackerWatchlistListEmptyStateView />,
-        },
-        {
-          name: "with-cta",
+          name: "with-cta (figma)",
           render: () => (
             <TrackerWatchlistListEmptyStateView onAddPress={() => {}} />
           ),
+        },
+        {
+          name: "no-cta",
+          render: () => <TrackerWatchlistListEmptyStateView />,
         },
       ]}
     />

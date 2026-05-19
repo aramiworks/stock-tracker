@@ -75,6 +75,19 @@ export const trackerResolvers = {
         await context.trackerTrpc.tracker.alerts.feed.unreadCount.query();
       return result.count;
     },
+    alertHistory: async (
+      _: unknown,
+      args: { limit?: number; cursor?: string | null },
+      context: SubgraphContext,
+    ) => {
+      // tRPC returns `detectedAt: Date`; Apollo coerces Date → ISO string
+      // when the GraphQL field type is `String!` (see the watchlistDetail
+      // → dropEvents.detectedAt path, which uses the same pattern).
+      return context.trackerTrpc.tracker.alertHistory.list.query({
+        limit: args.limit ?? 20,
+        cursor: args.cursor ?? null,
+      });
+    },
   },
   Mutation: {
     createWatch: async (

@@ -179,14 +179,14 @@ describe("TrackerDashboardHomeControllers", () => {
     expect(getByTestId("eligibility").props.children).toBe("notEligible");
   });
 
-  it("onSaPress navigates to account detail", () => {
+  it("onSaPress navigates to /tracker/watchlist (sentinel after INF-1414 route removal)", () => {
     const { getByTestId } = render(
       <TrackerDashboardHomeControllers>
         <Consumer />
       </TrackerDashboardHomeControllers>,
     );
     fireEvent.press(getByTestId("sa-press"));
-    expect(mockPush).toHaveBeenCalledWith("/tracker/accounts/detail/acc-1");
+    expect(mockPush).toHaveBeenCalledWith("/tracker/watchlist");
   });
 
   it("onCreateAccount calls mutation", async () => {

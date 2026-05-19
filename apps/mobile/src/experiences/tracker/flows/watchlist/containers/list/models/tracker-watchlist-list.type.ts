@@ -1,7 +1,8 @@
-// Shengsho-style watchlist contracts. Mirrors the tRPC `watchlist.list`
-// shape introduced in INF-1415 (backend sub-issue). When that lands, swap
-// `WATCHLIST_LIST_MOCK_GROUPS` for a `useSuspenseQuery` against the tracker
-// subgraph and drop the type alias chain to a generated GraphQL type.
+// Shengsho-style watchlist contracts. Shape matches the protected `watchlist`
+// GraphQL query landed by INF-1415 — see `apps/subgraphs/tracker/schema.graphql`
+// (`WatchlistGroup` / `WatchlistEntry`). The mock fixture
+// (`WATCHLIST_LIST_MOCK_GROUPS`) is retained for Storybook + view-layer tests
+// that don't want to spin up an Apollo client.
 
 export type TrackerWatchlistListScreenState =
   | "default"

@@ -1,6 +1,12 @@
 import { render, act, fireEvent } from "@testing-library/react-native";
 import { Text, Pressable } from "react-native";
 
+const mockRefetch = jest.fn().mockResolvedValue(undefined);
+
+jest.mock("@apollo/client/react", () => ({
+  useSuspenseQuery: jest.fn(),
+}));
+
 jest.mock("../lifecycles/tracker-watchlist-list.lifecycles", () => ({
   useTrackerWatchlistListLifecycle: jest.fn(),
 }));
@@ -10,11 +16,26 @@ jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
+import { useSuspenseQuery } from "@apollo/client/react";
 import {
   TrackerWatchlistListControllers,
   useTrackerWatchlistListControllers,
 } from "./tracker-watchlist-list.controllers";
 import { WATCHLIST_LIST_MOCK_GROUPS } from "../models/tracker-watchlist-list.mock";
+
+const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+  typeof useSuspenseQuery
+>;
+
+function setQueryData(
+  groups: typeof WATCHLIST_LIST_MOCK_GROUPS = WATCHLIST_LIST_MOCK_GROUPS,
+) {
+  mockedUseSuspenseQuery.mockReturnValue({
+    data: { watchlist: groups },
+    refetch: mockRefetch,
+    // The rest of the useSuspenseQuery return is unused by the controllers — cast wide.
+  } as unknown as ReturnType<typeof useSuspenseQuery>);
+}
 
 let captured: ReturnType<typeof useTrackerWatchlistListControllers> | null =
   null;
@@ -46,13 +67,23 @@ describe("TrackerWatchlistListControllers", () => {
   beforeEach(() => {
     captured = null;
     mockPush.mockClear();
+    mockRefetch.mockClear();
+    mockedUseSuspenseQuery.mockReset();
+    setQueryData();
   });
 
-  it("exposes screenState=default with the mock fixture", () => {
+  it("exposes screenState=default when watchlist.list returns groups", () => {
     renderControllers();
     expect(captured?.screenState).toBe("default");
     expect(captured?.groups).toEqual(WATCHLIST_LIST_MOCK_GROUPS);
     expect(captured?.isRefreshing).toBe(false);
+  });
+
+  it("exposes screenState=empty when watchlist.list returns no groups", () => {
+    setQueryData([]);
+    renderControllers();
+    expect(captured?.screenState).toBe("empty");
+    expect(captured?.groups).toEqual([]);
   });
 
   it("onAddProductsPress navigates to /tracker/catalog/browse", () => {
@@ -72,17 +103,16 @@ describe("TrackerWatchlistListControllers", () => {
     });
   });
 
-  it("onRefresh triggers a refetch via startTransition", async () => {
+  it("onRefresh triggers refetch via startTransition and clears the refreshing flag", async () => {
     renderControllers();
     await act(async () => {
       captured?.onRefresh();
+      // Flush microtasks so the startTransition-scheduled state update lands
+      // and the refetch promise resolves before assertions.
       await Promise.resolve();
       await Promise.resolve();
     });
-    // Refetch swaps the memoised groups; the value remains equal to the
-    // fixture but the underlying tick bumped — we assert the refreshing flag
-    // settled back to false and the groups stayed shape-equal.
+    expect(mockRefetch).toHaveBeenCalled();
     expect(captured?.isRefreshing).toBe(false);
-    expect(captured?.groups).toEqual(WATCHLIST_LIST_MOCK_GROUPS);
   });
 });

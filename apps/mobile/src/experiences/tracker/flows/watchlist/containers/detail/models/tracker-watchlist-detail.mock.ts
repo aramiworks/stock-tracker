@@ -7,8 +7,9 @@ import type { WatchlistDetailPayload } from "./tracker-watchlist-detail.type";
  *   - Hermès Bolide 27 → single SKU, "Hermès 공식" source label, full history
  *   - Cartier Tank Must Large Steel → multi-SKU (4 SKUs), no history
  *
- * Once INF-1415's `watchlist.detail(watchableUnitId)` query lands, swap the
- * mock branch in the controller for `useSuspenseQuery`.
+ * The controller resolves against the live `watchlistDetail(watchableUnitId)`
+ * GraphQL query landed by INF-1415. This fixture is kept for Storybook +
+ * view-layer unit tests that don't want to spin up an Apollo client.
  */
 export const WATCHLIST_DETAIL_MOCK: Record<string, WatchlistDetailPayload> = {
   "11111111-1111-1111-1111-000000000001": {

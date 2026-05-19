@@ -3,14 +3,11 @@ import type { WatchlistGroup } from "./tracker-watchlist-list.type";
 /**
  * Storybook + offline fixture for the Shengsho-style watchlist.
  *
- * Backend wiring lives in INF-1415 (`watchlist.list` tRPC + GraphQL). Until that
- * lands the container resolves against this fixture so the mobile work stays
- * unblocked. Once the query is live, delete the in-container mock branch in
- * `tracker-watchlist-list.controllers.tsx` and keep this file for stories +
- * unit tests that don't want to spin up an Apollo client.
- *
- * IDs are deterministic UUID-shaped strings so React keys remain stable across
- * hot reloads and snapshot diffs.
+ * The controller resolves against the live `watchlist` GraphQL query landed by
+ * INF-1415 (see `tracker-watchlist-list.controllers.tsx`). This fixture is
+ * kept for Storybook stories + view-layer unit tests that don't want to spin
+ * up an Apollo client. IDs are deterministic UUID-shaped strings so React
+ * keys remain stable across hot reloads and snapshot diffs.
  */
 export const WATCHLIST_LIST_MOCK_GROUPS: WatchlistGroup[] = [
   {

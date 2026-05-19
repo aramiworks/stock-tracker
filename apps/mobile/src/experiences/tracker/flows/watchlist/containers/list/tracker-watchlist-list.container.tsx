@@ -28,8 +28,9 @@ ConnectedViews.displayName = "TrackerWatchlistListConnectedViews";
  * scaffold from INF-1391 (PR #382) and replaces the legacy Cartier
  * `TrackerAccountsListContainer` at the route layer.
  *
- * Backend integration lives in INF-1415 — until that lands the controller
- * resolves against `WATCHLIST_LIST_MOCK_GROUPS`.
+ * Resolves against the protected `watchlist` GraphQL query landed by INF-1415.
+ * The mock fixture (`WATCHLIST_LIST_MOCK_GROUPS`) is retained for Storybook +
+ * view-layer unit tests that don't want to spin up an Apollo client.
  */
 export const TrackerWatchlistListContainer = memo(() => {
   return (

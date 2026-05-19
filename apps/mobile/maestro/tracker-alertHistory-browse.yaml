@@ -1,0 +1,39 @@
+appId: so.arami.stocktracker.app
+url: ${MAESTRO_APP_URL}
+name: Tracker - AlertHistory - Browse
+tags:
+  - authenticated
+---
+# Verifies the Shengsho-style alertHistory/browse container (INF-1478):
+#   - History tab navigates to the alert-history screen + title
+#   - Mock-resolved feed renders a row per drop event
+#   - Tapping a row pushes /tracker/watchlist/[id] (the unit's detail)
+#
+# Mock-resolved until INF-1479 wires the real `alertHistory` tRPC + GraphQL.
+
+- runFlow: helpers/launch-authenticated.yaml
+
+# Watchlist is the default landing tab — switch to the History tab.
+- tapOn: "내역"
+- assertVisible:
+    id: "alert-history-screen"
+- assertVisible:
+    id: "alert-history-title"
+
+# Mock fixture renders at least one row per kind.
+- assertVisible:
+    id: "alert-history-row-ah-bolide-27-restock-1"
+- assertVisible:
+    id: "alert-history-row-ah-bolide-31-soldout-1"
+
+# Korean labels surface from the i18n `alertHistory.event.*` keys.
+- assertVisible: "재입고"
+- assertVisible: "품절"
+
+# Scroll to confirm chronological list extends below the fold, then tap the
+# first row to navigate into the watchlist/detail screen.
+- scroll
+- tapOn:
+    id: "alert-history-row-ah-bolide-27-restock-1"
+- assertVisible:
+    id: "watchlist-detail-screen"

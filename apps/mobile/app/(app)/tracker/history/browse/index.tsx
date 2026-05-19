@@ -1,1 +1,1 @@
-export { TrackerHistoryBrowseContainer as default } from "@/experiences/tracker/flows/history/containers/browse";
+export { TrackerAlertHistoryBrowseContainer as default } from "@/experiences/tracker/flows/alertHistory/containers/browse";

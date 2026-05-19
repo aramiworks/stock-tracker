@@ -148,6 +148,18 @@
       "title": "알림 히스토리"
     }
   },
+  "alertHistory": {
+    "title": "내역",
+    "navLabel": "내역",
+    "event": {
+      "restocked": "재입고",
+      "soldOut": "품절"
+    },
+    "empty": {
+      "title": "알림 내역이 없습니다",
+      "body": "관심 품목을 등록하면 여기에 표시됩니다"
+    }
+  },
   "account": {
     "home": {
       "topBar": {
@@ -177,6 +189,6 @@
     "alerts": "알림",
     "catalog": "카탈로그",
     "watchlist": "관심목록",
-    "history": "알림내역"
+    "history": "내역"
   }
 }

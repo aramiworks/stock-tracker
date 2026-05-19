@@ -38,6 +38,18 @@
       "title": "Alert history"
     }
   },
+  "alertHistory": {
+    "title": "History",
+    "navLabel": "History",
+    "event": {
+      "restocked": "Restocked",
+      "soldOut": "Sold out"
+    },
+    "empty": {
+      "title": "No alerts yet",
+      "body": "When watched items restock, alerts will appear here."
+    }
+  },
   "catalog": {
     "title": "Catalog",
     "groupSubtitle": "All",

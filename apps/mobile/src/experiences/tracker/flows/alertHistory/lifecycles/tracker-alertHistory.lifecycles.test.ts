@@ -3,6 +3,8 @@ import { useTrackerAlertHistoryLifecycle } from "./tracker-alertHistory.lifecycl
 
 describe("useTrackerAlertHistoryLifecycle", () => {
   it("runs without throwing (stub flow-level lifecycle)", () => {
-    expect(() => renderHook(() => useTrackerAlertHistoryLifecycle())).not.toThrow();
+    expect(() =>
+      renderHook(() => useTrackerAlertHistoryLifecycle()),
+    ).not.toThrow();
   });
 });

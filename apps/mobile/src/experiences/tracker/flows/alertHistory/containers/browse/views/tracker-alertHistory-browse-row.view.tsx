@@ -74,9 +74,7 @@ export const TrackerAlertHistoryBrowseRowView = memo(
         testID={testID}
         style={styles.pressable}
       >
-        {isSoldOut && (
-          <View style={styles.bar} testID={`${testID}-bar`} />
-        )}
+        {isSoldOut && <View style={styles.bar} testID={`${testID}-bar`} />}
         <View style={styles.row}>
           <View style={styles.topLine}>
             <Text style={primaryStyle} numberOfLines={1}>

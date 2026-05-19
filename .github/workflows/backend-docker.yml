@@ -30,26 +30,31 @@ jobs:
             dir: apps/services/auth
             dockerfile: infra/docker/node-service.Dockerfile
             entrypoint: dist/main.js
+            sentryProject: stock-tracker-auth-service
           - service: tracker-service
             package: "@stock-tracker/tracker-service"
             dir: apps/services/tracker
             dockerfile: infra/docker/node-service.Dockerfile
             entrypoint: dist/main.js
+            sentryProject: stock-tracker-tracker-service
           - service: subgraph-tracker
             package: "@stock-tracker/subgraph-tracker"
             dir: apps/subgraphs/tracker
             dockerfile: infra/docker/node-service.Dockerfile
             entrypoint: dist/server.js
+            sentryProject: stock-tracker-tracker-subgraph
           - service: subgraph-auth
             package: "@stock-tracker/subgraph-auth"
             dir: apps/subgraphs/auth
             dockerfile: infra/docker/node-service.Dockerfile
             entrypoint: dist/server.js
+            sentryProject: stock-tracker-tracker-subgraph
           - service: router
             package: ""
             dir: ""
             dockerfile: apps/router/Dockerfile
             entrypoint: ""
+            sentryProject: ""
     steps:
       - uses: actions/checkout@v4
 
@@ -96,7 +101,7 @@ jobs:
       # initSentry() reads SENTRY_RELEASE from env at runtime — these must
       # match for Sentry to symbolicate stack traces.
       - name: Extract source maps from image
-        if: matrix.service == 'auth-service' || matrix.service == 'tracker-service'
+        if: matrix.sentryProject != ''
         run: |
           IMAGE="ghcr.io/${{ github.repository_owner }}/stock-tracker-${{ matrix.service }}:${{ github.sha }}"
           docker pull "$IMAGE"
@@ -110,13 +115,13 @@ jobs:
       #                     debug IDs in the bundle, no finalize required
       # continue-on-error → Sentry telemetry must never block the deploy job
       - name: Upload source maps to Sentry
-        if: matrix.service == 'auth-service' || matrix.service == 'tracker-service'
+        if: matrix.sentryProject != ''
         uses: getsentry/action-release@v1
         continue-on-error: true
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: stock-tracker-${{ matrix.service }}
+          SENTRY_PROJECT: ${{ matrix.sentryProject }}
         with:
           version: ${{ github.sha }}
           sourcemaps: sourcemaps/dist

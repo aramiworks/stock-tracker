@@ -1,4 +1,4 @@
-appId: so.arami.stocktracker.app
+url: ${MAESTRO_APP_URL}
 name: Auth - Sign In - Gmail OAuth
 tags:
   - baseline
@@ -15,18 +15,18 @@ tags:
       id: "auth-signIn-gmailOauth-screen"
     timeout: 10000
 
-# Title and subtitle
+# Title and subtitle (app is Korean-localized — see apps/mobile/src/lib/i18n/ko/auth.json)
 - assertVisible:
     id: "auth-signIn-title"
 - assertVisible: "Stock Tracker"
 - assertVisible:
     id: "auth-signIn-subtitle"
-- assertVisible: "Sign In"
+- assertVisible: "Hermès 신상 입고 알림 서비스"
 
 # Google sign-in button
 - assertVisible:
     id: "sign-in-google-button"
-- assertVisible: "Sign in with Google"
+- assertVisible: "Gmail로 시작하기"
 
 # Tap the button — should show loading indicator (no navigation since OAuth
 # requires a real Google session, but the button should respond)

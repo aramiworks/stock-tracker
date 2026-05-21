@@ -161,6 +161,32 @@ export const WATCHLIST_DETAIL_QUERY = gql`
   }
 `;
 
+/**
+ * Alert history — protected query landed by INF-1479 on the tracker subgraph.
+ * Returns a cursor-paginated page of past drop events ordered newest-first by
+ * `detectedAt`. The server only emits `kind: "restocked"` today (the row UI
+ * already handles a forward-compat `soldOut` variant per INF-1483). Mirrors
+ * `WATCHLIST_LIST_QUERY`'s use of raw `gql` rather than `graphql(...)` because
+ * the mobile codegen pipeline has pre-existing drift against the pivoted
+ * GraphQL schema.
+ */
+export const ALERT_HISTORY_QUERY = gql`
+  query AlertHistory($limit: Int, $cursor: String) {
+    alertHistory(limit: $limit, cursor: $cursor) {
+      events {
+        id
+        brand
+        productLine
+        modelName
+        skuDescriptor
+        kind
+        detectedAt
+      }
+      nextCursor
+    }
+  }
+`;
+
 export const PURCHASES_QUERY = graphql(`
   query Purchases(
     $accountId: ID

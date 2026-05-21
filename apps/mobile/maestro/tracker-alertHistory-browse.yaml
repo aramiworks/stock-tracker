@@ -1,0 +1,20 @@
+appId: so.arami.stocktracker.app
+url: ${MAESTRO_APP_URL}
+name: Tracker - AlertHistory - Browse
+tags:
+  - authenticated
+---
+# Verifies the Shengsho-style alertHistory/browse container (INF-1478):
+#   - History tab navigates to the alert-history screen + title
+#   - The live `alertHistory` query (INF-1479) renders the screen scaffold
+#     (either rows with the "재입고" / "품절" labels, or the empty state copy
+#     if the seeded account has no past drop events)
+
+- runFlow: helpers/launch-authenticated.yaml
+
+# Watchlist is the default landing tab — switch to the History tab.
+- tapOn: "내역"
+- assertVisible:
+    id: "alert-history-screen"
+- assertVisible:
+    id: "alert-history-title"

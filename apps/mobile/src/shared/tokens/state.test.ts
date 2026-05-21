@@ -6,6 +6,7 @@ describe("stateColors", () => {
       green: "#34c759",
       red: "#ff2d55",
       muted: "#808080",
+      teal: "#009E99",
     });
   });
 });

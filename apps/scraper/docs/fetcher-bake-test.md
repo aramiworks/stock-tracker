@@ -23,7 +23,8 @@ DOPPLER_PROJECT=stock-tracker DOPPLER_CONFIG=develop doppler run -- \
 
 # Prerequisites:
 #   npm install                          (workspace deps)
-#   npx playwright install chromium      (for BrowserFetcher)
+#   npx playwright-core@1.47.2 install chromium  (matches playwright-extra's peer dep)
+#   ln -sf node_modules/puppeteer-extra-plugin-stealth node_modules/stealth  (evasion resolution)
 #   Doppler develop config with DATABASE_URL + OXYLABS_* creds
 
 # The script runs both fetchers against all URLs every 60s for 10 min,
@@ -62,34 +63,47 @@ npm run analyze:bake -w @stock-tracker/scraper -- --runId=bake-2026-05-20
 
 ## Results
 
-### Smoke (2026-05-19, this PR)
+### Smoke (2026-05-21, this PR)
 
 ```
-runId: smoke-2026-05-13
-duration: ~10 min (8 rounds × 60s interval)
+runId: smoke-2026-05-19
+duration: ~10 min (4 rounds × 60s interval, browser latency extended rounds)
 URLs: 10 (9 product pages + homepage)
 proxy: Oxylabs residential, KR pool (pr.oxylabs.io:7777)
+total requests: 80 (40 per fetcher)
 
-- HttpFetcher:
-    homepage:       8/8 success (100%), status 200, avg ~2900ms
-    product pages:  0/72 success (0%), 71 blocked (403), 1 error (404)
-    overall:        10% success, 88.75% blocked, 1.25% error
-    latency range:  1856–6499ms (typical ~2800–3500ms)
-    content/resp:   ~633KB (homepage only)
-    est. cost:      $0.07 (80 requests over 10 min)
+- HttpFetcher (got-scraping + Chrome 131 TLS):
+    homepage:       4/4 success (100%), status 200
+    product pages:  0/36 success (0%), 35 blocked (403), 1 error
+    overall:        10% success, 87.5% blocked, 2.5% error
+    p50 latency:    3009ms
+    p95 latency:    3912ms
+    content/resp:   ~586KB (homepage only)
+    est. cost:      $0.034
 
-- BrowserFetcher:
-    all:            0/80 success — Chromium binary not installed
-    (env setup issue, not a code defect — `npx playwright install chromium` needed)
+- BrowserFetcher (Playwright + stealth):
+    homepage:       4/4 success (100%), status 200
+    product pages:  0/36 success (0%), 36 blocked (403)
+    overall:        10% success, 90% blocked, 0% error
+    p50 latency:    8812ms
+    p95 latency:    33701ms
+    content/resp:   ~619KB (homepage only)
+    est. cost:      $0.035
 
 Notes:
-  - Akamai blocks ALL product page requests via HTTP (got-scraping + Chrome 131 TLS).
-    Homepage passes because it likely has lighter bot protection.
-  - got-scraping TLS fingerprinting alone is NOT sufficient for product pages.
-  - BrowserFetcher needs a re-test with Chromium installed (see full bake).
-  - The 403 responses are consistent across all 8 rounds — not intermittent.
-  - One product URL (Picotin Lock 18 H056289CC37) returned 404 in round 3,
-    suggesting the product may have been delisted mid-test.
+  - BOTH fetchers are blocked on ALL product pages — Akamai returns 403 consistently.
+  - Homepage passes for both (likely lighter bot protection on the landing page).
+  - BrowserFetcher with Playwright stealth does NOT bypass Akamai on product pages.
+  - BrowserFetcher is 3–9x slower with zero anti-bot benefit over HttpFetcher.
+  - The 403 blocks are 100% consistent across all 4 rounds — not intermittent.
+  - Neither TLS fingerprinting (got-scraping) nor headless browser + stealth
+    is sufficient to pass Akamai Bot Manager on hermes.com/kr product pages.
+
+Setup notes (for reproducing):
+  - playwright-extra depends on playwright-core@1.47.2, not playwright@1.60.0.
+    Must install chromium for the correct version: `npx playwright-core@1.47.2 install chromium`
+  - puppeteer-extra-plugin-stealth resolves evasions as `stealth/evasions/*`,
+    needs a symlink: `ln -sf node_modules/puppeteer-extra-plugin-stealth node_modules/stealth`
 ```
 
 ### Full bake (separate commit after merge)
@@ -101,10 +115,20 @@ runId: bake-YYYYMMDD
 
 ## Decision
 
-**Preliminary (smoke):** HttpFetcher alone cannot scrape product pages — Akamai blocks 100% of requests even with Chrome 131 TLS fingerprinting + Oxylabs residential proxies. BrowserFetcher is the likely winner but needs a re-test with Chromium properly installed.
+**Smoke verdict: Neither fetcher can scrape product pages.**
 
-**Next steps:**
+Both HttpFetcher and BrowserFetcher achieve 0% success on product pages through Oxylabs residential proxies. Akamai Bot Manager on hermes.com/kr blocks all requests regardless of:
 
-1. Re-run smoke with Chromium installed to validate BrowserFetcher
-2. If BrowserFetcher passes product pages, run full 24h bake to measure sustained success rate
-3. Final decision after full bake data
+- TLS fingerprinting (Chrome 131 profile via got-scraping)
+- Headless browser with stealth evasions (Playwright + puppeteer-extra-plugin-stealth)
+- Korean locale/timezone/headers
+- Oxylabs KR residential IP pool
+
+**Recommendation:** HttpFetcher is the pragmatic default — same 0% product-page success as BrowserFetcher but 3–9x faster and cheaper. The real blocker is Akamai's server-side bot detection, not client fingerprinting.
+
+**Next steps (requires architectural decision):**
+
+1. **Evaluate Akamai solver services** (e.g., CapSolver, 2Captcha Akamai) — inject solved `_abck` cookie into HttpFetcher
+2. **Evaluate Oxylabs Web Scraper API** — Oxylabs' managed headless rendering with built-in Akamai bypass ($2.2/1K requests)
+3. **Evaluate Bright Data's Scraping Browser** — managed browser with fingerprint rotation
+4. Full bake is moot until we solve the Akamai challenge — skip for now

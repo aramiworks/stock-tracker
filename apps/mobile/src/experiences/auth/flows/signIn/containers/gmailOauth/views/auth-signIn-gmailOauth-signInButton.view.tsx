@@ -15,7 +15,7 @@ export const AuthSignInGmailOauthSignInButtonView =
         variant="elevated"
         onPress={onPress}
         disabled={disabled}
-        minWidth={200}
+        width="100%"
         color="$primary"
         testID="sign-in-google-button"
       >

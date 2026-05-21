@@ -15,7 +15,6 @@ export const AuthSignInGmailOauthErrorStateView =
         <Text
           role="title"
           size="large"
-          color="white"
           textAlign="center"
           testID="auth-signIn-error-heading"
         >
@@ -24,8 +23,7 @@ export const AuthSignInGmailOauthErrorStateView =
         <Text
           role="body"
           size="medium"
-          color="white"
-          opacity={0.8}
+          opacity={0.7}
           textAlign="center"
           marginTop={8}
           testID="auth-signIn-error-subtitle"
@@ -33,10 +31,10 @@ export const AuthSignInGmailOauthErrorStateView =
           {t("signIn.errorSubtitle")}
         </Text>
         <Button
-          variant="elevated"
+          variant="filled"
           onPress={onRetry}
-          minWidth={200}
-          color="$primary"
+          backgroundColor="#FF2D55"
+          color="white"
           marginTop={24}
           testID="auth-signIn-error-retry"
         >

@@ -54,6 +54,8 @@ jobs:
               - 'apps/router/Dockerfile'
             stories:
               - 'apps/mobile/src/**/*.story.tsx'
+              - 'apps/mobile/src/**/*.view.tsx'
+              - 'apps/mobile/src/**/*.views.tsx'
               - 'apps/storybook/**'
 
   lint:

@@ -156,14 +156,14 @@ Notes:
 
 Summary across all tested approaches:
 
-| Approach                                          | Product-page success |
-| ------------------------------------------------- | -------------------- |
-| HttpFetcher (got-scraping + residential proxy)    | 0%                   |
-| BrowserFetcher (Playwright + stealth + residential) | 0%                 |
-| Oxylabs WSA — default (source=universal, render=html) | 0% (613 faulted) |
-| Oxylabs WSA — desktop_chrome UA                   | 0% (613 faulted)     |
-| Oxylabs WSA — desktop_chrome + session_id         | 0% (613 faulted)     |
-| Oxylabs WSA — desktop_chrome + browser_instructions | 0% (613 faulted)   |
+| Approach                                              | Product-page success |
+| ----------------------------------------------------- | -------------------- |
+| HttpFetcher (got-scraping + residential proxy)        | 0%                   |
+| BrowserFetcher (Playwright + stealth + residential)   | 0%                   |
+| Oxylabs WSA — default (source=universal, render=html) | 0% (613 faulted)     |
+| Oxylabs WSA — desktop_chrome UA                       | 0% (613 faulted)     |
+| Oxylabs WSA — desktop_chrome + session_id             | 0% (613 faulted)     |
+| Oxylabs WSA — desktop_chrome + browser_instructions   | 0% (613 faulted)     |
 
 Akamai blocks Oxylabs' egress IPs at the network/IP level on product pages regardless
 of client fingerprinting, render mode, UA type, session stickiness, or browser scripting.

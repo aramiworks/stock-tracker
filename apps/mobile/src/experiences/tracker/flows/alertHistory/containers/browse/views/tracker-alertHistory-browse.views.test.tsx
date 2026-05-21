@@ -1,23 +1,23 @@
-import { render, fireEvent } from "@testing-library/react-native";
+import { render } from "@testing-library/react-native";
 import { TrackerAlertHistoryBrowseViews } from "./tracker-alertHistory-browse.views";
 import type { AlertHistoryEvent } from "../models/tracker-alertHistory-browse.type";
 
 const sampleEvents: AlertHistoryEvent[] = [
   {
     id: "evt-1",
-    watchableUnitId: "unit-1",
     brand: "Hermès",
     productLine: "Bolide",
     modelName: "Bolide 27",
+    skuDescriptor: "Noir · Togo · Gold",
     kind: "restocked",
     detectedAt: "2026-05-19T09:14:00.000Z",
   },
   {
     id: "evt-2",
-    watchableUnitId: "unit-2",
     brand: "Hermès",
     productLine: "Bolide",
     modelName: "Bolide 31",
+    skuDescriptor: null,
     kind: "soldOut",
     detectedAt: "2026-05-18T22:03:00.000Z",
   },
@@ -29,18 +29,16 @@ describe("TrackerAlertHistoryBrowseViews", () => {
     expect(getByTestId("alert-history-screen")).toBeTruthy();
   });
 
-  it("renders default state with provided events and forwards event press", () => {
-    const onEventPress = jest.fn();
+  it("renders default state with provided events", () => {
     const { getByTestId } = render(
       <TrackerAlertHistoryBrowseViews
         screenState="default"
         events={sampleEvents}
-        onEventPress={onEventPress}
       />,
     );
     expect(getByTestId("alert-history-list")).toBeTruthy();
-    fireEvent.press(getByTestId("alert-history-row-evt-1"));
-    expect(onEventPress).toHaveBeenCalledWith(sampleEvents[0]);
+    expect(getByTestId("alert-history-row-evt-1")).toBeTruthy();
+    expect(getByTestId("alert-history-row-evt-2")).toBeTruthy();
   });
 
   it("renders empty state", () => {

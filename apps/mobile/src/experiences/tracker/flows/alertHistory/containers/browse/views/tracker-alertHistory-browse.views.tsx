@@ -16,7 +16,6 @@ type Props = {
   events?: AlertHistoryEvent[];
   isRefreshing?: boolean;
   onRefresh?: () => void;
-  onEventPress?: (event: AlertHistoryEvent) => void;
 };
 
 /**
@@ -37,7 +36,6 @@ export const TrackerAlertHistoryBrowseViews = memo(
     events = ALERT_HISTORY_MOCK,
     isRefreshing = false,
     onRefresh,
-    onEventPress,
   }: Props) => {
     const { t } = useTranslation("tracker");
 
@@ -45,11 +43,7 @@ export const TrackerAlertHistoryBrowseViews = memo(
       default: (
         <View testID="alert-history-list">
           {events.map((event) => (
-            <TrackerAlertHistoryBrowseRowView
-              key={event.id}
-              event={event}
-              onPress={onEventPress}
-            />
+            <TrackerAlertHistoryBrowseRowView key={event.id} event={event} />
           ))}
         </View>
       ),

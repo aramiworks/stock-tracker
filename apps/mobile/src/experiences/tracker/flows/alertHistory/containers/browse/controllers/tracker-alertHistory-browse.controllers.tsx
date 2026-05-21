@@ -8,14 +8,40 @@ import {
   startTransition,
   type ReactNode,
 } from "react";
-import { useRouter } from "expo-router";
+import { useSuspenseQuery } from "@apollo/client/react";
+import { ALERT_HISTORY_QUERY } from "@/lib/graphql/queries";
 import type {
   AlertHistoryEvent,
+  AlertHistoryEventKind,
   TrackerAlertHistoryBrowseControllersOutput,
   TrackerAlertHistoryBrowseScreenState,
 } from "../models/tracker-alertHistory-browse.type";
-import { ALERT_HISTORY_MOCK } from "../models/tracker-alertHistory-browse.mock";
 import { useTrackerAlertHistoryBrowseLifecycle } from "../lifecycles/tracker-alertHistory-browse.lifecycles";
+
+/**
+ * GraphQL response shape for `query AlertHistory` (see
+ * `apps/subgraphs/tracker/schema.graphql`). Hand-written because the mobile
+ * codegen pipeline has pre-existing drift; once that drift is resolved we can
+ * swap to `graphql(...)`-generated types. Mirrors the watchlist/list pattern
+ * (see `tracker-watchlist-list.controllers.tsx`).
+ *
+ * Note `kind` is `string` on the wire — INF-1483 will tighten this to the
+ * `restocked` | `soldOut` enum once the soldOut event source lands.
+ */
+interface AlertHistoryQueryData {
+  alertHistory: {
+    events: Array<{
+      id: string;
+      brand: string;
+      productLine: string;
+      modelName: string;
+      skuDescriptor: string | null;
+      kind: string;
+      detectedAt: string;
+    }>;
+    nextCursor: string | null;
+  };
+}
 
 const ControllersContext =
   createContext<TrackerAlertHistoryBrowseControllersOutput | null>(null);
@@ -27,40 +53,41 @@ interface TrackerAlertHistoryBrowseControllersProps {
 /**
  * Shengsho-style alert-history browse controllers.
  *
- * Resolves against the in-memory `ALERT_HISTORY_MOCK` fixture until INF-1479
- * lands the protected `alertHistory` GraphQL query. The follow-up agent will
- * swap the `useMemo` source for `useSuspenseQuery(ALERT_HISTORY_QUERY)` and
- * forward the Apollo `refetch` into the lifecycle hook — the rest of this
- * file's shape stays unchanged.
- *
- * Events are sorted newest-first by `detectedAt` (descending) so the row order
- * mirrors a chronological feed regardless of how the mock array is authored.
+ * Resolves against the live protected `alertHistory` GraphQL query landed by
+ * INF-1479. The server returns events ordered newest-first by `detectedAt`, so
+ * the controller forwards them through unsorted. The view layer's `*.mock.ts`
+ * fixture is retained for Storybook + view-layer tests but no longer feeds the
+ * runtime controller.
  */
 export const TrackerAlertHistoryBrowseControllers =
   memo<TrackerAlertHistoryBrowseControllersProps>(({ children }) => {
-    const router = useRouter();
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // Mock-resolved source. Stable identity across renders so downstream
-    // useMemo deps don't churn — replaced by `data?.alertHistory ?? []` once
-    // INF-1479 wires the live query.
-    const source = ALERT_HISTORY_MOCK;
-
-    const refetch = useCallback(() => {
-      // No-op while mock-resolved. INF-1479 will replace this with the Apollo
-      // `refetch` returned from `useSuspenseQuery`.
-      return Promise.resolve();
-    }, []);
+    const { data, refetch } = useSuspenseQuery<AlertHistoryQueryData>(
+      ALERT_HISTORY_QUERY,
+      { variables: { limit: 20 } },
+    );
 
     useTrackerAlertHistoryBrowseLifecycle(refetch);
 
     const events = useMemo<AlertHistoryEvent[]>(() => {
-      return [...source].sort((a, b) => {
-        const aTime = new Date(a.detectedAt).getTime();
-        const bTime = new Date(b.detectedAt).getTime();
-        return bTime - aTime;
-      });
-    }, [source]);
+      // istanbul ignore next -- `useSuspenseQuery` always resolves data before
+      // we render; the `?? []` guard is purely defensive against partial data.
+      const wireEvents = data?.alertHistory?.events ?? [];
+      return wireEvents.map((e) => ({
+        id: e.id,
+        brand: e.brand,
+        productLine: e.productLine,
+        modelName: e.modelName,
+        skuDescriptor: e.skuDescriptor,
+        // Server only emits `"restocked"` today (INF-1479). INF-1483 will
+        // widen the source to include `"soldOut"`. Cast through the shared
+        // type so any unknown literal surfaces in TS rather than silently
+        // rendering as a misaligned row.
+        kind: e.kind as AlertHistoryEventKind,
+        detectedAt: e.detectedAt,
+      }));
+    }, [data?.alertHistory?.events]);
 
     const onRefresh = useCallback(() => {
       setIsRefreshing(true);
@@ -68,16 +95,6 @@ export const TrackerAlertHistoryBrowseControllers =
         void refetch().finally(() => setIsRefreshing(false));
       });
     }, [refetch]);
-
-    const onEventPress = useCallback(
-      (event: AlertHistoryEvent) => {
-        router.push({
-          pathname: "/tracker/watchlist/[id]",
-          params: { id: event.watchableUnitId },
-        });
-      },
-      [router],
-    );
 
     const screenState: TrackerAlertHistoryBrowseScreenState =
       events.length > 0 ? "default" : "empty";
@@ -87,7 +104,6 @@ export const TrackerAlertHistoryBrowseControllers =
       events,
       isRefreshing,
       onRefresh,
-      onEventPress,
     };
 
     return (

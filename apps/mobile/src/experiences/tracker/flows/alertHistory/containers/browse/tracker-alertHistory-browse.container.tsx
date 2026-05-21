@@ -15,7 +15,6 @@ const ConnectedViews = memo(() => {
       events={controllers.events}
       isRefreshing={controllers.isRefreshing}
       onRefresh={controllers.onRefresh}
-      onEventPress={controllers.onEventPress}
     />
   );
 });
@@ -28,11 +27,10 @@ ConnectedViews.displayName = "TrackerAlertHistoryBrowseConnectedViews";
  * Mirrors the watchlist/list scaffold (INF-1414 — `tracker-watchlist-list.container.tsx`):
  *   QueryErrorBoundary → Suspense → Models → Controllers → ConnectedViews
  *
- * The controller currently resolves against the in-memory `ALERT_HISTORY_MOCK`
- * fixture; once INF-1479 lands the protected `alertHistory` GraphQL query the
- * follow-up agent will swap the source in `controllers/tracker-alertHistory-browse.controllers.tsx`
- * for `useSuspenseQuery(ALERT_HISTORY_QUERY)`. The error + Suspense boundaries
- * are wired up now so the swap is non-breaking.
+ * The controller resolves against the live protected `alertHistory` GraphQL
+ * query landed by INF-1479 (see
+ * `controllers/tracker-alertHistory-browse.controllers.tsx`). The view-layer
+ * `*.mock.ts` fixture is kept for Storybook + view tests.
  */
 export const TrackerAlertHistoryBrowseContainer = memo(() => {
   return (

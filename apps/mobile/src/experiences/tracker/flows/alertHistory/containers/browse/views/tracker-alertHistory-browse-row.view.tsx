@@ -23,8 +23,10 @@ type Props = {
  *                                     Inter SemiBold 14 / #1a1a1a
  *   {YYYY.MM.DD} · {brand}          @ bottom, Inter Regular 11 / #999
  *
- * Tapping the row pushes `/tracker/watchlist/[id]` keyed by `watchableUnitId`,
- * so the user can drill into the unit's detail (Shengsho watchlist/detail).
+ * The row is pressable when `onPress` is supplied. Today the
+ * controller does not forward a press handler (the server response lacks a
+ * `watchableUnitId` field — drill-through to watchlist/detail will return when
+ * the backend exposes that link, tracked separately from INF-1483).
  *
  * Spec: design hand-off INF-1478 (default 623:1129, empty 623:1150, loading
  * 623:1183, optional error 623:1216).

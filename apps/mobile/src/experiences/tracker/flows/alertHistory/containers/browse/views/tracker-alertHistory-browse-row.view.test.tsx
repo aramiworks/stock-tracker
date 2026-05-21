@@ -4,10 +4,10 @@ import type { AlertHistoryEvent } from "../models/tracker-alertHistory-browse.ty
 
 const baseEvent: AlertHistoryEvent = {
   id: "evt-1",
-  watchableUnitId: "unit-1",
   brand: "Hermès",
   productLine: "Bolide",
   modelName: "Bolide 27",
+  skuDescriptor: null,
   kind: "restocked",
   detectedAt: "2026-05-19T09:14:00.000Z",
 };

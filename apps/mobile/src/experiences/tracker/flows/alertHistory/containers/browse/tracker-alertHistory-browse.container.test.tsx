@@ -17,7 +17,6 @@ jest.mock("./controllers/tracker-alertHistory-browse.controllers", () => ({
     events: [],
     isRefreshing: false,
     onRefresh: jest.fn(),
-    onEventPress: jest.fn(),
   }),
 }));
 

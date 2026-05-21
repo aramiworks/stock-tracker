@@ -6,10 +6,10 @@ import { OverviewLayout } from "@aramiworks/ui";
 
 const RESTOCKED: AlertHistoryEvent = {
   id: "ah-bolide-27-restock-1",
-  watchableUnitId: "11111111-1111-1111-1111-000000000001",
   brand: "Hermès",
   productLine: "Bolide",
   modelName: "Bolide 27",
+  skuDescriptor: "Noir · Togo · Gold",
   kind: "restocked",
   detectedAt: "2026-05-19T09:14:00.000Z",
 };
@@ -17,8 +17,8 @@ const RESTOCKED: AlertHistoryEvent = {
 const SOLD_OUT: AlertHistoryEvent = {
   ...RESTOCKED,
   id: "ah-bolide-31-soldout-1",
-  watchableUnitId: "11111111-1111-1111-1111-000000000002",
   modelName: "Bolide 31",
+  skuDescriptor: "Étoupe · Clemence · Palladium",
   kind: "soldOut",
   detectedAt: "2026-05-18T22:03:00.000Z",
 };

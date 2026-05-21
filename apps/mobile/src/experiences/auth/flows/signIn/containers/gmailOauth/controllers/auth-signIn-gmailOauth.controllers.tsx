@@ -57,6 +57,7 @@ if (Platform.OS !== "web") {
 export interface AuthSignInGmailOauthControllersOutput {
   signInWithGoogle: () => void;
   isSigningIn: boolean;
+  signInError: boolean;
 }
 
 const ControllersContext =
@@ -69,6 +70,7 @@ interface AuthSignInGmailOauthControllersProps {
 export const AuthSignInGmailOauthControllers =
   memo<AuthSignInGmailOauthControllersProps>(({ children }) => {
     const [isSigningIn, setIsSigningIn] = useState(false);
+    const [signInError, setSignInError] = useState(false);
     const isMountedRef = useRef(true);
     useEffect(() => {
       return () => {
@@ -94,6 +96,7 @@ export const AuthSignInGmailOauthControllers =
       if (!id_token) return;
 
       setIsSigningIn(true);
+      setSignInError(false);
       (async () => {
         try {
           const { error } = await supabase.auth.signInWithIdToken({
@@ -107,7 +110,7 @@ export const AuthSignInGmailOauthControllers =
           await trackEvent("sign_in_succeeded", { provider: "google" });
         } catch {
           void trackEvent("sign_in_failed", { provider: "google" });
-          // sign-in failed; auth state unchanged, user stays on sign-in screen
+          if (isMountedRef.current) setSignInError(true);
         } finally {
           /* istanbul ignore next -- defensive unmount guard */
           if (isMountedRef.current) setIsSigningIn(false);
@@ -117,6 +120,7 @@ export const AuthSignInGmailOauthControllers =
 
     const signInWithGoogle = useCallback(async () => {
       setIsSigningIn(true);
+      setSignInError(false);
       void trackEvent("sign_in_started", { provider: "google" });
       try {
         if (Platform.OS === "web") {
@@ -146,6 +150,7 @@ export const AuthSignInGmailOauthControllers =
         }
       } catch (err) {
         void trackEvent("sign_in_failed", { provider: "google" });
+        if (isMountedRef.current) setSignInError(true);
         throw err;
       } finally {
         /* istanbul ignore next -- defensive unmount guard */
@@ -156,6 +161,7 @@ export const AuthSignInGmailOauthControllers =
     const value: AuthSignInGmailOauthControllersOutput = {
       signInWithGoogle,
       isSigningIn,
+      signInError,
     };
 
     return (

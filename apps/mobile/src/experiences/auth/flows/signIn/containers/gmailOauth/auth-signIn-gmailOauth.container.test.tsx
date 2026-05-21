@@ -12,6 +12,7 @@ jest.mock("./controllers", () => ({
   useAuthSignInGmailOauthControllers: () => ({
     signInWithGoogle: jest.fn(),
     isSigningIn: false,
+    signInError: false,
   }),
 }));
 

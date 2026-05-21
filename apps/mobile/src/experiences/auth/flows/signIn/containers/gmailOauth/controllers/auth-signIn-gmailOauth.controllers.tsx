@@ -110,6 +110,7 @@ export const AuthSignInGmailOauthControllers =
           await trackEvent("sign_in_succeeded", { provider: "google" });
         } catch {
           void trackEvent("sign_in_failed", { provider: "google" });
+          /* istanbul ignore next -- defensive unmount guard */
           if (isMountedRef.current) setSignInError(true);
         } finally {
           /* istanbul ignore next -- defensive unmount guard */
@@ -150,6 +151,7 @@ export const AuthSignInGmailOauthControllers =
         }
       } catch (err) {
         void trackEvent("sign_in_failed", { provider: "google" });
+        /* istanbul ignore next -- defensive unmount guard */
         if (isMountedRef.current) setSignInError(true);
         throw err;
       } finally {

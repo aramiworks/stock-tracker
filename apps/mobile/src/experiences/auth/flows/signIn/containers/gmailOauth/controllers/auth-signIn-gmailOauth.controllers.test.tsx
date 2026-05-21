@@ -313,6 +313,25 @@ describe("AuthSignInGmailOauthControllers", () => {
     expect(supabase.auth.signInWithIdToken).toHaveBeenCalled();
   });
 
+  it("web response useEffect skips when response type is not success", () => {
+    jest.replaceProperty(Platform, "OS", "web" as typeof Platform.OS);
+
+    const Google = require("expo-auth-session/providers/google");
+    Google.useIdTokenAuthRequest.mockReturnValue([
+      { nonce: "mock-nonce" },
+      { type: "error" },
+      mockWebPromptAsync,
+    ]);
+
+    render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer />
+      </AuthSignInGmailOauthControllers>,
+    );
+
+    expect(supabase.auth.signInWithIdToken).not.toHaveBeenCalled();
+  });
+
   it("web response useEffect skips when no id_token", () => {
     jest.replaceProperty(Platform, "OS", "web" as typeof Platform.OS);
 

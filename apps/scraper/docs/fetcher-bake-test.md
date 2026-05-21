@@ -113,22 +113,69 @@ runId: bake-YYYYMMDD
 [fill in after the long run]
 ```
 
+### WSA Parameter Probe (INF-1492, 2026-05-21)
+
+After the INF-1413 smoke confirmed 0% product-page success through Oxylabs residential proxies,
+we evaluated Oxylabs Web Scraper API (WSA) as a managed anti-bot alternative.
+The team lead's manual curl confirmed the default WSA config (status 613 "faulted") on product pages.
+A follow-up probe tested 4 variants against 3 product URLs + homepage.
+
+```
+probe date:  2026-05-21
+endpoint:    https://realtime.oxylabs.io/v1/queries
+URLs:        4 (3 product pages + homepage)
+variants:    3 WSA + 1 Web Unblocker
+
+v1 – render-chrome  (source=universal, render=html, user_agent_type=desktop_chrome, parse=false):
+  homepage:       OK (200, 579KB)  ~16.5s
+  product pages:  0/3 success — all 613 "faulted" (Oxylabs reports target unreachable)
+
+v2 – session        (v1 + session_id="probe-kr-1" for sticky IP):
+  homepage:       OK (200, 579KB)  ~10s
+  product pages:  0/3 success — all 613 "faulted"
+
+v3 – browser-wait   (v1 + browser_instructions: wait_for_element + scroll + wait 2s):
+  homepage:       OK (200, 579KB)  ~14s
+  product pages:  0/3 success — all 613 "faulted"
+
+v4 – Web Unblocker  (unblock.oxylabs.io:60000 proxy, x-oxylabs-render: html):
+  unable to test cleanly (undici HTTPS proxy setup issue); inconclusive
+
+Notes:
+  - 613 "faulted" = Oxylabs itself cannot reach the target — Akamai blocks at the
+    network/IP level before WSA's rendering layer even runs.
+  - Homepage always passes (lighter bot protection on landing page).
+  - session_id, browser_instructions, and desktop_chrome UA make no difference —
+    the block is at WSA's egress IP level, not client fingerprinting.
+  - WSA homepage success ≠ product page success: different Akamai policy per path.
+```
+
 ## Decision
 
-**Smoke verdict: Neither fetcher can scrape product pages.**
+**WSA verdict: Oxylabs cannot reach Hermès KR product pages at all.**
 
-Both HttpFetcher and BrowserFetcher achieve 0% success on product pages through Oxylabs residential proxies. Akamai Bot Manager on hermes.com/kr blocks all requests regardless of:
+Summary across all tested approaches:
 
-- TLS fingerprinting (Chrome 131 profile via got-scraping)
-- Headless browser with stealth evasions (Playwright + puppeteer-extra-plugin-stealth)
-- Korean locale/timezone/headers
-- Oxylabs KR residential IP pool
+| Approach                                          | Product-page success |
+| ------------------------------------------------- | -------------------- |
+| HttpFetcher (got-scraping + residential proxy)    | 0%                   |
+| BrowserFetcher (Playwright + stealth + residential) | 0%                 |
+| Oxylabs WSA — default (source=universal, render=html) | 0% (613 faulted) |
+| Oxylabs WSA — desktop_chrome UA                   | 0% (613 faulted)     |
+| Oxylabs WSA — desktop_chrome + session_id         | 0% (613 faulted)     |
+| Oxylabs WSA — desktop_chrome + browser_instructions | 0% (613 faulted)   |
 
-**Recommendation:** HttpFetcher is the pragmatic default — same 0% product-page success as BrowserFetcher but 3–9x faster and cheaper. The real blocker is Akamai's server-side bot detection, not client fingerprinting.
+Akamai blocks Oxylabs' egress IPs at the network/IP level on product pages regardless
+of client fingerprinting, render mode, UA type, session stickiness, or browser scripting.
+The homepage passes on all approaches — this is a per-path policy, not a general IP ban.
 
-**Next steps (requires architectural decision):**
+**Oxylabs (residential proxies + WSA) is exhausted. Pivot to Bright Data.**
 
-1. **Evaluate Akamai solver services** (e.g., CapSolver, 2Captcha Akamai) — inject solved `_abck` cookie into HttpFetcher
-2. **Evaluate Oxylabs Web Scraper API** — Oxylabs' managed headless rendering with built-in Akamai bypass ($2.2/1K requests)
-3. **Evaluate Bright Data's Scraping Browser** — managed browser with fingerprint rotation
-4. Full bake is moot until we solve the Akamai challenge — skip for now
+**Next: Evaluate Bright Data Scraping Browser**
+
+Bright Data uses a different residential IP pool and managed browser infrastructure.
+Given that the Oxylabs block is IP-level (not fingerprint-level), a different provider
+is the next logical test before falling back to Akamai solver services (CapSolver / 2Captcha).
+
+1. **Bright Data Scraping Browser** — managed browser with fingerprint rotation, different IP pool
+2. **Akamai solver service** (CapSolver / 2Captcha Akamai) — fallback if Bright Data also fails

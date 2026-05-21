@@ -913,6 +913,206 @@ describe("watchlist queries + mutations (INF-1415)", () => {
   });
 });
 
+describe("alertHistory query (INF-1479)", () => {
+  const HISTORY_USER_ID = "00000000-0000-0000-0000-000000000003";
+  let historyUnitId: string;
+  let historySkuId: string;
+
+  // Three drop events with strictly-ordered timestamps so cursor pagination
+  // is deterministic. Listed newest -> oldest because the query orders DESC.
+  const DROP_T1 = new Date("2025-05-03T12:00:00Z"); // newest
+  const DROP_T2 = new Date("2025-05-02T12:00:00Z");
+  const DROP_T3 = new Date("2025-05-01T12:00:00Z"); // oldest
+
+  let dropId1: string;
+  let dropId2: string;
+  let dropId3: string;
+
+  beforeAll(async () => {
+    await prisma.auth_users.upsert({
+      where: { id: HISTORY_USER_ID },
+      update: {},
+      create: {
+        id: HISTORY_USER_ID,
+        supabase_id: HISTORY_USER_ID,
+        email: "alert-history-e2e@test.local",
+      },
+    });
+
+    // Dedicated unit + SKU so the test owns its drop event set without
+    // colliding with the shared seededUnitId from the parent suite (which
+    // uses a different user anyway).
+    const unit = await prisma.watchable_units.create({
+      data: {
+        brand: "Hermes",
+        product_line: "Kelly",
+        model_name: "Kelly 28 (history e2e)",
+        active: true,
+      },
+    });
+    historyUnitId = unit.id;
+
+    const sku = await prisma.skus.create({
+      data: {
+        watchable_unit_id: historyUnitId,
+        color: "Noir",
+        leather: "Togo",
+        hardware: "GHW",
+        size: "28",
+        active: true,
+      },
+    });
+    historySkuId = sku.id;
+
+    // Unit-level watch (sku_id = NULL) - covers every drop event under unit.
+    await prisma.watches.create({
+      data: {
+        auth_user_id: HISTORY_USER_ID,
+        watchable_unit_id: historyUnitId,
+        sku_id: null,
+        notify_push: true,
+        notify_email: true,
+        active: true,
+      },
+    });
+
+    const d1 = await prisma.drop_events.create({
+      data: { sku_id: historySkuId, detected_at: DROP_T1 },
+    });
+    dropId1 = d1.id;
+    const d2 = await prisma.drop_events.create({
+      data: { sku_id: historySkuId, detected_at: DROP_T2 },
+    });
+    dropId2 = d2.id;
+    const d3 = await prisma.drop_events.create({
+      data: { sku_id: historySkuId, detected_at: DROP_T3 },
+    });
+    dropId3 = d3.id;
+  });
+
+  afterAll(async () => {
+    await prisma.drop_events.deleteMany({ where: { sku_id: historySkuId } });
+    await prisma.watches.deleteMany({
+      where: { auth_user_id: HISTORY_USER_ID },
+    });
+    await prisma.skus.deleteMany({ where: { id: historySkuId } });
+    await prisma.watchable_units.deleteMany({ where: { id: historyUnitId } });
+    await prisma.auth_users.deleteMany({ where: { id: HISTORY_USER_ID } });
+  });
+
+  function execAsHistoryUser(
+    query: string,
+    variables?: Record<string, unknown>,
+  ) {
+    return executeAs({
+      server,
+      query,
+      variables,
+      trackerUrl,
+      userId: HISTORY_USER_ID,
+    });
+  }
+
+  it("paginates events most-recent first with cursor handoff", async () => {
+    // Page 1 - limit 2 should return the two newest events and a non-null
+    // cursor pointing at the boundary.
+    const page1Res = await execAsHistoryUser(`
+      query {
+        alertHistory(limit: 2) {
+          events {
+            id
+            brand
+            productLine
+            modelName
+            skuDescriptor
+            kind
+            detectedAt
+          }
+          nextCursor
+        }
+      }
+    `);
+    const page1 = getData(page1Res);
+    expect(page1.errors).toBeUndefined();
+    expect(page1.data?.alertHistory.events).toHaveLength(2);
+    expect(
+      page1.data?.alertHistory.events.map((e: { id: string }) => e.id),
+    ).toEqual([dropId1, dropId2]);
+    expect(page1.data?.alertHistory.events[0].brand).toBe("Hermes");
+    expect(page1.data?.alertHistory.events[0].productLine).toBe("Kelly");
+    expect(page1.data?.alertHistory.events[0].modelName).toBe(
+      "Kelly 28 (history e2e)",
+    );
+    expect(page1.data?.alertHistory.events[0].skuDescriptor).toBe(
+      "Noir · Togo · GHW · 28",
+    );
+    expect(page1.data?.alertHistory.events[0].kind).toBe("restocked");
+    expect(page1.data?.alertHistory.nextCursor).toBe(DROP_T2.toISOString());
+
+    // Page 2 - using the page1 cursor, expect the oldest event and a null
+    // nextCursor (final page).
+    const page2Res = await execAsHistoryUser(
+      `
+        query ($cursor: String) {
+          alertHistory(limit: 2, cursor: $cursor) {
+            events {
+              id
+              detectedAt
+            }
+            nextCursor
+          }
+        }
+      `,
+      { cursor: page1.data?.alertHistory.nextCursor },
+    );
+    const page2 = getData(page2Res);
+    expect(page2.errors).toBeUndefined();
+    expect(page2.data?.alertHistory.events).toHaveLength(1);
+    expect(page2.data?.alertHistory.events[0].id).toBe(dropId3);
+    expect(page2.data?.alertHistory.nextCursor).toBeNull();
+  });
+
+  it("returns an empty/non-matching page for users watching different units", async () => {
+    // TEST_USER_ID watches a *different* unit (seededUnitId, Hermes Birkin
+    // 25), so the Kelly 28 drop events we seeded above should not appear
+    // in its alertHistory.
+    const res = await exec(`
+      query {
+        alertHistory(limit: 50) {
+          events {
+            id
+          }
+          nextCursor
+        }
+      }
+    `);
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    const ids = (data?.alertHistory.events as { id: string }[]).map(
+      (e) => e.id,
+    );
+    expect(ids).not.toContain(dropId1);
+    expect(ids).not.toContain(dropId2);
+    expect(ids).not.toContain(dropId3);
+  });
+
+  it("rejects alertHistory query without auth", async () => {
+    const res = await execUnauth(`
+      query {
+        alertHistory {
+          events {
+            id
+          }
+          nextCursor
+        }
+      }
+    `);
+    const { errors } = getData(res);
+    expect(errors).toBeDefined();
+    expect(errors!.length).toBeGreaterThan(0);
+  });
+});
+
 describe("error propagation", () => {
   it("includes error info on unauthorized queries", async () => {
     const res = await execUnauth(`

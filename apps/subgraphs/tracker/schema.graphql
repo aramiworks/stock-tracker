@@ -151,6 +151,33 @@ type WatchlistRemoveResult {
   removed: Boolean!
 }
 
+"""
+A single row in the user's alert history (INF-1479). One entry per past
+drop event that matches the user's watchlist. `kind` is one of
+"restocked" | "soldOut" — today the backend only emits "restocked"
+because `drop_events` has no kind discriminator; soldOut will land
+once we have a sold-out event source.
+"""
+type AlertHistoryEvent {
+  id: ID!
+  brand: String!
+  productLine: String!
+  modelName: String!
+  skuDescriptor: String
+  kind: String!
+  detectedAt: String!
+}
+
+"""
+Cursor-paginated page of alert history events ordered by `detectedAt`
+DESC. `nextCursor` is the ISO timestamp of the last visible event, or
+null on the final page.
+"""
+type AlertHistoryPage {
+  events: [AlertHistoryEvent!]!
+  nextCursor: String
+}
+
 input CreateWatchInput {
   watchableUnitId: ID!
   skuId: ID
@@ -223,6 +250,13 @@ extend type Query {
   Count of unread alerts
   """
   unreadAlertCount: Int!
+
+  """
+  Paginated past drop events for the current user's watchlist, ordered
+  most-recent first. Cursor is the ISO timestamp of the last visible
+  event from the previous page.
+  """
+  alertHistory(limit: Int = 20, cursor: String): AlertHistoryPage!
 }
 
 extend type Mutation {

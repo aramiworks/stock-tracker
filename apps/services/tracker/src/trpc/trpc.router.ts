@@ -8,6 +8,8 @@ import { TrackerWatchlistManageControllers } from "../tracker/flows/watchlist/ma
 import { trackerWatchlistManageViews } from "../tracker/flows/watchlist/manage/views/index.js";
 import { TrackerAlertsFeedControllers } from "../tracker/flows/alerts/feed/controllers/index.js";
 import { trackerAlertsFeedViews } from "../tracker/flows/alerts/feed/views/index.js";
+import { TrackerAlertHistoryBrowseControllers } from "../tracker/flows/alertHistory/browse/controllers/index.js";
+import { trackerAlertHistoryBrowseViews } from "../tracker/flows/alertHistory/browse/views/index.js";
 import { TrackerIngestDropEventControllers } from "../tracker/flows/ingest/dropEvent/controllers/index.js";
 import { trackerIngestDropEventViews } from "../tracker/flows/ingest/dropEvent/views/index.js";
 
@@ -21,6 +23,7 @@ export class TrpcRouter {
     private readonly catalogBrowseControllers: TrackerCatalogBrowseControllers,
     private readonly watchlistManageControllers: TrackerWatchlistManageControllers,
     private readonly alertsFeedControllers: TrackerAlertsFeedControllers,
+    private readonly alertHistoryBrowseControllers: TrackerAlertHistoryBrowseControllers,
     private readonly ingestDropEventControllers: TrackerIngestDropEventControllers,
   ) {
     const dashboardRouter = this.trpc.router({
@@ -137,6 +140,18 @@ export class TrpcRouter {
       }),
     });
 
+    const alertHistoryRouter = this.trpc.router({
+      // INF-1479 — Paginated, user-scoped past drop events for the
+      // alertHistory.browse UI. Cursor is the ISO timestamp of the last
+      // event from the previous page.
+      list: this.trpc.protectedProcedure
+        .input(trackerAlertHistoryBrowseViews.list.input)
+        .output(trackerAlertHistoryBrowseViews.list.output)
+        .query(async ({ ctx, input }) => {
+          return this.alertHistoryBrowseControllers.list(input, ctx.userId);
+        }),
+    });
+
     const ingestRouter = this.trpc.router({
       dropEvent: this.trpc.router({
         upsert: this.trpc.serviceProcedure
@@ -154,6 +169,7 @@ export class TrpcRouter {
         catalog: catalogRouter,
         watchlist: watchlistRouter,
         alerts: alertsRouter,
+        alertHistory: alertHistoryRouter,
         ingest: ingestRouter,
       }),
     });

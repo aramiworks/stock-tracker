@@ -54,7 +54,7 @@ if (Platform.OS !== "web") {
   });
 }
 
-interface AuthSignInGmailOauthControllersOutput {
+export interface AuthSignInGmailOauthControllersOutput {
   signInWithGoogle: () => void;
   isSigningIn: boolean;
 }

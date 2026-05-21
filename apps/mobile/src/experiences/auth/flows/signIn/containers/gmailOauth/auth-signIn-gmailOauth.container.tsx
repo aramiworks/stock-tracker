@@ -1,13 +1,23 @@
 import { memo } from "react";
 import { AuthSignInGmailOauthModels } from "./models";
-import { AuthSignInGmailOauthControllers } from "./controllers";
+import {
+  AuthSignInGmailOauthControllers,
+  useAuthSignInGmailOauthControllers,
+} from "./controllers";
 import { AuthSignInGmailOauthViews } from "./views";
+
+const ConnectedViews = memo(() => {
+  const controllers = useAuthSignInGmailOauthControllers();
+  return <AuthSignInGmailOauthViews {...controllers} />;
+});
+
+ConnectedViews.displayName = "AuthSignInGmailOauthConnectedViews";
 
 export const AuthSignInGmailOauthContainer = memo(() => {
   return (
     <AuthSignInGmailOauthModels>
       <AuthSignInGmailOauthControllers>
-        <AuthSignInGmailOauthViews />
+        <ConnectedViews />
       </AuthSignInGmailOauthControllers>
     </AuthSignInGmailOauthModels>
   );

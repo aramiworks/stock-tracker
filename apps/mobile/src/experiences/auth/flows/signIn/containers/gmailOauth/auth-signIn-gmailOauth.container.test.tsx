@@ -9,6 +9,10 @@ jest.mock("./controllers", () => ({
   }: {
     children: React.ReactNode;
   }) => children,
+  useAuthSignInGmailOauthControllers: () => ({
+    signInWithGoogle: jest.fn(),
+    isSigningIn: false,
+  }),
 }));
 
 jest.mock("./views", () => ({

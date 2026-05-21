@@ -11,8 +11,7 @@ export const AuthSignInGmailOauthLoadingStateView = memo(() => {
       <Text
         role="body"
         size="medium"
-        color="white"
-        opacity={0.8}
+        opacity={0.7}
         marginTop={12}
         testID="auth-signIn-loading-caption"
       >

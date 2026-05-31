@@ -21,8 +21,9 @@ jest.mock("./views/tracker-watchlist-detail.views", () => ({
     `WatchlistDetailViews:${props.screenState ?? "default"}`,
 }));
 
-jest.mock("@/shared/components/query-error-boundary", () => ({
-  QueryErrorBoundary: ({ children }: { children: React.ReactNode }) => children,
+jest.mock("@/shared/components/container-error-boundary", () => ({
+  ContainerErrorBoundary: ({ children }: { children: React.ReactNode }) =>
+    children,
 }));
 
 import React from "react";

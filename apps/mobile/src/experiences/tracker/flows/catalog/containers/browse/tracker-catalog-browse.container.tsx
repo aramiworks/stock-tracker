@@ -5,7 +5,7 @@ import {
   useTrackerCatalogBrowseControllers,
 } from "./controllers";
 import { TrackerCatalogBrowseViews } from "./views";
-import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
+import { ContainerErrorBoundary } from "@/shared/components/container-error-boundary";
 
 const ConnectedViews = memo(() => {
   const controllers = useTrackerCatalogBrowseControllers();
@@ -27,7 +27,7 @@ ConnectedViews.displayName = "TrackerCatalogBrowseConnectedViews";
 
 export const TrackerCatalogBrowseContainer = memo(() => {
   return (
-    <QueryErrorBoundary
+    <ContainerErrorBoundary
       fallback={
         /* istanbul ignore next -- error boundary fallback */ () => (
           <TrackerCatalogBrowseViews screenState="error" />
@@ -45,7 +45,7 @@ export const TrackerCatalogBrowseContainer = memo(() => {
           </TrackerCatalogBrowseControllers>
         </TrackerCatalogBrowseModels>
       </Suspense>
-    </QueryErrorBoundary>
+    </ContainerErrorBoundary>
   );
 });
 

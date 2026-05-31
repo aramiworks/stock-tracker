@@ -5,7 +5,7 @@ import {
   useTrackerWatchlistListControllers,
 } from "./controllers/tracker-watchlist-list.controllers";
 import { TrackerWatchlistListViews } from "./views/tracker-watchlist-list.views";
-import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
+import { ContainerErrorBoundary } from "@/shared/components/container-error-boundary";
 
 const ConnectedViews = memo(() => {
   const controllers = useTrackerWatchlistListControllers();
@@ -34,7 +34,7 @@ ConnectedViews.displayName = "TrackerWatchlistListConnectedViews";
  */
 export const TrackerWatchlistListContainer = memo(() => {
   return (
-    <QueryErrorBoundary
+    <ContainerErrorBoundary
       fallback={
         /* istanbul ignore next -- error boundary fallback */ () => (
           <TrackerWatchlistListViews screenState="error" />
@@ -52,7 +52,7 @@ export const TrackerWatchlistListContainer = memo(() => {
           </TrackerWatchlistListControllers>
         </TrackerWatchlistListModels>
       </Suspense>
-    </QueryErrorBoundary>
+    </ContainerErrorBoundary>
   );
 });
 

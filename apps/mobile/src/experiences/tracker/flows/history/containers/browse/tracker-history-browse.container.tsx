@@ -5,7 +5,7 @@ import {
   useTrackerHistoryBrowseControllers,
 } from "./controllers";
 import { TrackerHistoryBrowseViews } from "./views";
-import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
+import { ContainerErrorBoundary } from "@/shared/components/container-error-boundary";
 
 const ConnectedViews = memo(() => {
   const controllers = useTrackerHistoryBrowseControllers();
@@ -30,7 +30,7 @@ ConnectedViews.displayName = "TrackerHistoryBrowseConnectedViews";
 
 export const TrackerHistoryBrowseContainer = memo(() => {
   return (
-    <QueryErrorBoundary
+    <ContainerErrorBoundary
       fallback={
         /* istanbul ignore next -- error boundary fallback */ ({ retry }) => (
           <TrackerHistoryBrowseViews screenState="error" onRetry={retry} />
@@ -48,7 +48,7 @@ export const TrackerHistoryBrowseContainer = memo(() => {
           </TrackerHistoryBrowseControllers>
         </TrackerHistoryBrowseModels>
       </Suspense>
-    </QueryErrorBoundary>
+    </ContainerErrorBoundary>
   );
 });
 

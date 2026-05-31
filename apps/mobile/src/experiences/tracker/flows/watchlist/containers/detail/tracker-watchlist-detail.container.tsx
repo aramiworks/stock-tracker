@@ -5,7 +5,7 @@ import {
   useTrackerWatchlistDetailControllers,
 } from "./controllers/tracker-watchlist-detail.controllers";
 import { TrackerWatchlistDetailViews } from "./views/tracker-watchlist-detail.views";
-import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
+import { ContainerErrorBoundary } from "@/shared/components/container-error-boundary";
 
 const ConnectedViews = memo(() => {
   const controllers = useTrackerWatchlistDetailControllers();
@@ -35,7 +35,7 @@ type Props = {
 export const TrackerWatchlistDetailContainer = memo<Props>(
   ({ watchableUnitId }) => {
     return (
-      <QueryErrorBoundary
+      <ContainerErrorBoundary
         fallback={
           /* istanbul ignore next -- error boundary fallback */ () => (
             <TrackerWatchlistDetailViews screenState="error" />
@@ -55,7 +55,7 @@ export const TrackerWatchlistDetailContainer = memo<Props>(
             </TrackerWatchlistDetailControllers>
           </TrackerWatchlistDetailModels>
         </Suspense>
-      </QueryErrorBoundary>
+      </ContainerErrorBoundary>
     );
   },
 );

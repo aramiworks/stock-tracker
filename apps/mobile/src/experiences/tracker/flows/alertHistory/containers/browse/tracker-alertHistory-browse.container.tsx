@@ -5,7 +5,7 @@ import {
   useTrackerAlertHistoryBrowseControllers,
 } from "./controllers/tracker-alertHistory-browse.controllers";
 import { TrackerAlertHistoryBrowseViews } from "./views/tracker-alertHistory-browse.views";
-import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
+import { ContainerErrorBoundary } from "@/shared/components/container-error-boundary";
 
 const ConnectedViews = memo(() => {
   const controllers = useTrackerAlertHistoryBrowseControllers();
@@ -25,7 +25,7 @@ ConnectedViews.displayName = "TrackerAlertHistoryBrowseConnectedViews";
  * Shengsho-style alert-history browse container.
  *
  * Mirrors the watchlist/list scaffold (INF-1414 — `tracker-watchlist-list.container.tsx`):
- *   QueryErrorBoundary → Suspense → Models → Controllers → ConnectedViews
+ *   ContainerErrorBoundary → Suspense → Models → Controllers → ConnectedViews
  *
  * The controller resolves against the live protected `alertHistory` GraphQL
  * query landed by INF-1479 (see
@@ -34,7 +34,7 @@ ConnectedViews.displayName = "TrackerAlertHistoryBrowseConnectedViews";
  */
 export const TrackerAlertHistoryBrowseContainer = memo(() => {
   return (
-    <QueryErrorBoundary
+    <ContainerErrorBoundary
       fallback={
         /* istanbul ignore next -- error boundary fallback */ () => (
           <TrackerAlertHistoryBrowseViews screenState="error" />
@@ -52,7 +52,7 @@ export const TrackerAlertHistoryBrowseContainer = memo(() => {
           </TrackerAlertHistoryBrowseControllers>
         </TrackerAlertHistoryBrowseModels>
       </Suspense>
-    </QueryErrorBoundary>
+    </ContainerErrorBoundary>
   );
 });
 

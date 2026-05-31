@@ -1,10 +1,10 @@
 import { memo, type ReactNode } from "react";
 import { View, StyleSheet } from "react-native";
-import { Text } from "@aramiworks/ui";
-import { useTranslation } from "react-i18next";
 import type { AuthSignInGmailOauthControllersOutput } from "../controllers/auth-signIn-gmailOauth.controllers";
 import { AuthSignInGmailOauthHeaderView } from "./auth-signIn-gmailOauth-header.view";
+import { AuthSignInGmailOauthWelcomeHeadingView } from "./auth-signIn-gmailOauth-welcomeHeading.view";
 import { AuthSignInGmailOauthSignInButtonView } from "./auth-signIn-gmailOauth-signInButton.view";
+import { AuthSignInGmailOauthTermsView } from "./auth-signIn-gmailOauth-terms.view";
 import { AuthSignInGmailOauthLoadingStateView } from "./auth-signIn-gmailOauth-loadingState.view";
 import { AuthSignInGmailOauthErrorStateView } from "./auth-signIn-gmailOauth-errorState.view";
 
@@ -24,7 +24,6 @@ export const AuthSignInGmailOauthViews = memo<AuthSignInGmailOauthViewsProps>(
     signInError = false,
     onRetry,
   }) => {
-    const { t } = useTranslation("auth");
     const state: AuthSignInGmailOauthScreenState =
       screenState ??
       (signInError ? "error" : isSigningIn ? "loading" : "default");
@@ -32,24 +31,14 @@ export const AuthSignInGmailOauthViews = memo<AuthSignInGmailOauthViewsProps>(
     const content: Record<AuthSignInGmailOauthScreenState, ReactNode> = {
       default: (
         <>
-          <Text role="title" size="large" testID="auth-signIn-welcome">
-            {t("signIn.welcome")}
-          </Text>
+          <AuthSignInGmailOauthWelcomeHeadingView />
           <View style={styles.signInButtonWrapper}>
             <AuthSignInGmailOauthSignInButtonView
               onPress={signInWithGoogle}
               disabled={isSigningIn}
             />
           </View>
-          <Text
-            role="body"
-            size="small"
-            opacity={0.5}
-            textAlign="center"
-            testID="auth-signIn-terms"
-          >
-            {t("signIn.terms")}
-          </Text>
+          <AuthSignInGmailOauthTermsView />
         </>
       ),
       loading: <AuthSignInGmailOauthLoadingStateView />,

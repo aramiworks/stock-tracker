@@ -48,6 +48,21 @@ describe("AuthSignInGmailOauthViews", () => {
     expect(getByTestId("sign-in-google-button")).toBeTruthy();
   });
 
+  it("derives error state from signInError when screenState is omitted", () => {
+    const { getByTestId, queryByTestId } = render(
+      <AuthSignInGmailOauthViews signInError />,
+    );
+    expect(getByTestId("auth-signIn-error-state")).toBeTruthy();
+    expect(queryByTestId("sign-in-google-button")).toBeNull();
+  });
+
+  it("prefers error over loading when both signInError and isSigningIn are true", () => {
+    const { getByTestId } = render(
+      <AuthSignInGmailOauthViews signInError isSigningIn />,
+    );
+    expect(getByTestId("auth-signIn-error-state")).toBeTruthy();
+  });
+
   it("renders the error state with retry button and calls onRetry", () => {
     const onRetry = jest.fn();
     const { getByTestId } = render(

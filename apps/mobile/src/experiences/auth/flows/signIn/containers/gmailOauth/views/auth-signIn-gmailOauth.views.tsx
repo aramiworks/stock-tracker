@@ -17,10 +17,17 @@ type AuthSignInGmailOauthViewsProps =
   };
 
 export const AuthSignInGmailOauthViews = memo<AuthSignInGmailOauthViewsProps>(
-  ({ screenState, signInWithGoogle, isSigningIn = false, onRetry }) => {
+  ({
+    screenState,
+    signInWithGoogle,
+    isSigningIn = false,
+    signInError = false,
+    onRetry,
+  }) => {
     const { t } = useTranslation("auth");
     const state: AuthSignInGmailOauthScreenState =
-      screenState ?? (isSigningIn ? "loading" : "default");
+      screenState ??
+      (signInError ? "error" : isSigningIn ? "loading" : "default");
 
     const content: Record<AuthSignInGmailOauthScreenState, ReactNode> = {
       default: (

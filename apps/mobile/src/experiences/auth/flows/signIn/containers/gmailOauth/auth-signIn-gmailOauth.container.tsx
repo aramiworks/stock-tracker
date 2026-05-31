@@ -8,7 +8,12 @@ import { AuthSignInGmailOauthViews } from "./views";
 
 const ConnectedViews = memo(() => {
   const controllers = useAuthSignInGmailOauthControllers();
-  return <AuthSignInGmailOauthViews {...controllers} />;
+  return (
+    <AuthSignInGmailOauthViews
+      {...controllers}
+      onRetry={controllers.signInWithGoogle}
+    />
+  );
 });
 
 ConnectedViews.displayName = "AuthSignInGmailOauthConnectedViews";

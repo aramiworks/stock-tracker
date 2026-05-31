@@ -44,10 +44,15 @@ interface ConsumerHandle {
 }
 
 const Consumer = forwardRef<ConsumerHandle>((_props, ref) => {
-  const { signInWithGoogle, isSigningIn } =
+  const { signInWithGoogle, isSigningIn, signInError } =
     useAuthSignInGmailOauthControllers();
   useImperativeHandle(ref, () => ({ signInWithGoogle }));
-  return <Text testID="signing-in">{String(isSigningIn)}</Text>;
+  return (
+    <>
+      <Text testID="signing-in">{String(isSigningIn)}</Text>
+      <Text testID="sign-in-error">{String(signInError)}</Text>
+    </>
+  );
 });
 Consumer.displayName = "Consumer";
 
@@ -88,6 +93,82 @@ describe("AuthSignInGmailOauthControllers", () => {
       </AuthSignInGmailOauthControllers>,
     );
     expect(getByTestId("signing-in").props.children).toBe("false");
+  });
+
+  it("signInError starts as false", () => {
+    const { getByTestId } = render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer />
+      </AuthSignInGmailOauthControllers>,
+    );
+    expect(getByTestId("sign-in-error").props.children).toBe("false");
+  });
+
+  it("sets signInError to true when native sign-in throws", async () => {
+    (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValueOnce({
+      error: new Error("auth error"),
+    });
+    const ref = React.createRef<ConsumerHandle>();
+    const { getByTestId } = render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer ref={ref} />
+      </AuthSignInGmailOauthControllers>,
+    );
+    await act(async () => {
+      const result =
+        ref.current!.signInWithGoogle() as unknown as Promise<void>;
+      await result.catch(() => {});
+    });
+    expect(getByTestId("sign-in-error").props.children).toBe("true");
+  });
+
+  it("sets signInError to true when web sign-in fails", async () => {
+    jest.replaceProperty(Platform, "OS", "web" as typeof Platform.OS);
+
+    const Google = require("expo-auth-session/providers/google");
+    Google.useIdTokenAuthRequest.mockReturnValue([
+      { nonce: "mock-nonce" },
+      { type: "success", params: { id_token: "web-id-token" } },
+      mockWebPromptAsync,
+    ]);
+
+    (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValueOnce({
+      error: new Error("auth error"),
+    });
+
+    const { getByTestId } = render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer />
+      </AuthSignInGmailOauthControllers>,
+    );
+
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    expect(getByTestId("sign-in-error").props.children).toBe("true");
+  });
+
+  it("clears signInError at the start of a retry sign-in", async () => {
+    (supabase.auth.signInWithIdToken as jest.Mock)
+      .mockResolvedValueOnce({ error: new Error("first try") })
+      .mockResolvedValueOnce({ error: null });
+    const ref = React.createRef<ConsumerHandle>();
+    const { getByTestId } = render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer ref={ref} />
+      </AuthSignInGmailOauthControllers>,
+    );
+    await act(async () => {
+      const r = ref.current!.signInWithGoogle() as unknown as Promise<void>;
+      await r.catch(() => {});
+    });
+    expect(getByTestId("sign-in-error").props.children).toBe("true");
+
+    await act(async () => {
+      await ref.current!.signInWithGoogle();
+    });
+    expect(getByTestId("sign-in-error").props.children).toBe("false");
   });
 
   it("native signInWithGoogle calls GoogleSignin.signIn and supabase.signInWithIdToken", async () => {
@@ -230,6 +311,25 @@ describe("AuthSignInGmailOauthControllers", () => {
 
     // Should not throw — error is caught silently
     expect(supabase.auth.signInWithIdToken).toHaveBeenCalled();
+  });
+
+  it("web response useEffect skips when response type is not success", () => {
+    jest.replaceProperty(Platform, "OS", "web" as typeof Platform.OS);
+
+    const Google = require("expo-auth-session/providers/google");
+    Google.useIdTokenAuthRequest.mockReturnValue([
+      { nonce: "mock-nonce" },
+      { type: "error" },
+      mockWebPromptAsync,
+    ]);
+
+    render(
+      <AuthSignInGmailOauthControllers>
+        <Consumer />
+      </AuthSignInGmailOauthControllers>,
+    );
+
+    expect(supabase.auth.signInWithIdToken).not.toHaveBeenCalled();
   });
 
   it("web response useEffect skips when no id_token", () => {

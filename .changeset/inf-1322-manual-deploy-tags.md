@@ -1,5 +1,5 @@
 ---
-"@stock-tracker/railway-infra": patch
+"@stock-tracker/config": patch
 ---
 
 Make backend Docker publishing manual-only and rename master image tag from `latest` to `master`.

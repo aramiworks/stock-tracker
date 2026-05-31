@@ -4,7 +4,11 @@ import {
   AuthSignInGmailOauthControllers,
   useAuthSignInGmailOauthControllers,
 } from "./controllers";
-import { AuthSignInGmailOauthViews } from "./views";
+import {
+  AuthSignInGmailOauthErrorStateView,
+  AuthSignInGmailOauthViews,
+} from "./views";
+import { ContainerErrorBoundary } from "@/shared/components/container-error-boundary";
 
 const ConnectedViews = memo(() => {
   const controllers = useAuthSignInGmailOauthControllers();
@@ -20,11 +24,19 @@ ConnectedViews.displayName = "AuthSignInGmailOauthConnectedViews";
 
 export const AuthSignInGmailOauthContainer = memo(() => {
   return (
-    <AuthSignInGmailOauthModels>
-      <AuthSignInGmailOauthControllers>
-        <ConnectedViews />
-      </AuthSignInGmailOauthControllers>
-    </AuthSignInGmailOauthModels>
+    <ContainerErrorBoundary
+      fallback={
+        /* istanbul ignore next -- error boundary fallback */ ({ retry }) => (
+          <AuthSignInGmailOauthErrorStateView onRetry={retry} />
+        )
+      }
+    >
+      <AuthSignInGmailOauthModels>
+        <AuthSignInGmailOauthControllers>
+          <ConnectedViews />
+        </AuthSignInGmailOauthControllers>
+      </AuthSignInGmailOauthModels>
+    </ContainerErrorBoundary>
   );
 });
 

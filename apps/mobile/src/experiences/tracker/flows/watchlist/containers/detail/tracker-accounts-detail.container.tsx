@@ -5,7 +5,7 @@ import {
   useTrackerAccountsDetailControllers,
 } from "./controllers";
 import { TrackerAccountsDetailViews } from "./views";
-import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
+import { ContainerErrorBoundary } from "@/shared/components/container-error-boundary";
 
 const ConnectedViews = memo(() => {
   const controllers = useTrackerAccountsDetailControllers();
@@ -42,7 +42,7 @@ interface TrackerAccountsDetailContainerProps {
 export const TrackerAccountsDetailContainer = memo(
   ({ accountId }: TrackerAccountsDetailContainerProps) => {
     return (
-      <QueryErrorBoundary
+      <ContainerErrorBoundary
         fallback={
           /* istanbul ignore next -- error boundary fallback */ ({ retry }) => (
             <TrackerAccountsDetailViews screenState="error" onRetry={retry} />
@@ -60,7 +60,7 @@ export const TrackerAccountsDetailContainer = memo(
             </TrackerAccountsDetailControllers>
           </TrackerAccountsDetailModels>
         </Suspense>
-      </QueryErrorBoundary>
+      </ContainerErrorBoundary>
     );
   },
 );

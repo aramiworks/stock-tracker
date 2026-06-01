@@ -140,14 +140,16 @@ const config: StorybookConfig = {
       ...(config.optimizeDeps.exclude || []),
       "@aramiworks/ui",
     ];
-    // React 19's jsx-runtime.js has no ESM export condition, so Vite 8 serves
-    // it raw via @fs/... instead of pre-bundling it. framer-motion's .mjs files
-    // do named ESM imports (`import { jsx } from 'react/jsx-runtime'`) which
+    // React 19's CJS packages have no "import" ESM export condition, so Vite 8
+    // serves them raw via @fs/... instead of pre-bundling them. .mjs files from
+    // framer-motion/Tamagui do named ESM imports (e.g. `import { jsx } from
+    // 'react/jsx-runtime'`, `import { createPortal } from 'react-dom'`) which
     // fail against the raw CJS file. Force pre-bundling to convert CJS → ESM.
     config.optimizeDeps.include = [
       ...(config.optimizeDeps.include || []),
       "react/jsx-runtime",
       "react/jsx-dev-runtime",
+      "react-dom",
     ];
     return config;
   },

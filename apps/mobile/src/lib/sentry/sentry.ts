@@ -1,6 +1,10 @@
 import * as Sentry from "@sentry/react-native";
 import { getCurrentEfcv } from "./efcv-cache";
 
+let navigationIntegration: ReturnType<
+  typeof Sentry.reactNavigationIntegration
+> | null = null;
+
 /**
  * Initialise Sentry for the mobile app.
  *
@@ -9,17 +13,25 @@ import { getCurrentEfcv } from "./efcv-cache";
  *
  * EFCV tags (`experience`, `flow`, `container`) are added to every event via
  * `beforeSend` from a cache populated by `<SentryEfcvTracker />`.
+ *
+ * The React Navigation integration is created here so screen transitions are
+ * captured as performance transactions and breadcrumbs; the root layout must
+ * call `registerSentryNavigationContainer` once the navigation ref mounts.
  */
 export function initSentry(): void {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
   if (!dsn) return;
+
+  navigationIntegration = Sentry.reactNavigationIntegration({
+    enableTimeToInitialDisplay: true,
+  });
 
   Sentry.init({
     dsn,
     tracesSampleRate: 0.2,
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
-    integrations: [Sentry.mobileReplayIntegration()],
+    integrations: [Sentry.mobileReplayIntegration(), navigationIntegration],
     beforeSend(event) {
       try {
         const efcv = getCurrentEfcv();
@@ -30,4 +42,15 @@ export function initSentry(): void {
       return event;
     },
   });
+}
+
+/**
+ * Register the navigation container ref with the Sentry React Navigation
+ * integration. Safe to call before `initSentry` (no-ops in that case) and
+ * idempotent across re-renders of the root layout.
+ */
+export function registerSentryNavigationContainer(ref: unknown): void {
+  if (navigationIntegration) {
+    navigationIntegration.registerNavigationContainer(ref);
+  }
 }

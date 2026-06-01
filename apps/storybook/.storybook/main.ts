@@ -145,11 +145,16 @@ const config: StorybookConfig = {
     // framer-motion/Tamagui do named ESM imports (e.g. `import { jsx } from
     // 'react/jsx-runtime'`, `import { createPortal } from 'react-dom'`) which
     // fail against the raw CJS file. Force pre-bundling to convert CJS → ESM.
+    //
+    // react-native-web ships nested node_modules with CJS-only deps; use the
+    // `parent > child` syntax so Vite pre-bundles them in the right context.
     config.optimizeDeps.include = [
       ...(config.optimizeDeps.include || []),
       "react/jsx-runtime",
       "react/jsx-dev-runtime",
       "react-dom",
+      "react-native-web > @react-native/normalize-colors",
+      "react-native-web > memoize-one",
     ];
     return config;
   },

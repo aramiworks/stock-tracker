@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import { identifyUser, resetAnalytics } from "../../../lib/analytics";
+import { identifySentryUser, resetSentryUser } from "../../../lib/sentry";
 import { setSession } from "../models/auth.store";
 
 const SESSION_TIMEOUT_MS = 5000;
@@ -24,7 +25,10 @@ export const useAuthLifecycle = () => {
           settled = true;
           clearTimeout(timeout);
           setSession(session);
-          if (session?.user.id) void identifyUser(session.user.id);
+          if (session?.user.id) {
+            void identifyUser(session.user.id);
+            identifySentryUser(session.user.id);
+          }
         }
       })
       .catch(() => {
@@ -42,8 +46,10 @@ export const useAuthLifecycle = () => {
       setSession(session);
       if (event === "SIGNED_OUT") {
         void resetAnalytics();
+        resetSentryUser();
       } else if (session?.user.id) {
         void identifyUser(session.user.id);
+        identifySentryUser(session.user.id);
       }
     });
 

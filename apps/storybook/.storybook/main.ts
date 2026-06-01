@@ -166,10 +166,9 @@ const config: StorybookConfig = {
     config.define = {
       ...(config.define || {}),
       "process.env": "{}",
-    config.define = {
-      ...(config.define || {}),
-      "process.env": "{}",
-      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV ?? "development"),
+      "process.env.NODE_ENV": JSON.stringify(
+        process.env.NODE_ENV ?? "development",
+      ),
     };
     return config;
   },

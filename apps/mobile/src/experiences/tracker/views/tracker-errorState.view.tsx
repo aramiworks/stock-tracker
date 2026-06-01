@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { XStack, Button, EmptyStateTemplate, Text } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
+import { stateColors } from "@/shared/tokens/state";
 
 type TrackerErrorStateViewProps = {
   title?: string;
@@ -53,7 +54,7 @@ const ErrorIcon = memo(() => (
     alignItems="center"
     justifyContent="center"
   >
-    <Text role="headline" size="small" fontWeight="700" color="#FF2D55">
+    <Text role="headline" size="small" fontWeight="700" color={stateColors.red}>
       !
     </Text>
   </XStack>

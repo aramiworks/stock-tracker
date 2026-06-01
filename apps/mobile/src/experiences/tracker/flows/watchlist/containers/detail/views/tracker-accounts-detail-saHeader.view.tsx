@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { colors } from "@aramiworks/ui";
 
 type TrackerAccountsDetailSaHeaderViewProps = {
   name?: string;
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#FFE8ED",
+    backgroundColor: "#E5EEFF",
     alignItems: "center",
     justifyContent: "center",
     padding: 8,
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: "600",
     fontSize: 16,
-    color: "#FF2D55",
+    color: colors.primary,
     textAlign: "center",
   },
   name: {

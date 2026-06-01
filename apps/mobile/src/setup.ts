@@ -80,6 +80,21 @@ jest.mock("@aramiworks/ui", () => {
   const showConfirmDialog = jest.fn();
   return {
     config: {},
+    colors: {
+      primary: "#0066FF",
+      onPrimary: "#FFFFFF",
+      primaryContainer: "#70737C29",
+      onPrimaryContainer: "#0066FF",
+      secondary: "#37383C9C",
+      onSecondary: "#FFFFFF",
+      tertiary: "#989BA2",
+      error: "#BA1A1A",
+      onError: "#FFFFFF",
+      surface: "#FFFFFF",
+      onSurface: "#1A1C1E",
+      outline: "#73777F",
+      outlineVariant: "#C3C7CF",
+    },
     useConfirmDialog: () => ({
       showConfirmDialog,
       ConfirmDialogPortal: () => null,

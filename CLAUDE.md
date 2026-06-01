@@ -112,7 +112,7 @@ npm run check-types            # Type check all packages
 
 ## Design
 
-- Primary: #FF2D55 (Cartier red)
+- Primary: `colors.primary` from `@aramiworks/ui` (`#0066FF`) — import via `import { colors } from "@aramiworks/ui"` and reference `colors.primary`. Never hardcode the hex inside the app.
 - Secondary: #009E99 (teal)
 - Font: Inter
 - Language: Korean (ko)

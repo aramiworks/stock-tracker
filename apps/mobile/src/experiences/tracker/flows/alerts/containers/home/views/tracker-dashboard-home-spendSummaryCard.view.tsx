@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Card, XStack, YStack } from "@aramiworks/ui";
+import { Card, XStack, YStack, colors } from "@aramiworks/ui";
 
 type SpendSummaryCardState = "populated" | "zero" | "loading";
 
@@ -52,7 +52,7 @@ export const TrackerDashboardHomeSpendSummaryCardView = memo(
             <Text
               style={[
                 styles.percent,
-                { color: totalSpend > 0 ? "#FF2D55" : "#999" },
+                { color: totalSpend > 0 ? colors.primary : "#999" },
               ]}
             >
               {formattedPercent}
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: 5,
-    backgroundColor: "#FF2D55",
+    backgroundColor: colors.primary,
     borderRadius: 3,
   },
   skeleton: {

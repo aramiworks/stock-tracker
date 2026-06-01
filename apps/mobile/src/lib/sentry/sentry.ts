@@ -1,5 +1,28 @@
 import * as Sentry from "@sentry/react-native";
+import Constants from "expo-constants";
 import { getCurrentEfcv } from "./efcv-cache";
+
+/**
+ * Resolve the release identifier in the form `{version}+{build}`, matching
+ * the convention used by `sentry-cli` source-map uploads via the
+ * `@sentry/react-native/expo` plugin. Falls back to `version` alone if no
+ * native build number is exposed at runtime.
+ */
+function resolveRelease(): string | undefined {
+  const version = Constants.expoConfig?.version;
+  if (!version) return undefined;
+  const build =
+    Constants.expoConfig?.ios?.buildNumber ??
+    Constants.expoConfig?.android?.versionCode?.toString();
+  return build ? `${version}+${build}` : version;
+}
+
+function resolveDist(): string | undefined {
+  return (
+    Constants.expoConfig?.ios?.buildNumber ??
+    Constants.expoConfig?.android?.versionCode?.toString()
+  );
+}
 
 /**
  * Initialise Sentry for the mobile app.
@@ -9,6 +32,11 @@ import { getCurrentEfcv } from "./efcv-cache";
  *
  * EFCV tags (`experience`, `flow`, `container`) are added to every event via
  * `beforeSend` from a cache populated by `<SentryEfcvTracker />`.
+ *
+ * Release/dist are derived from `Constants.expoConfig` so events line up with
+ * the source maps the `@sentry/react-native/expo` plugin uploads. Environment
+ * is derived from `EXPO_PUBLIC_APP_ENV` (local | develop | stage | master) so
+ * events from each EAS channel are filterable in Sentry.
  */
 export function initSentry(): void {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
@@ -16,6 +44,9 @@ export function initSentry(): void {
 
   Sentry.init({
     dsn,
+    environment: process.env.EXPO_PUBLIC_APP_ENV ?? "local",
+    release: resolveRelease(),
+    dist: resolveDist(),
     tracesSampleRate: 0.2,
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,

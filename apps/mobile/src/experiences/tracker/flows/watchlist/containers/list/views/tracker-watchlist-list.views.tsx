@@ -1,11 +1,5 @@
 import { memo, type ReactNode } from "react";
-import {
-  Pressable,
-  View,
-  Text,
-  RefreshControl,
-  StyleSheet,
-} from "react-native";
+import { View, RefreshControl, StyleSheet } from "react-native";
 import { ListTemplate, TopAppBar } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
@@ -14,6 +8,7 @@ import type {
   TrackerWatchlistListScreenState,
 } from "../models/tracker-watchlist-list.type";
 import { WATCHLIST_LIST_MOCK_GROUPS } from "../models/tracker-watchlist-list.mock";
+import { TrackerWatchlistListAddButtonView } from "./tracker-watchlist-list-addButton.view";
 import { TrackerWatchlistListGroupHeaderView } from "./tracker-watchlist-list-groupHeader.view";
 import { TrackerWatchlistListRowView } from "./tracker-watchlist-list-row.view";
 import { TrackerWatchlistListEmptyStateView } from "./tracker-watchlist-list-emptyState.view";
@@ -38,19 +33,6 @@ export const TrackerWatchlistListViews = memo(
     onEntryPress,
   }: Props) => {
     const { t } = useTranslation("tracker");
-
-    const addButton = onAddProductsPress ? (
-      <Pressable
-        onPress={onAddProductsPress}
-        accessibilityRole="button"
-        accessibilityLabel={t("watchlist.actions.add")}
-        testID="watchlist-add-products-button"
-        style={styles.addButton}
-        hitSlop={8}
-      >
-        <Text style={styles.addLabel}>{t("watchlist.actions.add")}</Text>
-      </Pressable>
-    ) : undefined;
 
     const content: Record<TrackerWatchlistListScreenState, ReactNode> = {
       default: (
@@ -97,7 +79,9 @@ export const TrackerWatchlistListViews = memo(
           <TopAppBar
             type="small"
             title={t("watchlist.title")}
-            trailingContent={addButton}
+            trailingContent={
+              <TrackerWatchlistListAddButtonView onPress={onAddProductsPress} />
+            }
             testID="watchlist-list-title"
           />
         }
@@ -122,15 +106,5 @@ const styles = StyleSheet.create({
   },
   group: {
     marginBottom: 8,
-  },
-  addButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  addLabel: {
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 15,
-    color: "#ff2d55",
   },
 });

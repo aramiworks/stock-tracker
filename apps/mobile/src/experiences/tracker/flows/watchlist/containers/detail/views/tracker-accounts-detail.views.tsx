@@ -1,11 +1,5 @@
 import { memo, useState, useCallback, type ReactNode } from "react";
-import {
-  View,
-  Text,
-  RefreshControl,
-  StyleSheet,
-  Pressable,
-} from "react-native";
+import { View, RefreshControl, StyleSheet } from "react-native";
 import { DetailTemplate, TopAppBar, useConfirmDialog } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 import type {
@@ -18,6 +12,9 @@ import type {
 import { TrackerAccountsDetailSaHeaderView } from "./tracker-accounts-detail-saHeader.view";
 import { TrackerAccountsDetailTankStatusView } from "./tracker-accounts-detail-tankStatus.view";
 import { TrackerAccountsDetailPurchaseRowView } from "./tracker-accounts-detail-purchaseRow.view";
+import { TrackerAccountsDetailRecentPurchasesLabelView } from "./tracker-accounts-detail-recentPurchasesLabel.view";
+import { TrackerAccountsDetailAddPurchaseButtonView } from "./tracker-accounts-detail-addPurchaseButton.view";
+import { TrackerAccountsDetailTrailingActionsView } from "./tracker-accounts-detail-trailingActions.view";
 import { TrackerAccountsDetailErrorStateView } from "./tracker-accounts-detail-errorState.view";
 import { TrackerAccountsDetailSkeletonCardView } from "./tracker-accounts-detail-skeletonCard.view";
 import { TrackerAccountsDetailEditAccountModalView } from "./tracker-accounts-detail-editAccountModal.view";
@@ -162,9 +159,7 @@ export const TrackerAccountsDetailViews = memo(
             testID="accounts-detail-tank-status"
           />
           <View style={styles.spacer20} />
-          <Text style={styles.sectionLabel}>
-            {t("accounts.detail.recentPurchases")}
-          </Text>
+          <TrackerAccountsDetailRecentPurchasesLabelView />
           <View style={styles.spacer12} />
           {purchases.map((p, i) => (
             <View key={p.id}>
@@ -181,18 +176,12 @@ export const TrackerAccountsDetailViews = memo(
             </View>
           ))}
           <View style={styles.spacer20} />
-          <Pressable
-            style={styles.addPurchaseButton}
+          <TrackerAccountsDetailAddPurchaseButtonView
             onPress={() => {
               setEditingPurchase(null);
               setPurchaseModalVisible(true);
             }}
-            testID="accounts-detail-add-purchase"
-          >
-            <Text style={styles.addPurchaseText}>
-              {t("accounts.detail.addPurchase")}
-            </Text>
-          </Pressable>
+          />
         </>
       ),
       loading: (
@@ -219,32 +208,15 @@ export const TrackerAccountsDetailViews = memo(
               onNavigationPress={onBack}
               testID="accounts-detail"
               trailingContent={
-                screenState === "default" &&
-                (onUpdateAccount || onDeleteAccount) ? (
-                  <View style={styles.trailingActions}>
-                    {onUpdateAccount && (
-                      <Pressable
-                        onPress={() => setEditAccountVisible(true)}
-                        style={styles.appBarAction}
-                        testID="accounts-detail-edit"
-                      >
-                        <Text style={styles.appBarActionText}>
-                          {t("accounts.detail.editAction")}
-                        </Text>
-                      </Pressable>
-                    )}
-                    {onDeleteAccount && (
-                      <Pressable
-                        onPress={handleDeleteAccount}
-                        style={styles.appBarAction}
-                        testID="accounts-detail-delete"
-                      >
-                        <Text style={styles.appBarDeleteText}>
-                          {t("accounts.detail.deleteAction")}
-                        </Text>
-                      </Pressable>
-                    )}
-                  </View>
+                screenState === "default" ? (
+                  <TrackerAccountsDetailTrailingActionsView
+                    onEdit={
+                      onUpdateAccount
+                        ? () => setEditAccountVisible(true)
+                        : undefined
+                    }
+                    onDelete={onDeleteAccount ? handleDeleteAccount : undefined}
+                  />
                 ) : undefined
               }
             />
@@ -297,51 +269,9 @@ export const TrackerAccountsDetailViews = memo(
 TrackerAccountsDetailViews.displayName = "TrackerAccountsDetailViews";
 
 const styles = StyleSheet.create({
-  trailingActions: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  appBarAction: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  appBarActionText: {
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 14,
-    color: "#FF2D55",
-  },
-  appBarDeleteText: {
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 14,
-    color: "#999",
-  },
   scrollContent: {
     paddingHorizontal: 20,
     paddingBottom: 80,
-  },
-  sectionLabel: {
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 14,
-    color: "#888",
-    alignSelf: "flex-start",
-  },
-  addPurchaseButton: {
-    height: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E5E5E5",
-    borderStyle: "dashed",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  addPurchaseText: {
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 14,
-    color: "#FF2D55",
   },
   spacer12: {
     height: 12,

@@ -1,4 +1,5 @@
 export * from "./tracker-watchlist-list.views";
+export * from "./tracker-watchlist-list-addButton.view";
 export * from "./tracker-watchlist-list-groupHeader.view";
 export * from "./tracker-watchlist-list-row.view";
 export * from "./tracker-watchlist-list-statePill.view";

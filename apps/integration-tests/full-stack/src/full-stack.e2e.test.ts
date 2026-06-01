@@ -19,19 +19,13 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 
 import { signIn, type SignInResult } from "./helpers/auth.js";
-import {
-  deleteByPrefix,
-  getAuthUserId,
-  makeRunId,
-  prefix,
-} from "./helpers/cleanup.js";
+import { deleteWatchesByIds, getAuthUserId } from "./helpers/cleanup.js";
 import { gql } from "./helpers/gql.js";
-
-const runId = makeRunId();
-const runPrefix = prefix(runId);
 
 let session: SignInResult;
 let authUserId: string;
+let seedUnitId: string | null = null;
+const createdWatchIds: string[] = [];
 
 beforeAll(async () => {
   session = await signIn();
@@ -42,11 +36,20 @@ beforeAll(async () => {
     );
   }
   authUserId = id;
+
+  const { body } = await gql<{
+    catalogList: Array<{
+      brand: string;
+      productLine: string;
+      units: Array<{ id: string; modelName: string }>;
+    }>;
+  }>(`query { catalogList { brand productLine units { id modelName } } }`);
+  seedUnitId = body.data?.catalogList?.[0]?.units?.[0]?.id ?? null;
 });
 
 afterAll(async () => {
-  if (authUserId) {
-    await deleteByPrefix(authUserId, runPrefix);
+  if (authUserId && createdWatchIds.length > 0) {
+    await deleteWatchesByIds(authUserId, createdWatchIds);
   }
 });
 
@@ -65,24 +68,22 @@ describe("full-stack post-deploy e2e", () => {
   it("2. dashboard query returns aggregates", async () => {
     const { status, body } = await gql<{
       dashboard: {
-        totalAccounts: number;
-        totalPurchases: number;
-        totalSpent: number;
+        activeWatches: number;
+        unreadAlerts: number;
+        recentDrops: number;
       };
     }>(
-      `query { dashboard { totalAccounts totalPurchases totalSpent } }`,
+      `query { dashboard { activeWatches unreadAlerts recentDrops } }`,
       {},
-      {
-        token: session.accessToken,
-      },
+      { token: session.accessToken },
     );
 
     expect(status).toBe(200);
     expect(body.errors).toBeUndefined();
     expect(body.data?.dashboard).toBeDefined();
-    expect(typeof body.data?.dashboard.totalAccounts).toBe("number");
-    expect(typeof body.data?.dashboard.totalPurchases).toBe("number");
-    expect(typeof body.data?.dashboard.totalSpent).toBe("number");
+    expect(typeof body.data?.dashboard.activeWatches).toBe("number");
+    expect(typeof body.data?.dashboard.unreadAlerts).toBe("number");
+    expect(typeof body.data?.dashboard.recentDrops).toBe("number");
   });
 
   it("3. unauthenticated request is rejected", async () => {
@@ -96,63 +97,99 @@ describe("full-stack post-deploy e2e", () => {
     expect(failed).toBe(true);
   });
 
-  it("4. createAccount mutation round-trips through the full chain", async () => {
-    const storeName = `${runPrefix} 까르띠에 청담`;
+  it("4. createWatch mutation round-trips through the full chain", async () => {
+    if (!seedUnitId) {
+      console.warn(
+        "skip — catalogList is empty on the deployed env, can't exercise createWatch. Seed dev catalog (INF-1551) first.",
+      );
+      return;
+    }
     const { status, body } = await gql<{
-      createAccount: { id: string; storeName: string };
+      createWatch: {
+        id: string;
+        watchableUnitId: string;
+        notifyPush: boolean;
+        notifyEmail: boolean;
+      };
     }>(
-      `mutation Create($input: CreateAccountInput!) {
-        createAccount(input: $input) { id storeName }
+      `mutation Create($input: CreateWatchInput!) {
+        createWatch(input: $input) {
+          id
+          watchableUnitId
+          notifyPush
+          notifyEmail
+        }
       }`,
-      { input: { storeName, saName: "E2E SA", notes: "post-deploy smoke" } },
+      {
+        input: {
+          watchableUnitId: seedUnitId,
+          notifyPush: true,
+          notifyEmail: false,
+        },
+      },
       { token: session.accessToken },
     );
 
     expect(status).toBe(200);
     expect(body.errors).toBeUndefined();
-    expect(body.data?.createAccount.id).toBeTruthy();
-    expect(body.data?.createAccount.storeName).toBe(storeName);
+    expect(body.data?.createWatch.id).toBeTruthy();
+    expect(body.data?.createWatch.watchableUnitId).toBe(seedUnitId);
+    expect(body.data?.createWatch.notifyPush).toBe(true);
+    expect(body.data?.createWatch.notifyEmail).toBe(false);
+
+    const newId = body.data?.createWatch.id;
+    if (newId) createdWatchIds.push(newId);
   });
 
-  it("5. created account is owned by the JWT subject and readable back", async () => {
-    const storeName = `${runPrefix} ownership-check`;
-    const create = await gql<{ createAccount: { id: string } }>(
-      `mutation Create($input: CreateAccountInput!) {
-        createAccount(input: $input) { id }
+  it("5. created watch is owned by the JWT subject and readable back", async () => {
+    if (!seedUnitId) {
+      console.warn(
+        "skip — catalogList is empty on the deployed env, can't exercise createWatch + watches round-trip. Seed dev catalog (INF-1551) first.",
+      );
+      return;
+    }
+    const create = await gql<{
+      createWatch: { id: string; watchableUnitId: string };
+    }>(
+      `mutation Create($input: CreateWatchInput!) {
+        createWatch(input: $input) { id watchableUnitId }
       }`,
-      { input: { storeName } },
+      { input: { watchableUnitId: seedUnitId } },
       { token: session.accessToken },
     );
     expect(create.body.errors).toBeUndefined();
-    const newId = create.body.data?.createAccount.id;
+    const newId = create.body.data?.createWatch.id;
     expect(newId).toBeTruthy();
+    if (newId) createdWatchIds.push(newId);
 
     const list = await gql<{
-      accounts: Array<{ id: string; storeName: string }>;
+      watches: Array<{ id: string; watchableUnitId: string }>;
     }>(
-      `query { accounts { id storeName } }`,
+      `query { watches { id watchableUnitId } }`,
       {},
       { token: session.accessToken },
     );
     expect(list.body.errors).toBeUndefined();
-    const found = list.body.data?.accounts.find((a) => a.id === newId);
+    const found = list.body.data?.watches.find((w) => w.id === newId);
     expect(found).toBeDefined();
-    expect(found?.storeName).toBe(storeName);
+    expect(found?.watchableUnitId).toBe(seedUnitId);
   });
 
-  it("6. invalid query returns GraphQL errors with extensions", async () => {
-    const { status, body } = await gql(
-      `query { account(id: "definitely-not-a-uuid") { id } }`,
+  it("6. unknown catalog item returns null without throwing", async () => {
+    const { status, body } = await gql<{
+      catalogItem: { id: string } | null;
+    }>(
+      `query { catalogItem(id: "00000000-0000-0000-0000-000000000000") { id } }`,
       {},
       { token: session.accessToken },
     );
 
-    // The router proxies subgraph errors back; we don't care about the
-    // exact code, only that the error envelope is preserved end-to-end.
     expect(status).toBe(200);
-    const dataAccount = (body.data as { account?: unknown } | undefined)
-      ?.account;
-    const failed = (body.errors?.length ?? 0) > 0 || dataAccount === null;
-    expect(failed).toBe(true);
+    // Either the subgraph returns null (typical Prisma findUnique semantics)
+    // or it returns top-level errors. Either way is a clean end-to-end
+    // round trip — what we don't want is a transport failure.
+    const ok =
+      body.data?.catalogItem === null || (body.errors?.length ?? 0) > 0;
+    expect(ok).toBe(true);
   });
 });

@@ -1,10 +1,10 @@
 /**
  * Service-role REST cleanup for e2e fixture rows.
  *
- * Tests prefix every account they create with `[e2e-${runId}]` so a single
- * delete-by-prefix at suite teardown removes only this run's data — even if
- * a previous run crashed and left rows behind. Cascades to tracker_purchases
- * via the FK.
+ * Tests track every watch they create in `createdWatchIds` and pass the
+ * list to deleteWatchesByIds() at suite teardown. This avoids relying on
+ * name-prefix matching (the current Hermès `watches` schema has no
+ * user-tagged string field — see INF-1450 history).
  */
 
 import { env } from "./env.js";
@@ -17,19 +17,6 @@ const headers = {
 
 const rest = (path: string) => `${env.supabaseUrl}/rest/v1${path}`;
 
-export function makeRunId(): string {
-  const stamp = new Date()
-    .toISOString()
-    .replace(/[^0-9]/g, "")
-    .slice(0, 14);
-  const rand = Math.random().toString(36).slice(2, 8);
-  return `${stamp}-${rand}`;
-}
-
-export function prefix(runId: string): string {
-  return `[e2e-${runId}]`;
-}
-
 /**
  * Look up the public.auth_users.id for the given Supabase auth user UUID.
  * Returns null if the row hasn't been created yet (the app upserts it on
@@ -40,9 +27,7 @@ export async function getAuthUserId(
 ): Promise<string | null> {
   const res = await fetch(
     rest(`/auth_users?supabase_id=eq.${supabaseUserId}&select=id`),
-    {
-      headers,
-    },
+    { headers },
   );
   if (!res.ok) {
     throw new Error(
@@ -54,48 +39,24 @@ export async function getAuthUserId(
 }
 
 /**
- * Delete all tracker_accounts whose store_name starts with the given prefix.
- * Cascades to tracker_purchases via the FK.
+ * Delete the given watches by ID, scoped to the authenticated user so a
+ * leaked service-role key in a misconfigured CI run can never wipe another
+ * user's watchlist. Idempotent — missing rows are silently skipped.
  */
-export async function deleteByPrefix(
+export async function deleteWatchesByIds(
   authUserId: string,
-  runPrefix: string,
+  ids: string[],
 ): Promise<number> {
-  const accountsRes = await fetch(
-    rest(
-      `/tracker_accounts?auth_user_id=eq.${authUserId}&store_name=like.${encodeURIComponent(runPrefix + "%")}&select=id`,
-    ),
-    { headers },
-  );
-  if (!accountsRes.ok) {
-    throw new Error(
-      `Failed to list accounts (${accountsRes.status}): ${await accountsRes.text()}`,
-    );
-  }
-  const accounts = (await accountsRes.json()) as Array<{ id: string }>;
-  if (accounts.length === 0) return 0;
-
-  const ids = accounts.map((a) => a.id);
-  const purgeRes = await fetch(
-    rest(`/tracker_purchases?tracker_account_id=in.(${ids.join(",")})`),
+  if (ids.length === 0) return 0;
+  const inList = ids.join(",");
+  const res = await fetch(
+    rest(`/watches?auth_user_id=eq.${authUserId}&id=in.(${inList})`),
     { method: "DELETE", headers },
   );
-  if (!purgeRes.ok && purgeRes.status !== 404) {
+  if (!res.ok && res.status !== 404) {
     throw new Error(
-      `Failed to delete purchases (${purgeRes.status}): ${await purgeRes.text()}`,
+      `Failed to delete watches (${res.status}): ${await res.text()}`,
     );
   }
-
-  const delRes = await fetch(
-    rest(
-      `/tracker_accounts?auth_user_id=eq.${authUserId}&store_name=like.${encodeURIComponent(runPrefix + "%")}`,
-    ),
-    { method: "DELETE", headers },
-  );
-  if (!delRes.ok) {
-    throw new Error(
-      `Failed to delete accounts (${delRes.status}): ${await delRes.text()}`,
-    );
-  }
-  return accounts.length;
+  return ids.length;
 }

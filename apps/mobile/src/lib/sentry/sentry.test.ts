@@ -92,4 +92,32 @@ describe("initSentry", () => {
       expect.objectContaining({ environment: "local" }),
     );
   });
+
+  it("resolves release and dist to undefined when expoConfig version is missing", () => {
+    const constantsMock = jest.requireMock("expo-constants") as {
+      default: { expoConfig: unknown };
+    };
+    const saved = constantsMock.default.expoConfig;
+    constantsMock.default.expoConfig = null;
+    process.env.EXPO_PUBLIC_SENTRY_DSN = TEST_DSN;
+    initSentry();
+    expect(sentryMock.init).toHaveBeenCalledWith(
+      expect.objectContaining({ release: undefined, dist: undefined }),
+    );
+    constantsMock.default.expoConfig = saved;
+  });
+
+  it("resolves release to version-only and dist to undefined when no build number is available", () => {
+    const constantsMock = jest.requireMock("expo-constants") as {
+      default: { expoConfig: unknown };
+    };
+    const saved = constantsMock.default.expoConfig;
+    constantsMock.default.expoConfig = { version: "2.0.0" };
+    process.env.EXPO_PUBLIC_SENTRY_DSN = TEST_DSN;
+    initSentry();
+    expect(sentryMock.init).toHaveBeenCalledWith(
+      expect.objectContaining({ release: "2.0.0", dist: undefined }),
+    );
+    constantsMock.default.expoConfig = saved;
+  });
 });

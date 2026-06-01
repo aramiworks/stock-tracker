@@ -215,9 +215,7 @@ export const TrackerAccountsDetailViews = memo(
                         ? () => setEditAccountVisible(true)
                         : undefined
                     }
-                    onDelete={
-                      onDeleteAccount ? handleDeleteAccount : undefined
-                    }
+                    onDelete={onDeleteAccount ? handleDeleteAccount : undefined}
                   />
                 ) : undefined
               }

@@ -36,6 +36,12 @@ describe("initSentry", () => {
     expect(sentryMock.init).not.toHaveBeenCalled();
   });
 
+  it("registerSentryNavigationContainer no-ops when initSentry has not been called", () => {
+    const ref = { current: {} };
+    registerSentryNavigationContainer(ref);
+    expect(mockRegisterNavigationContainer).not.toHaveBeenCalled();
+  });
+
   it("calls Sentry.init with the DSN when set", () => {
     process.env.EXPO_PUBLIC_SENTRY_DSN = TEST_DSN;
     initSentry();

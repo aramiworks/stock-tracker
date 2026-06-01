@@ -1,26 +1,24 @@
 /**
- * Curated Hermès KR product URLs for the fetcher bake test.
+ * LIVE Hermès KR product URLs for the fetcher bake test.
  *
- * Mix of high-demand categories: Picotin, Constance, Oran, Bolide, Garden Party.
- * Excludes Birkin/Kelly (SA-allocation only, never online).
+ * Snapshot discovered 2026-06-01 by scraping the bags-and-clutches category
+ * page (see scripts/find-live-product.ts). The previous curated list was
+ * adapted from US reference codes and 404'd — stale product paths draw a
+ * DataDome challenge, so the bake test must run against currently-live URLs.
+ *
+ * Slugs contain RAW (unencoded) Korean — callers must encodeURI() before fetch.
+ * These go stale as Hermès rotates inventory; re-run find-live-product.ts to
+ * refresh. (Dynamic catalog discovery is a separate workstream.)
  */
 export const BAKE_TEST_URLS: readonly string[] = [
-  // Picotin Lock 18
-  "https://www.hermes.com/kr/ko/product/picotin-lock-18-%EB%B0%B1-H056289CC37/",
-  "https://www.hermes.com/kr/ko/product/picotin-lock-18-%EB%B0%B1-H056289CC18/",
-  // Picotin Lock 18 Pocket
-  "https://www.hermes.com/kr/ko/product/picotin-lock-18-%ED%8F%AC%EC%BC%93-%EB%B0%B1-H083189CKAP/",
-  // Picotin Lock 22
-  "https://www.hermes.com/kr/ko/product/picotin-lock-22-%EB%B0%B1-H060991CCP0/",
-  // Constance Slim Wallet
-  "https://www.hermes.com/kr/ko/product/constance-slim-%EC%A7%80%EA%B0%91-H082214CK8W/",
-  // Oran sandals (adapted from US reference codes)
-  "https://www.hermes.com/kr/ko/product/oran-%EC%83%8C%EB%93%A4-H021056Zv01340/",
-  "https://www.hermes.com/kr/ko/product/oran-%EC%83%8C%EB%93%A4-H202230Zv5H340/",
-  // Bolide (common reference)
-  "https://www.hermes.com/kr/ko/product/bolide-1923-31-%EB%B0%B1-H073583CK89/",
-  // Garden Party 30
-  "https://www.hermes.com/kr/ko/product/garden-party-30-%EB%B0%B1-H073583CK18/",
-  // Homepage as a control (always 200, no product parsing needed)
+  "https://www.hermes.com/kr/ko/product/halzan-25-verso-백-H082660CKBD/",
+  "https://www.hermes.com/kr/ko/product/bolide-1923-verso-미니-백-H077817CKBK/",
+  "https://www.hermes.com/kr/ko/product/arcon-백-H084853CKAB/",
+  "https://www.hermes.com/kr/ko/product/jypsiere-미니-백-H084049CKAA/",
+  "https://www.hermes.com/kr/ko/product/hermes-perspective-cavaliere-28-백-H082917CKAC/",
+  "https://www.hermes.com/kr/ko/product/faubourg-express-백-H086338CK89/",
+  "https://www.hermes.com/kr/ko/product/evelyne-iii-29-백-H056277CKD2/",
+  "https://www.hermes.com/kr/ko/product/hermes-della-cavalleria-미니-백-ii-H085367CK10/",
+  // Homepage control (always 200, no product parsing needed).
   "https://www.hermes.com/kr/ko/",
 ];

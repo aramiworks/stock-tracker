@@ -146,15 +146,18 @@ const config: StorybookConfig = {
     // 'react/jsx-runtime'`, `import { createPortal } from 'react-dom'`) which
     // fail against the raw CJS file. Force pre-bundling to convert CJS → ESM.
     //
-    // react-native-web ships nested node_modules with CJS-only deps; use the
-    // `parent > child` syntax so Vite pre-bundles them in the right context.
+    // @aramiworks/ui is excluded from pre-bundling (ships TypeScript), so Vite
+    // never discovers react-native-web transitively. This causes a cascade of
+    // @fs/... failures across react-native-web's entire CJS dep tree (including
+    // inline-style-prefixer subpaths, @react-native/normalize-colors, etc.).
+    // Adding react-native-web directly forces Vite to pre-bundle it and all its
+    // CJS internals in one esbuild pass, eliminating the cascade entirely.
     config.optimizeDeps.include = [
       ...(config.optimizeDeps.include || []),
       "react/jsx-runtime",
       "react/jsx-dev-runtime",
       "react-dom",
-      "react-native-web > @react-native/normalize-colors",
-      "react-native-web > memoize-one",
+      "react-native-web",
     ];
     return config;
   },

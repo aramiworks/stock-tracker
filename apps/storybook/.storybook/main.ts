@@ -159,6 +159,18 @@ const config: StorybookConfig = {
       "react-dom",
       "react-native-web",
     ];
+    // @tamagui/constants and similar packages reference `process.env.*` directly
+    // (e.g. `process.env.TEST_NATIVE_PLATFORM`). Vite doesn't define `process`
+    // in the browser — shim it so these reads return undefined instead of throwing
+    // `ReferenceError: process is not defined`.
+    config.define = {
+      ...(config.define || {}),
+      "process.env": "{}",
+    config.define = {
+      ...(config.define || {}),
+      "process.env": "{}",
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV ?? "development"),
+    };
     return config;
   },
 };

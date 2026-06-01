@@ -4,7 +4,7 @@ import {
   TrackerWatchlistListControllers,
   useTrackerWatchlistListControllers,
 } from "./controllers/tracker-watchlist-list.controllers";
-import { TrackerWatchlistListViews } from "./views/tracker-watchlist-list.views";
+import { TrackerWatchlistListViews } from "./views";
 import { ContainerErrorBoundary } from "@/shared/components/container-error-boundary";
 
 const ConnectedViews = memo(() => {

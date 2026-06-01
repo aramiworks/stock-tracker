@@ -20,7 +20,7 @@ jest.mock("./controllers/tracker-alertHistory-browse.controllers", () => ({
   }),
 }));
 
-jest.mock("./views/tracker-alertHistory-browse.views", () => ({
+jest.mock("./views", () => ({
   TrackerAlertHistoryBrowseViews: (props: Record<string, unknown>) =>
     `AlertHistoryBrowseViews:${props.screenState ?? "default"}`,
 }));

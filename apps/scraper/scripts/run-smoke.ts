@@ -11,9 +11,11 @@
 import { PrismaClient } from "@prisma/client";
 import { HttpFetcher } from "../src/fetch/HttpFetcher.js";
 import { BrowserFetcher } from "../src/fetch/BrowserFetcher.js";
+import { CapSolverDatadomeFetcher } from "../src/fetch/CapSolverDatadomeFetcher.js";
 import { getProxyFromEnv } from "../src/fetch/proxy.js";
 import { BAKE_TEST_URLS } from "../src/spikes/fetcher-bake-test/urls.js";
 import { isAkamaiBlocked } from "../src/fetch/HttpFetcher.js";
+import type { Fetcher } from "../src/fetch/Fetcher.js";
 import type { RawResponse } from "../src/brands/BrandAdapter.js";
 
 const AKAMAI_STATUS_CODES = new Set([403, 429, 503]);
@@ -26,10 +28,23 @@ const runIdArg = args.find((a) => a.startsWith("--runId="));
 const runId = runIdArg
   ? runIdArg.split("=")[1]!
   : `smoke-${new Date().toISOString().slice(0, 16).replace(/[:.]/g, "-")}`;
+// --http-only isolates the HTTP base-rate (skips the Playwright browser arm).
+const httpOnly = args.includes("--http-only");
+// --with-capsolver adds the HTTP+DataDome-solve fallback arm. It only spends
+// CapSolver credits on the intermittent interstitial (clean fetches are free).
+const withCapsolver = args.includes("--with-capsolver");
+// --urls=a,b restricts the run to URLs whose path contains any listed substring
+// (e.g. the consistently-blocked products) to measure the solver's rescue rate
+// without burning credits on the already-clean majority.
+const urlsArg = args.find((a) => a.startsWith("--urls="));
+const urlFilters = urlsArg ? urlsArg.split("=")[1]!.split(",") : null;
+const targetUrls = urlFilters
+  ? BAKE_TEST_URLS.filter((u) => urlFilters.some((f) => u.includes(f)))
+  : BAKE_TEST_URLS;
 
 console.log(`Starting smoke test: runId=${runId}`);
 console.log(
-  `URLs: ${BAKE_TEST_URLS.length}, interval: ${INTERVAL_MS / 1000}s, duration: ${DURATION_MS / 60_000}min`,
+  `URLs: ${targetUrls.length}, interval: ${INTERVAL_MS / 1000}s, duration: ${DURATION_MS / 60_000}min`,
 );
 console.log("");
 
@@ -38,13 +53,19 @@ const proxy = getProxyFromEnv();
 const httpFetcher = new HttpFetcher();
 const browserFetcher = new BrowserFetcher();
 
-const fetchers = [
-  { name: "http" as const, impl: httpFetcher },
-  { name: "browser" as const, impl: browserFetcher },
+type FetcherName = "http" | "browser" | "capsolver";
+const fetchers: { name: FetcherName; impl: Fetcher }[] = [
+  { name: "http", impl: httpFetcher },
 ];
+if (!httpOnly) fetchers.push({ name: "browser", impl: browserFetcher });
+if (withCapsolver) {
+  const key = process.env.CAPSOLVER_API_KEY;
+  if (!key) throw new Error("--with-capsolver requires CAPSOLVER_API_KEY");
+  fetchers.push({ name: "capsolver", impl: new CapSolverDatadomeFetcher(key) });
+}
 
 function buildResult(
-  fetcher: "http" | "browser",
+  fetcher: FetcherName,
   url: string,
   response: RawResponse | undefined,
   latencyMs: number,
@@ -63,8 +84,16 @@ function buildResult(
     };
   }
   const resp = response!;
+  // Hermès KR is behind DataDome + Cloudflare (not Akamai): the block is a 403
+  // interstitial carrying the `dd` object / captcha-delivery c.js. Detect both
+  // the legacy Akamai markers and the DataDome interstitial signature.
+  const isDataDomeBlock =
+    resp.body.includes("var dd=") ||
+    resp.body.includes("captcha-delivery.com/c.js");
   const blocked =
-    AKAMAI_STATUS_CODES.has(resp.status) || isAkamaiBlocked(resp.body);
+    AKAMAI_STATUS_CODES.has(resp.status) ||
+    isAkamaiBlocked(resp.body) ||
+    isDataDomeBlock;
   const success = resp.status >= 200 && resp.status < 400 && !blocked;
   return {
     fetcher,
@@ -86,11 +115,12 @@ async function runRound(): Promise<void> {
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(0);
   console.log(`\n=== Round ${round} (${elapsed}s elapsed) ===`);
 
-  for (const url of BAKE_TEST_URLS) {
+  for (const url of targetUrls) {
     const promises = fetchers.map(async ({ name, impl }) => {
       const start = Date.now();
       try {
-        const response = await impl.get(url, { proxy });
+        // URLs carry raw Korean slugs — encode the path before fetching.
+        const response = await impl.get(encodeURI(url), { proxy });
         const latencyMs = Date.now() - start;
         const result = buildResult(name, url, response, latencyMs);
         await prisma.fetcher_bake_results.create({

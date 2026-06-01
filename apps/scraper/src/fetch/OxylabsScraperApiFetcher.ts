@@ -32,10 +32,10 @@ interface WsaResponse {
 }
 
 export class OxylabsScraperApiFetcher implements Fetcher {
-  // proxy arg is required by Fetcher interface but unused — WSA owns its egress
+  // proxy arg is part of the Fetcher interface but unused — WSA owns its egress
   async get(
     url: string,
-    _opts: { proxy: Proxy; headers?: Record<string, string> },
+    _opts: { proxy?: Proxy; headers?: Record<string, string> },
   ): Promise<RawResponse> {
     const username = process.env.OXYLABS_WSA_USERNAME;
     const password = process.env.OXYLABS_WSA_PASSWORD;

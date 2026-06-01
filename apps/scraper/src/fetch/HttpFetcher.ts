@@ -22,19 +22,25 @@ export function isAkamaiBlocked(body: string): boolean {
 export class HttpFetcher implements Fetcher {
   async get(
     url: string,
-    opts: { proxy: Proxy; headers?: Record<string, string> },
+    opts: { proxy?: Proxy; headers?: Record<string, string> },
   ): Promise<RawResponse> {
     const { gotScraping } = await import("got-scraping");
 
-    const auth = buildProxyAuth(opts.proxy);
-    const proxyUrl = `http://${auth.username}:${auth.password}@${opts.proxy.host}:${opts.proxy.port}`;
+    // Proxy is optional. With one, route through it (Hermès KR / IP-level
+    // blocks); without, fetch directly — got-scraping's Chrome TLS fingerprint
+    // alone clears fingerprint-level Akamai (Cartier KR).
+    let proxyUrl: string | undefined;
+    if (opts.proxy) {
+      const auth = buildProxyAuth(opts.proxy);
+      proxyUrl = `http://${auth.username}:${auth.password}@${opts.proxy.host}:${opts.proxy.port}`;
+    }
 
     // Think-time jitter: 800–2500ms before request
     await jitter(800, 2500);
 
     const response = await gotScraping({
       url,
-      proxyUrl,
+      ...(proxyUrl ? { proxyUrl } : {}),
       responseType: "text",
       headerGeneratorOptions: {
         browsers: [{ name: "chrome", minVersion: 131 }],

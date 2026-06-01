@@ -1,8 +1,7 @@
 import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { colors } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
-
-const BRAND_RED = "#FF2D55";
 
 export const AuthSignInGmailOauthHeaderView = memo(() => {
   const { t } = useTranslation("auth");
@@ -26,7 +25,7 @@ AuthSignInGmailOauthHeaderView.displayName = "AuthSignInGmailOauthHeaderView";
 const styles = StyleSheet.create({
   container: {
     height: 400,
-    backgroundColor: BRAND_RED,
+    backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
     paddingTop: 96,
@@ -50,7 +49,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 48,
     lineHeight: 56,
-    color: BRAND_RED,
+    color: colors.primary,
   },
   title: {
     fontFamily: "Inter",

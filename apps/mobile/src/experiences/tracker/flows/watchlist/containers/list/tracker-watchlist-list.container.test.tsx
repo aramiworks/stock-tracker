@@ -19,7 +19,7 @@ jest.mock("./controllers/tracker-watchlist-list.controllers", () => ({
   }),
 }));
 
-jest.mock("./views/tracker-watchlist-list.views", () => ({
+jest.mock("./views", () => ({
   TrackerWatchlistListViews: (props: Record<string, unknown>) =>
     `WatchlistListViews:${props.screenState ?? "default"}`,
 }));

@@ -4,7 +4,7 @@ import {
   TrackerAlertHistoryBrowseControllers,
   useTrackerAlertHistoryBrowseControllers,
 } from "./controllers/tracker-alertHistory-browse.controllers";
-import { TrackerAlertHistoryBrowseViews } from "./views/tracker-alertHistory-browse.views";
+import { TrackerAlertHistoryBrowseViews } from "./views";
 import { ContainerErrorBoundary } from "@/shared/components/container-error-boundary";
 
 const ConnectedViews = memo(() => {

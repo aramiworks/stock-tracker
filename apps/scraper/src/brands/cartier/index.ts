@@ -18,12 +18,15 @@ export class CartierAdapter implements BrandAdapter {
   }
 
   async fetch(url: string, fetcher: Fetcher): Promise<RawResponse> {
+    // No proxy: Cartier KR's Akamai is fingerprint-level, cleared by the
+    // fetcher's Chrome TLS fingerprint alone. Referer overrides HttpFetcher's
+    // Hermès default so the request is self-consistent for Cartier.
     return fetcher.get(url, {
-      proxy: undefined as never, // caller provides proxy via fetcher binding
       headers: {
         Accept:
           "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        Referer: "https://www.cartier.com/ko-kr/",
       },
     });
   }

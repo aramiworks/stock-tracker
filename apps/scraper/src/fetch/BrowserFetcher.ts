@@ -5,8 +5,13 @@ import { buildProxyAuth } from "./proxy.js";
 export class BrowserFetcher implements Fetcher {
   async get(
     url: string,
-    opts: { proxy: Proxy; headers?: Record<string, string> },
+    opts: { proxy?: Proxy; headers?: Record<string, string> },
   ): Promise<RawResponse> {
+    if (!opts.proxy) {
+      throw new Error("BrowserFetcher requires a proxy");
+    }
+    const proxy = opts.proxy;
+
     // Lazy-import to keep cold-start cost off the HTTP path
     const { chromium } = await import("playwright-extra");
     const StealthPlugin = (await import("puppeteer-extra-plugin-stealth"))
@@ -14,7 +19,7 @@ export class BrowserFetcher implements Fetcher {
 
     chromium.use(StealthPlugin());
 
-    const auth = buildProxyAuth(opts.proxy);
+    const auth = buildProxyAuth(proxy);
 
     const browser = await chromium.launch({
       headless: true,
@@ -24,7 +29,7 @@ export class BrowserFetcher implements Fetcher {
     try {
       const context = await browser.newContext({
         proxy: {
-          server: `http://${opts.proxy.host}:${opts.proxy.port}`,
+          server: `http://${proxy.host}:${proxy.port}`,
           username: auth.username,
           password: auth.password,
         },

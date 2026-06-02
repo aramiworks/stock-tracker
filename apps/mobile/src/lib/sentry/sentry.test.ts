@@ -13,6 +13,17 @@ jest.mock("./efcv-cache", () => ({
   getCurrentEfcv: jest.fn(() => ({ experience: "tracker", flow: "dashboard" })),
 }));
 
+jest.mock("expo-constants", () => ({
+  __esModule: true,
+  default: {
+    expoConfig: {
+      version: "0.0.1",
+      ios: { buildNumber: "42" },
+      android: { versionCode: 42 },
+    },
+  },
+}));
+
 import { initSentry, registerSentryNavigationContainer } from "./sentry";
 
 const TEST_DSN = "https://key@sentry.io/123";
@@ -28,6 +39,7 @@ describe("initSentry", () => {
 
   afterEach(() => {
     delete process.env.EXPO_PUBLIC_SENTRY_DSN;
+    delete process.env.EXPO_PUBLIC_APP_ENV;
     jest.clearAllMocks();
   });
 
@@ -71,6 +83,55 @@ describe("initSentry", () => {
     const event = { tags: {} };
     const result = beforeSend(event);
     expect(result).toEqual({ tags: {} });
+  });
+
+  it("forwards release, dist, and environment to Sentry.init", () => {
+    process.env.EXPO_PUBLIC_SENTRY_DSN = TEST_DSN;
+    process.env.EXPO_PUBLIC_APP_ENV = "develop";
+    initSentry();
+    expect(sentryMock.init).toHaveBeenCalledWith(
+      expect.objectContaining({
+        release: "0.0.1+42",
+        dist: "42",
+        environment: "develop",
+      }),
+    );
+  });
+
+  it("defaults environment to 'local' when EXPO_PUBLIC_APP_ENV is unset", () => {
+    process.env.EXPO_PUBLIC_SENTRY_DSN = TEST_DSN;
+    initSentry();
+    expect(sentryMock.init).toHaveBeenCalledWith(
+      expect.objectContaining({ environment: "local" }),
+    );
+  });
+
+  it("resolves release and dist to undefined when expoConfig version is missing", () => {
+    const constantsMock = jest.requireMock("expo-constants") as {
+      default: { expoConfig: unknown };
+    };
+    const saved = constantsMock.default.expoConfig;
+    constantsMock.default.expoConfig = null;
+    process.env.EXPO_PUBLIC_SENTRY_DSN = TEST_DSN;
+    initSentry();
+    expect(sentryMock.init).toHaveBeenCalledWith(
+      expect.objectContaining({ release: undefined, dist: undefined }),
+    );
+    constantsMock.default.expoConfig = saved;
+  });
+
+  it("resolves release to version-only and dist to undefined when no build number is available", () => {
+    const constantsMock = jest.requireMock("expo-constants") as {
+      default: { expoConfig: unknown };
+    };
+    const saved = constantsMock.default.expoConfig;
+    constantsMock.default.expoConfig = { version: "2.0.0" };
+    process.env.EXPO_PUBLIC_SENTRY_DSN = TEST_DSN;
+    initSentry();
+    expect(sentryMock.init).toHaveBeenCalledWith(
+      expect.objectContaining({ release: "2.0.0", dist: undefined }),
+    );
+    constantsMock.default.expoConfig = saved;
   });
 
   it("includes the React Navigation integration with TTID enabled", () => {

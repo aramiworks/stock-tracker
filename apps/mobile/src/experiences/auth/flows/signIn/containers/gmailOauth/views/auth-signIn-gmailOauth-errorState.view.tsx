@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { View, StyleSheet } from "react-native";
-import { Button, Text } from "@aramiworks/ui";
+import { Button, Text, colors } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 
 type AuthSignInGmailOauthErrorStateViewProps = {
@@ -33,7 +33,7 @@ export const AuthSignInGmailOauthErrorStateView =
         <Button
           variant="filled"
           onPress={onRetry}
-          backgroundColor="#FF2D55"
+          backgroundColor={colors.primary}
           color="white"
           marginTop={24}
           testID="auth-signIn-error-retry"

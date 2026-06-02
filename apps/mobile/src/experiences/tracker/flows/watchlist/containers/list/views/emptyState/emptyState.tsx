@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { colors } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -13,7 +14,7 @@ type Props = {
  *   - 64×64 circular icon (bg #f2f2f2) with "+" glyph (32pt Semi Bold #808080)
  *   - title  17pt Semi Bold #1a1a1a, centered
  *   - body   14pt #808080, centered
- *   - 160×44 pill CTA — bg #ff2d55, radius 22, white "+ 추가" 15pt Semi Bold
+ *   - 160×44 pill CTA — bg colors.primary, radius 22, white "+ 추가" 15pt Semi Bold
  *
  * Tapping the CTA dispatches to the Shengsho catalog browse screen (the same
  * destination the top-app-bar "+ 추가" action reaches).
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     width: 160,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#ff2d55",
+    backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
   },

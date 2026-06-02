@@ -22,8 +22,6 @@ export default function AppLayout() {
   //   Watchlist → History (2 tabs only)
   // Catalog is reached via the "+ Add products" entry point on the Watchlist
   // screen — it is a stack route under `tracker/catalog/browse/`, not a tab.
-  // The Alerts experience is parked under `_archived_eligibility/` until the
-  // Eligibility revival lands.
   return (
     <Tabs
       screenOptions={{
@@ -61,12 +59,6 @@ export default function AppLayout() {
       />
       <Tabs.Screen
         name="tracker/catalog"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="tracker/alerts"
         options={{
           href: null,
         }}

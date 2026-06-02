@@ -1,6 +1,7 @@
 import { renderHook, act } from "@testing-library/react-native";
 import { supabase } from "../../../lib/supabase";
 import { identifyUser, resetAnalytics } from "../../../lib/analytics";
+import { identifySentryUser, resetSentryUser } from "../../../lib/sentry";
 import { setSession } from "../models/auth.store";
 import { useAuthLifecycle } from "./auth.lifecycles";
 
@@ -11,6 +12,11 @@ jest.mock("../models/auth.store", () => ({
 jest.mock("../../../lib/analytics", () => ({
   identifyUser: jest.fn().mockResolvedValue(undefined),
   resetAnalytics: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock("../../../lib/sentry", () => ({
+  identifySentryUser: jest.fn(),
+  resetSentryUser: jest.fn(),
 }));
 
 describe("useAuthLifecycle", () => {
@@ -52,6 +58,7 @@ describe("useAuthLifecycle", () => {
     });
 
     expect(identifyUser).toHaveBeenCalledWith("user-1");
+    expect(identifySentryUser).toHaveBeenCalledWith("user-1");
   });
 
   it("calls setSession(null) when getSession returns null session", async () => {
@@ -136,7 +143,9 @@ describe("useAuthLifecycle", () => {
 
     expect(setSession).toHaveBeenCalledWith(newSession);
     expect(identifyUser).toHaveBeenCalledWith("user-2");
+    expect(identifySentryUser).toHaveBeenCalledWith("user-2");
     expect(resetAnalytics).not.toHaveBeenCalled();
+    expect(resetSentryUser).not.toHaveBeenCalled();
   });
 
   it("resets analytics on SIGNED_OUT events", () => {
@@ -152,7 +161,9 @@ describe("useAuthLifecycle", () => {
 
     expect(setSession).toHaveBeenCalledWith(null);
     expect(resetAnalytics).toHaveBeenCalled();
+    expect(resetSentryUser).toHaveBeenCalled();
     expect(identifyUser).not.toHaveBeenCalled();
+    expect(identifySentryUser).not.toHaveBeenCalled();
   });
 
   it("does not identify on non-SIGNED_OUT events without a user id", () => {
@@ -168,6 +179,8 @@ describe("useAuthLifecycle", () => {
 
     expect(identifyUser).not.toHaveBeenCalled();
     expect(resetAnalytics).not.toHaveBeenCalled();
+    expect(identifySentryUser).not.toHaveBeenCalled();
+    expect(resetSentryUser).not.toHaveBeenCalled();
   });
 
   it("cleans up timeout and subscription on unmount", () => {

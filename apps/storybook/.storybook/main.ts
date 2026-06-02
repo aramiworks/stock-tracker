@@ -62,10 +62,28 @@ const config: StorybookConfig = {
         }
       },
     };
+    // Virtual module plugin: stubs expo-constants — it pulls in expo-modules-core
+    // which imports TurboModuleRegistry from react-native, absent from
+    // react-native-web. Constants.expoConfig.version is replaced with "0.0.0".
+    const expoConstantsMockPlugin = {
+      name: "mock-expo-constants",
+      enforce: "pre" as const,
+      resolveId(id: string) {
+        if (id === "expo-constants") {
+          return "\0expo-constants-mock";
+        }
+      },
+      load(id: string) {
+        if (id === "\0expo-constants-mock") {
+          return 'const Constants = { expoConfig: { version: "0.0.0" } }; export default Constants;';
+        }
+      },
+    };
     config.plugins = [
       ...(config.plugins ?? []),
       reactFabricMockPlugin,
       codegenNativeComponentMockPlugin,
+      expoConstantsMockPlugin,
     ];
 
     config.resolve.alias = [

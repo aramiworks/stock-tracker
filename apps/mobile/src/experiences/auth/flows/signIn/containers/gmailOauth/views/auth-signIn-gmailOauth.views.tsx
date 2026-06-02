@@ -1,5 +1,6 @@
 import { memo, type ReactNode } from "react";
 import { View, StyleSheet } from "react-native";
+import { colors } from "@aramiworks/ui";
 import type { AuthSignInGmailOauthControllersOutput } from "../controllers/auth-signIn-gmailOauth.controllers";
 import { AuthSignInGmailOauthHeaderView } from "./auth-signIn-gmailOauth-header.view";
 import { AuthSignInGmailOauthWelcomeHeadingView } from "./auth-signIn-gmailOauth-welcomeHeading.view";
@@ -59,7 +60,7 @@ AuthSignInGmailOauthViews.displayName = "AuthSignInGmailOauthViews";
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#FF2D55",
+    backgroundColor: colors.primary,
   },
   card: {
     flex: 1,

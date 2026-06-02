@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import { colors } from "@aramiworks/ui";
 import type { ItemCategory } from "../models/tracker-history-browse.type";
 
 type TrackerHistoryBrowseCategoryFilterChipsViewProps = {
@@ -88,8 +89,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   chipSelected: {
-    backgroundColor: "#FF2D55",
-    borderColor: "#FF2D55",
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   chipText: {
     fontFamily: "Inter",

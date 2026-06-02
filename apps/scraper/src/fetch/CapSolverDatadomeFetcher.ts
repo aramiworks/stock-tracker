@@ -6,6 +6,14 @@ import {
   buildCaptchaUrl,
   solveDatadome,
 } from "./datadome.js";
+import {
+  HERMES_UA,
+  HERMES_BASE_HEADERS,
+  flattenHeaders,
+  newSessionId,
+  buildStickyUser,
+  buildSolverProxy,
+} from "./oxylabsSticky.js";
 
 /**
  * Fetcher that loads hermes.com/kr through Oxylabs KR residential and, when
@@ -15,37 +23,11 @@ import {
  * On the clean majority of requests no solve happens (zero CapSolver cost);
  * the solve only fires on the intermittent interstitial. See
  * scripts/run-capsolver-probe.ts for the validated end-to-end.
+ *
+ * The UA + client hints + sticky-session builders come from oxylabsSticky.ts —
+ * shared with HermesFetcher so the fetch UA and the CapSolver solve UA can never
+ * drift (DataDome binds its cookie to both the exit IP AND the UA).
  */
-
-// CapSolver's DataDome solver only accepts Windows Chrome 143–146 UAs, and the
-// UA sent to CapSolver MUST equal the UA used on the real fetch. So this
-// fetcher pins one consistent UA + client hints across every request.
-const UA =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36";
-
-const BASE_HEADERS: Record<string, string> = {
-  "User-Agent": UA,
-  "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-  Accept:
-    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-  "Sec-CH-UA":
-    '"Chromium";v="143", "Google Chrome";v="143", "Not_A Brand";v="24"',
-  "Sec-CH-UA-Mobile": "?0",
-  "Sec-CH-UA-Platform": '"Windows"',
-  Referer: "https://www.hermes.com/kr/ko/",
-};
-
-/** Collapse got-scraping's header bag (string | string[]) to a flat record. */
-function flattenHeaders(
-  raw: Record<string, string | string[] | undefined>,
-): Record<string, string> {
-  const out: Record<string, string> = {};
-  for (const [k, v] of Object.entries(raw)) {
-    if (typeof v === "string") out[k] = v;
-    else if (Array.isArray(v)) out[k] = v.join(", ");
-  }
-  return out;
-}
 
 export class CapSolverDatadomeFetcher implements Fetcher {
   constructor(private readonly clientKey: string) {
@@ -62,12 +44,12 @@ export class CapSolverDatadomeFetcher implements Fetcher {
 
     // Sticky session pins the initial GET, the CapSolver solve, and the retry
     // GET to ONE Oxylabs KR exit IP (DataDome cookies are IP-bound).
-    const sessId = Math.random().toString(36).slice(2, 12);
-    const stickyUser = `${proxy.username}-cc-${proxy.countryCode}-sessid-${sessId}-sesstime-10`;
+    const sessId = newSessionId();
+    const stickyUser = buildStickyUser(proxy, sessId);
     const proxyUrl = `http://${stickyUser}:${proxy.password}@${proxy.host}:${proxy.port}`;
-    const proxyForSolver = `http:${proxy.host}:${proxy.port}:${stickyUser}:${proxy.password}`;
+    const proxyForSolver = buildSolverProxy(proxy, sessId);
 
-    const headers = { ...BASE_HEADERS, ...opts.headers };
+    const headers = { ...HERMES_BASE_HEADERS, ...opts.headers };
 
     const r1 = await gotScraping({
       url,
@@ -105,7 +87,7 @@ export class CapSolverDatadomeFetcher implements Fetcher {
       clientKey: this.clientKey,
       pageUrl: url,
       captchaUrl,
-      userAgent: UA,
+      userAgent: HERMES_UA,
       proxy: proxyForSolver,
     });
     const datadomeCookie = cookieStr.split(";")[0]!.trim();

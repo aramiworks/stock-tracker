@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { XStack, Text } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
+import { stateColors } from "@/shared/tokens/state";
 
 type EligibilityBadgeStatus = "eligible" | "notEligible";
 
@@ -33,7 +34,7 @@ export const TrackerEligibilityBadgeView = memo(
           role="label"
           size="large"
           fontWeight="600"
-          color={isEligible ? "#219654" : "#FF2D55"}
+          color={isEligible ? "#219654" : stateColors.red}
         >
           {isEligible
             ? t("eligibility.eligible")

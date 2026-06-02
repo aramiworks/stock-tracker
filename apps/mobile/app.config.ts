@@ -43,7 +43,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     adaptiveIcon: {
-      backgroundColor: "#FF2D55",
+      backgroundColor: "#0066FF",
     },
     package: `so.arami.stocktracker.app${suffix}`,
   },

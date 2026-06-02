@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { Pressable, Text, StyleSheet } from "react-native";
+import { colors } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -38,6 +39,6 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: "600",
     fontSize: 14,
-    color: "#FF2D55",
+    color: colors.primary,
   },
 });

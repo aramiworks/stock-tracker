@@ -1,7 +1,8 @@
 import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Card, XStack, YStack } from "@aramiworks/ui";
+import { Card, XStack, YStack, colors } from "@aramiworks/ui";
+import { stateColors } from "@/shared/tokens/state";
 
 type SaCardState = "eligible" | "notEligible" | "noPurchases";
 
@@ -38,7 +39,7 @@ export const TrackerDashboardHomeSaCardView = memo(
       state === "eligible"
         ? "#219654"
         : state === "notEligible"
-          ? "#FF2D55"
+          ? stateColors.red
           : "#999";
 
     const spendText =
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#FFE8ED",
+    backgroundColor: "#E5EEFF",
     alignItems: "center",
     justifyContent: "center",
     padding: 8,
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: "600",
     fontSize: 16,
-    color: "#FF2D55",
+    color: colors.primary,
     textAlign: "center",
   },
   name: {

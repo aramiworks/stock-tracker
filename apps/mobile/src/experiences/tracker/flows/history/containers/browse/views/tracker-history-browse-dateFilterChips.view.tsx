@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { colors } from "@aramiworks/ui";
 import { useTranslation } from "react-i18next";
 
 type DateFilter = "thisMonth" | "threeMonths" | "thisYear" | "all";
@@ -67,8 +68,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   chipSelected: {
-    backgroundColor: "#FF2D55",
-    borderColor: "#FF2D55",
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   chipText: {
     fontFamily: "Inter",

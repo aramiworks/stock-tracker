@@ -31,9 +31,11 @@ export const TrackerAccountHomeViews = memo(
     const { t } = useTranslation("tracker");
     const router = useRouter();
 
-    const content: Record<TrackerAccountHomeScreenState, ReactNode> = {
+    // Top group: cards + sign-out (laid out at the top with consistent gaps)
+    // Bottom group: version footer (anchored to bottom via flex spacer)
+    const topGroup: Record<TrackerAccountHomeScreenState, ReactNode> = {
       default: (
-        <>
+        <YStack gap={24}>
           <TrackerAccountHomeAccountInfoCardView
             email={email}
             createdAt={createdAt}
@@ -42,8 +44,7 @@ export const TrackerAccountHomeViews = memo(
             onPress={signOut}
             disabled={isSigningOut}
           />
-          <TrackerAccountHomeVersionFooterView />
-        </>
+        </YStack>
       ),
       loading: <TrackerAccountHomeLoadingStateView />,
       error: <TrackerAccountHomeErrorStateView onRetry={onRetry} />,
@@ -62,8 +63,9 @@ export const TrackerAccountHomeViews = memo(
           />
         }
       >
-        <YStack padding={16} gap={24} flex={1}>
-          {content[screenState]}
+        <YStack padding={16} flex={1} justifyContent="space-between">
+          {topGroup[screenState]}
+          <TrackerAccountHomeVersionFooterView />
         </YStack>
       </DashboardTemplate>
     );

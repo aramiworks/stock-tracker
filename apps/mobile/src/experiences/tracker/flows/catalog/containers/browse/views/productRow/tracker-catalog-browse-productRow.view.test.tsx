@@ -36,4 +36,12 @@ describe("TrackerCatalogBrowseProductRowView", () => {
     fireEvent.press(getByTestId("catalog-row-u-1"));
     expect(onTogglePress).toHaveBeenCalledTimes(1);
   });
+
+  it("renders with unknown stock state style", () => {
+    const unknownUnit: CatalogUnit = { ...unit, stockState: "unknown" };
+    const { getByTestId } = render(
+      <TrackerCatalogBrowseProductRowView unit={unknownUnit} checked={false} />,
+    );
+    expect(getByTestId("catalog-row-u-1")).toBeTruthy();
+  });
 });

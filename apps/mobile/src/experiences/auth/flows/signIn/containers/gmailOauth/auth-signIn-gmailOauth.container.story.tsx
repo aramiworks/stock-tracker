@@ -1,7 +1,7 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { OverviewLayout } from "@aramiworks/ui";
-import { AuthSignInGmailOauthViews } from "../views/auth-signIn-gmailOauth.views";
+import { AuthSignInGmailOauthViews } from "./views/auth-signIn-gmailOauth.views";
 
 const meta: Meta<typeof AuthSignInGmailOauthViews> = {
   title: "auth/signIn/gmailOauth",

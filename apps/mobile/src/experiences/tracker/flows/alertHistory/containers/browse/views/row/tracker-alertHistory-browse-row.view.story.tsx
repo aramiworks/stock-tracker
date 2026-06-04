@@ -24,7 +24,7 @@ const SOLD_OUT: AlertHistoryEvent = {
 };
 
 const meta: Meta<typeof TrackerAlertHistoryBrowseRowView> = {
-  title: "tracker/alertHistory/browse/row",
+  title: "tracker/alertHistory/browse/views/row",
   component: TrackerAlertHistoryBrowseRowView,
   parameters: {
     layout: "centered",
@@ -38,9 +38,6 @@ const meta: Meta<typeof TrackerAlertHistoryBrowseRowView> = {
 
 export default meta;
 type Story = StoryObj<typeof TrackerAlertHistoryBrowseRowView>;
-
-export const Restocked: Story = { args: { event: RESTOCKED } };
-export const SoldOut: Story = { args: { event: SOLD_OUT } };
 
 export const Overview: Story = {
   render: () => (
@@ -59,3 +56,6 @@ export const Overview: Story = {
     />
   ),
 };
+
+export const Restocked: Story = { args: { event: RESTOCKED } };
+export const SoldOut: Story = { args: { event: SOLD_OUT } };

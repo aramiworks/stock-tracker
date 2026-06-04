@@ -29,7 +29,7 @@ const BOLIDE_GROUP = {
 };
 
 const meta: Meta<typeof TrackerCatalogBrowseGroupHeaderView> = {
-  title: "tracker/catalog/browse/groupHeader",
+  title: "tracker/catalog/browse/views/groupHeader",
   component: TrackerCatalogBrowseGroupHeaderView,
   parameters: {
     layout: "centered",
@@ -49,10 +49,6 @@ const meta: Meta<typeof TrackerCatalogBrowseGroupHeaderView> = {
 
 export default meta;
 type Story = StoryObj<typeof TrackerCatalogBrowseGroupHeaderView>;
-
-export const None: Story = { args: { group: BOLIDE_GROUP, state: "none" } };
-export const Some: Story = { args: { group: BOLIDE_GROUP, state: "some" } };
-export const All: Story = { args: { group: BOLIDE_GROUP, state: "all" } };
 
 export const Overview: Story = {
   render: () => (
@@ -90,3 +86,7 @@ export const Overview: Story = {
     />
   ),
 };
+
+export const None: Story = { args: { group: BOLIDE_GROUP, state: "none" } };
+export const Some: Story = { args: { group: BOLIDE_GROUP, state: "some" } };
+export const All: Story = { args: { group: BOLIDE_GROUP, state: "all" } };

@@ -4,7 +4,7 @@ import { TrackerWatchlistListStatePillView } from "./tracker-watchlist-list-stat
 import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerWatchlistListStatePillView> = {
-  title: "tracker/watchlist/list/statePill",
+  title: "tracker/watchlist/list/views/statePill",
   component: TrackerWatchlistListStatePillView,
   parameters: {
     layout: "centered",
@@ -24,10 +24,6 @@ const meta: Meta<typeof TrackerWatchlistListStatePillView> = {
 
 export default meta;
 type Story = StoryObj<typeof TrackerWatchlistListStatePillView>;
-
-export const InStock: Story = { args: { state: "in_stock" } };
-export const OutOfStock: Story = { args: { state: "out_of_stock" } };
-export const Unknown: Story = { args: { state: "unknown" } };
 
 export const Overview: Story = {
   render: () => (
@@ -52,3 +48,7 @@ export const Overview: Story = {
     />
   ),
 };
+
+export const InStock: Story = { args: { state: "in_stock" } };
+export const OutOfStock: Story = { args: { state: "out_of_stock" } };
+export const Unknown: Story = { args: { state: "unknown" } };

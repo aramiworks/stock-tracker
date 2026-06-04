@@ -13,6 +13,7 @@
     "analyze:bake": "tsx scripts/analyze-bake.ts"
   },
   "dependencies": {
+    "@stock-tracker/config": "*",
     "@stock-tracker/prisma": "*",
     "@stock-tracker/types": "*",
     "@trigger.dev/sdk": "^4.4.5",

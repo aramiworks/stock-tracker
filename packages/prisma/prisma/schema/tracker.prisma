@@ -102,11 +102,14 @@ model alerts {
 // -- Scraper state -----------------------------------------------------------
 
 model sku_stock_state {
-  sku_id             String   @id @db.Uuid
+  sku_id             String    @id @db.Uuid
   in_stock           Boolean
   last_checked       DateTime
   last_changed       DateTime
-  consecutive_errors Int      @default(0)
+  consecutive_errors Int       @default(0)
+  /// Set when the Slack pager has fired for this SKU. Used to dedupe pages
+  /// inside a cooldown window so a sustained outage doesn't spam the channel.
+  last_paged_at      DateTime?
 
   sku skus @relation(fields: [sku_id], references: [id])
 }

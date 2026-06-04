@@ -6,6 +6,7 @@ import { getProxyFromEnv } from "./fetch/proxy.js";
 import { PrismaStateBuffer } from "./state/StateBuffer.js";
 import { pollCartier } from "./poll/pollCartier.js";
 import { pollHermes } from "./poll/pollHermes.js";
+import { createIngestClient } from "./ingest/trpcClient.js";
 import {
   getScraperLogger,
   pageOnConsecutiveFailures,
@@ -20,13 +21,27 @@ export const helloScraper = task({
   },
 });
 
+// Build the ingest client only when its env is configured. Without it,
+// pollCartier still records transitions and logs — it just doesn't emit drop
+// events (e.g. local runs without a service token).
+function ingestFromEnv() {
+  if (
+    process.env.TRACKER_INGEST_URL &&
+    process.env.TRACKER_INGEST_SERVICE_TOKEN
+  ) {
+    return createIngestClient();
+  }
+  return undefined;
+}
+
 /**
  * Poll every active Cartier SKU for stock and record state transitions.
  *
  * Cartier KR is fingerprint-level Akamai, so HttpFetcher fetches it with no
- * proxy. Drop-event ingest is intentionally NOT wired yet — the tRPC client is
- * stubbed (INF-1356); transitions are recorded and logged until it lands, at
- * which point pass `ingest: createIngestClient()` into pollCartier here.
+ * proxy. On an out->in transition the drop event is pushed to tracker-service
+ * via the ingest client (INF-1573) when TRACKER_INGEST_URL +
+ * TRACKER_INGEST_SERVICE_TOKEN are set; otherwise the transition is recorded
+ * and logged only.
  */
 export const pollCartierTask = schedules.task({
   id: "poll-cartier",
@@ -40,6 +55,7 @@ export const pollCartierTask = schedules.task({
         fetcher: new HttpFetcher(),
         stateBuffer: new PrismaStateBuffer(prisma),
         logger,
+        ingest: ingestFromEnv(),
       });
 
       const summary = {

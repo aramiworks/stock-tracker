@@ -1,14 +1,18 @@
 /**
- * Stub tRPC client for calling tracker-service's ingest mutation.
+ * tRPC client for calling tracker-service's ingest mutation
+ * (tracker.ingest.dropEvent.upsert, a serviceProcedure).
  *
- * TODO(INF-1361): swap local types for tracker AppRouter import after INF-1356 merges.
+ * Mirrors apps/subgraphs/tracker/src/clients/trpc.ts: a typed createTRPCClient
+ * over httpBatchLink + superjson. Service-to-service auth is the X-Service-Token
+ * header (validated against TRACKER_INGEST_SERVICE_TOKEN on the tracker side).
  *
- * The real tRPC client will use the tracker-service's exported AppRouter type.
- * For now, we define the input/output shapes locally to match the plan contract
- * so downstream code can type-check against the expected shape.
+ * The returned shape exposes `upsert(input) => Promise<output>` directly (the
+ * tRPC `.mutate` is wrapped) so callers like pollCartier stay decoupled from the
+ * tRPC client surface.
  */
-
-// -- Local type definitions (mirror plan contract) --
+import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import superjson from "superjson";
+import type { TrackerAppRouter } from "@stock-tracker/tracker-service/trpc";
 
 export interface DropEventUpsertInput {
   skuId: string;
@@ -21,8 +25,6 @@ export interface DropEventUpsertOutput {
   dropEventId: string;
   alertsCreated: number;
 }
-
-// -- Client stub --
 
 export function createIngestClient(): {
   tracker: {
@@ -42,16 +44,22 @@ export function createIngestClient(): {
     );
   }
 
-  // TODO(INF-1361): replace with actual tRPC client initialization:
-  //   import { createTRPCClient, httpBatchLink } from "@trpc/client";
-  //   import type { AppRouter } from "@stock-tracker/tracker-service/trpc";
+  const client = createTRPCClient<TrackerAppRouter>({
+    links: [
+      httpBatchLink({
+        url,
+        transformer: superjson,
+        headers: () => ({ "x-service-token": token }),
+      }),
+    ],
+  });
+
   return {
     tracker: {
       ingest: {
         dropEvent: {
-          upsert: async (_input: DropEventUpsertInput) => {
-            throw new Error("not implemented — waiting for INF-1356 merge");
-          },
+          upsert: (input) =>
+            client.tracker.ingest.dropEvent.upsert.mutate(input),
         },
       },
     },

@@ -1,6 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { TrackerCatalogBrowseSkeletonCardView } from "./skeletonCard";
+import { TrackerCatalogBrowseSkeletonCardView } from "./tracker-catalog-browse-skeletonCard.view";
 
 const meta: Meta<typeof TrackerCatalogBrowseSkeletonCardView> = {
   title: "tracker/catalog/browse/skeletonCard",

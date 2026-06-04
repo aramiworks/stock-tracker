@@ -4,7 +4,7 @@ import { TrackerWatchlistListEmptyStateView } from "./tracker-watchlist-list-emp
 import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerWatchlistListEmptyStateView> = {
-  title: "tracker/watchlist/list/emptyState",
+  title: "tracker/watchlist/list/views/emptyState",
   component: TrackerWatchlistListEmptyStateView,
   parameters: {
     layout: "centered",
@@ -17,12 +17,6 @@ const meta: Meta<typeof TrackerWatchlistListEmptyStateView> = {
 
 export default meta;
 type Story = StoryObj<typeof TrackerWatchlistListEmptyStateView>;
-
-// Default matches the Figma 845-69 layout: icon + title + body + pill CTA.
-// The no-CTA variant only renders when the container omits onAddPress
-// (e.g. when the catalog destination is unreachable).
-export const Default: Story = { args: { onAddPress: () => {} } };
-export const NoCta: Story = { args: {} };
 
 export const Overview: Story = {
   render: () => (
@@ -43,3 +37,9 @@ export const Overview: Story = {
     />
   ),
 };
+
+// Default matches the Figma 845-69 layout: icon + title + body + pill CTA.
+// The no-CTA variant only renders when the container omits onAddPress
+// (e.g. when the catalog destination is unreachable).
+export const Default: Story = { args: { onAddPress: () => {} } };
+export const NoCta: Story = { args: {} };

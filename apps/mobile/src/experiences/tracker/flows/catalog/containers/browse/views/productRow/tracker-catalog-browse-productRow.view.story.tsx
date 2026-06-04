@@ -11,7 +11,7 @@ const UNIT = {
 };
 
 const meta: Meta<typeof TrackerCatalogBrowseProductRowView> = {
-  title: "tracker/catalog/browse/productRow",
+  title: "tracker/catalog/browse/views/productRow",
   component: TrackerCatalogBrowseProductRowView,
   parameters: {
     layout: "centered",
@@ -25,9 +25,6 @@ const meta: Meta<typeof TrackerCatalogBrowseProductRowView> = {
 
 export default meta;
 type Story = StoryObj<typeof TrackerCatalogBrowseProductRowView>;
-
-export const Unchecked: Story = { args: { unit: UNIT, checked: false } };
-export const Checked: Story = { args: { unit: UNIT, checked: true } };
 
 export const Overview: Story = {
   render: () => (
@@ -50,3 +47,6 @@ export const Overview: Story = {
     />
   ),
 };
+
+export const Unchecked: Story = { args: { unit: UNIT, checked: false } };
+export const Checked: Story = { args: { unit: UNIT, checked: true } };

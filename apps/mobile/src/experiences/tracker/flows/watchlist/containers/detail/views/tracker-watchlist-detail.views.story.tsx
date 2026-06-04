@@ -10,7 +10,7 @@ const TANK_MUST_PAYLOAD =
   WATCHLIST_DETAIL_MOCK["22222222-2222-2222-2222-000000000001"];
 
 const meta: Meta<typeof TrackerWatchlistDetailViews> = {
-  title: "tracker/watchlist/detail.views",
+  title: "tracker/watchlist/detail/views",
   // Note: container-level Storybook entry lives at
   // ../tracker-watchlist-detail.container.story.tsx
   component: TrackerWatchlistDetailViews,
@@ -27,21 +27,10 @@ const meta: Meta<typeof TrackerWatchlistDetailViews> = {
 export default meta;
 type Story = StoryObj<typeof TrackerWatchlistDetailViews>;
 
-export const HermesBolide: Story = {
-  args: { screenState: "default", payload: BOLIDE_PAYLOAD },
-};
-
-export const CartierEmptyHistory: Story = {
-  args: { screenState: "default", payload: TANK_MUST_PAYLOAD },
-};
-
-export const Loading: Story = { args: { screenState: "loading" } };
-export const Error: Story = { args: { screenState: "error" } };
-
 export const Overview: Story = {
   render: () => (
     <OverviewLayout
-      viewName="tracker/watchlist/detail.views"
+      viewName="tracker/watchlist/detail/views"
       variants={[
         {
           name: "default — full history (hermès bolide 27)",
@@ -73,3 +62,14 @@ export const Overview: Story = {
     />
   ),
 };
+
+export const HermesBolide: Story = {
+  args: { screenState: "default", payload: BOLIDE_PAYLOAD },
+};
+
+export const CartierEmptyHistory: Story = {
+  args: { screenState: "default", payload: TANK_MUST_PAYLOAD },
+};
+
+export const Loading: Story = { args: { screenState: "loading" } };
+export const Error: Story = { args: { screenState: "error" } };

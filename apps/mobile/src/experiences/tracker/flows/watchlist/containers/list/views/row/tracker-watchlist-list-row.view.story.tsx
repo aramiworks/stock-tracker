@@ -34,7 +34,7 @@ const UNKNOWN: WatchlistEntry = {
 };
 
 const meta: Meta<typeof TrackerWatchlistListRowView> = {
-  title: "tracker/watchlist/list/row",
+  title: "tracker/watchlist/list/views/row",
   component: TrackerWatchlistListRowView,
   parameters: {
     layout: "centered",
@@ -48,10 +48,6 @@ const meta: Meta<typeof TrackerWatchlistListRowView> = {
 
 export default meta;
 type Story = StoryObj<typeof TrackerWatchlistListRowView>;
-
-export const InStock: Story = { args: { entry: IN_STOCK } };
-export const OutOfStock: Story = { args: { entry: OUT_OF_STOCK } };
-export const Unknown: Story = { args: { entry: UNKNOWN } };
 
 export const Overview: Story = {
   render: () => (
@@ -74,3 +70,7 @@ export const Overview: Story = {
     />
   ),
 };
+
+export const InStock: Story = { args: { entry: IN_STOCK } };
+export const OutOfStock: Story = { args: { entry: OUT_OF_STOCK } };
+export const Unknown: Story = { args: { entry: UNKNOWN } };

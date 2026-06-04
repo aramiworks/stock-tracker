@@ -12,9 +12,9 @@ export const TrackerAccountHomeSignOutButtonView = memo<Props>(
     const { t } = useTranslation("tracker");
     return (
       <Button
-        variant="filled"
-        backgroundColor="$error"
-        color="$onError"
+        variant="outlined"
+        borderColor="$error"
+        color="$error"
         onPress={onPress}
         disabled={disabled}
         testID="sign-out-button"

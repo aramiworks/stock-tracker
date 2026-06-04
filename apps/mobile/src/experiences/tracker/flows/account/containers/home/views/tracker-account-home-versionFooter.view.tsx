@@ -20,9 +20,8 @@ TrackerAccountHomeVersionFooterView.displayName =
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "flex-end",
     alignItems: "center",
+    paddingVertical: 12,
   },
   text: {
     fontFamily: "Inter",

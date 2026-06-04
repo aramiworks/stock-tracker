@@ -13,5 +13,5 @@ export default function Index() {
     return <Redirect href="/auth/signIn/gmailOauth" />;
   }
 
-  return <Redirect href="/tracker/alerts/home" />;
+  return <Redirect href="/tracker/watchlist" />;
 }

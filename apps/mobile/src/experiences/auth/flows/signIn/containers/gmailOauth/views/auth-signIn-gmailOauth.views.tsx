@@ -2,12 +2,12 @@ import { memo, type ReactNode } from "react";
 import { View, StyleSheet } from "react-native";
 import { colors } from "@aramiworks/ui";
 import type { AuthSignInGmailOauthControllersOutput } from "../controllers/auth-signIn-gmailOauth.controllers";
-import { AuthSignInGmailOauthHeaderView } from "./auth-signIn-gmailOauth-header.view";
-import { AuthSignInGmailOauthWelcomeHeadingView } from "./auth-signIn-gmailOauth-welcomeHeading.view";
-import { AuthSignInGmailOauthSignInButtonView } from "./auth-signIn-gmailOauth-signInButton.view";
-import { AuthSignInGmailOauthTermsView } from "./auth-signIn-gmailOauth-terms.view";
-import { AuthSignInGmailOauthLoadingStateView } from "./auth-signIn-gmailOauth-loadingState.view";
-import { AuthSignInGmailOauthErrorStateView } from "./auth-signIn-gmailOauth-errorState.view";
+import { AuthSignInGmailOauthHeaderView } from "./header/auth-signIn-gmailOauth-header.view";
+import { AuthSignInGmailOauthWelcomeHeadingView } from "./welcomeHeading/auth-signIn-gmailOauth-welcomeHeading.view";
+import { AuthSignInGmailOauthSignInButtonView } from "./signInButton/auth-signIn-gmailOauth-signInButton.view";
+import { AuthSignInGmailOauthTermsView } from "./terms/auth-signIn-gmailOauth-terms.view";
+import { AuthSignInGmailOauthLoadingStateView } from "./loadingState/auth-signIn-gmailOauth-loadingState.view";
+import { AuthSignInGmailOauthErrorStateView } from "./errorState/auth-signIn-gmailOauth-errorState.view";
 
 export type AuthSignInGmailOauthScreenState = "default" | "loading" | "error";
 

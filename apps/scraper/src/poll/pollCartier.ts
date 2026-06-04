@@ -102,13 +102,14 @@ async function emitDropEvent(
 export async function pollCartierSku(
   deps: PollSkuDeps,
   adapter: BrandAdapter,
-  sku: { id: string; referenceCode: string },
+  sku: { id: string; referenceCode: string; url?: string },
 ): Promise<PollSkuResult> {
   const now = deps.now ?? (() => new Date());
   const ref: SkuRef = {
     id: sku.id,
     brand: BRAND,
     referenceCode: sku.referenceCode,
+    ...(sku.url ? { url: sku.url } : {}),
   };
   const url = adapter.buildUrl(ref);
 
@@ -161,7 +162,7 @@ export async function pollCartier(
       reference_code: { not: null },
       watchable_unit: { brand: BRAND, active: true },
     },
-    select: { id: true, reference_code: true },
+    select: { id: true, reference_code: true, source_url: true },
   });
 
   const results: PollSkuResult[] = [];
@@ -170,6 +171,7 @@ export async function pollCartier(
       await pollCartierSku(deps, adapter, {
         id: sku.id,
         referenceCode: sku.reference_code as string,
+        ...(sku.source_url ? { url: sku.source_url } : {}),
       }),
     );
   }

@@ -141,15 +141,52 @@ describe("pollCartierSku", () => {
   });
 });
 
+describe("pollCartierSku url source", () => {
+  it("uses the stored source url verbatim when provided", async () => {
+    const seen: string[] = [];
+    const fetcher: Fetcher = {
+      get: async (url) => {
+        seen.push(url);
+        return ok(OUT_OF_STOCK_HTML);
+      },
+    };
+    const stored =
+      "https://www.cartier.com/ko-kr/시계/컬렉션/산토스/x-CRWSSA0086.html";
+    const r = await pollCartierSku(
+      { fetcher, stateBuffer: memoryStateBuffer() },
+      adapter,
+      {
+        id: "s",
+        referenceCode: "WSSA0086",
+        url: stored,
+      },
+    );
+    expect(seen).toEqual([stored]);
+    expect(r.url).toBe(stored);
+  });
+});
+
 describe("pollCartier", () => {
-  it("drives every active Cartier SKU from the catalog", async () => {
+  it("drives every active Cartier SKU and passes source_url through", async () => {
     const prisma = {
       skus: {
         findMany: jest
-          .fn<() => Promise<Array<{ id: string; reference_code: string }>>>()
+          .fn<
+            () => Promise<
+              Array<{
+                id: string;
+                reference_code: string;
+                source_url: string | null;
+              }>
+            >
+          >()
           .mockResolvedValue([
-            { id: "a", reference_code: "WSTA0106" },
-            { id: "b", reference_code: "WSTA0107" },
+            { id: "a", reference_code: "WSTA0106", source_url: null },
+            {
+              id: "b",
+              reference_code: "WSSA0086",
+              source_url: "https://www.cartier.com/ko-kr/x-CRWSSA0086.html",
+            },
           ]),
       },
     } as unknown as Parameters<typeof pollCartier>[0]["prisma"];
@@ -161,10 +198,12 @@ describe("pollCartier", () => {
     });
 
     expect(results).toHaveLength(2);
-    expect(results.map((r) => r.referenceCode)).toEqual([
-      "WSTA0106",
-      "WSTA0107",
-    ]);
-    expect(results.every((r) => r.inStock === false)).toBe(true);
+    // Tank Must falls back to the derived URL; the other uses its stored URL.
+    expect(results[0]!.url).toContain(
+      "tank-must-de-cartier-watch-CRWSTA0106.html",
+    );
+    expect(results[1]!.url).toBe(
+      "https://www.cartier.com/ko-kr/x-CRWSSA0086.html",
+    );
   });
 });

@@ -28,6 +28,14 @@ describe("CartierAdapter", () => {
         );
       },
     );
+
+    it("uses the stored url verbatim when present (non-Tank-Must lines)", () => {
+      const stored =
+        "https://www.cartier.com/ko-kr/시계/컬렉션/산토스-드-까르띠에/산토스-뒤몽-워치-CRWSSA0086.html";
+      expect(adapter.buildUrl({ ...sku("WSSA0086"), url: stored })).toBe(
+        stored,
+      );
+    });
   });
 
   describe("parse", () => {

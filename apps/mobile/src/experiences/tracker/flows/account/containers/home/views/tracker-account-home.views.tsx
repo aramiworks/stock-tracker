@@ -1,44 +1,53 @@
-import { memo } from "react";
-import { Text, StyleSheet, View } from "react-native";
-import {
-  Button,
-  Card,
-  DashboardTemplate,
-  Divider,
-  TopAppBar,
-  XStack,
-  YStack,
-} from "@aramiworks/ui";
+import { memo, type ReactNode } from "react";
+import { DashboardTemplate, TopAppBar, YStack } from "@aramiworks/ui";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import Constants from "expo-constants";
+import { TrackerAccountHomeAccountInfoCardView } from "./tracker-account-home-accountInfoCard.view";
+import { TrackerAccountHomeSignOutButtonView } from "./tracker-account-home-signOutButton.view";
+import { TrackerAccountHomeVersionFooterView } from "./tracker-account-home-versionFooter.view";
+import { TrackerAccountHomeLoadingStateView } from "./tracker-account-home-loadingState.view";
+import { TrackerAccountHomeErrorStateView } from "./tracker-account-home-errorState.view";
+
+export type TrackerAccountHomeScreenState = "default" | "loading" | "error";
 
 interface TrackerAccountHomeViewsProps {
+  screenState?: TrackerAccountHomeScreenState;
   email?: string;
   createdAt?: string;
   signOut?: () => Promise<void>;
   isSigningOut?: boolean;
+  onRetry?: () => void;
 }
 
 export const TrackerAccountHomeViews = memo(
   ({
+    screenState = "default",
     email = "",
     createdAt = "",
     signOut,
     isSigningOut = false,
+    onRetry,
   }: TrackerAccountHomeViewsProps) => {
     const { t } = useTranslation("tracker");
     const router = useRouter();
 
-    const formattedDate = createdAt
-      ? new Date(createdAt).toLocaleDateString("ko-KR", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })
-      : "";
-
-    const version = Constants.expoConfig?.version ?? "0.0.0";
+    const content: Record<TrackerAccountHomeScreenState, ReactNode> = {
+      default: (
+        <>
+          <TrackerAccountHomeAccountInfoCardView
+            email={email}
+            createdAt={createdAt}
+          />
+          <TrackerAccountHomeSignOutButtonView
+            onPress={signOut}
+            disabled={isSigningOut}
+          />
+          <TrackerAccountHomeVersionFooterView />
+        </>
+      ),
+      loading: <TrackerAccountHomeLoadingStateView />,
+      error: <TrackerAccountHomeErrorStateView onRetry={onRetry} />,
+    };
 
     return (
       <DashboardTemplate
@@ -54,48 +63,7 @@ export const TrackerAccountHomeViews = memo(
         }
       >
         <YStack padding={16} gap={24} flex={1}>
-          <Card variant="outlined" testID="account-info-card">
-            <YStack padding={16} gap={0}>
-              <XStack
-                justifyContent="space-between"
-                alignItems="center"
-                paddingVertical={12}
-              >
-                <Text style={styles.label}>
-                  {t("account.home.accountInfoCard.emailLabel", "이메일")}
-                </Text>
-                <Text style={styles.value}>{email}</Text>
-              </XStack>
-              <Divider />
-              <XStack
-                justifyContent="space-between"
-                alignItems="center"
-                paddingVertical={12}
-              >
-                <Text style={styles.label}>
-                  {t("account.home.accountInfoCard.signupDateLabel", "가입일")}
-                </Text>
-                <Text style={styles.value}>{formattedDate}</Text>
-              </XStack>
-            </YStack>
-          </Card>
-
-          <Button
-            variant="filled"
-            backgroundColor="$error"
-            color="$onError"
-            onPress={signOut}
-            disabled={isSigningOut}
-            testID="sign-out-button"
-          >
-            {t("account.home.signOutButton.label", "로그아웃")}
-          </Button>
-
-          <View style={styles.versionContainer}>
-            <Text style={styles.versionText} testID="version-footer">
-              {t("account.home.versionFooter.label", "버전")} v{version}
-            </Text>
-          </View>
+          {content[screenState]}
         </YStack>
       </DashboardTemplate>
     );
@@ -103,27 +71,3 @@ export const TrackerAccountHomeViews = memo(
 );
 
 TrackerAccountHomeViews.displayName = "TrackerAccountHomeViews";
-
-const styles = StyleSheet.create({
-  label: {
-    fontFamily: "Inter",
-    fontSize: 14,
-    color: "#49454F",
-  },
-  value: {
-    fontFamily: "Inter",
-    fontSize: 14,
-    color: "#1C1B1F",
-  },
-  versionContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  versionText: {
-    fontFamily: "Inter",
-    fontSize: 12,
-    color: "#49454F",
-    opacity: 0.6,
-  },
-});

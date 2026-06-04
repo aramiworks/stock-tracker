@@ -62,10 +62,28 @@ const config: StorybookConfig = {
         }
       },
     };
+    // Virtual module plugin: stubs expo-constants — it pulls in expo-modules-core
+    // which imports TurboModuleRegistry from react-native, absent from
+    // react-native-web. Constants.expoConfig.version is replaced with "0.0.0".
+    const expoConstantsMockPlugin = {
+      name: "mock-expo-constants",
+      enforce: "pre" as const,
+      resolveId(id: string) {
+        if (id === "expo-constants") {
+          return "\0expo-constants-mock";
+        }
+      },
+      load(id: string) {
+        if (id === "\0expo-constants-mock") {
+          return 'const Constants = { expoConfig: { version: "0.0.0" } }; export default Constants;';
+        }
+      },
+    };
     config.plugins = [
       ...(config.plugins ?? []),
       reactFabricMockPlugin,
       codegenNativeComponentMockPlugin,
+      expoConstantsMockPlugin,
     ];
 
     config.resolve.alias = [
@@ -105,6 +123,14 @@ const config: StorybookConfig = {
         find: "expo-router",
         replacement: path.resolve(__dirname, "./mocks/expo-router.js"),
       },
+      // Mock expo-constants — its real implementation transitively imports
+      // expo-modules-core's `requireNativeModule`, which reads
+      // `TurboModuleRegistry` from react-native (a native-only API absent
+      // from react-native-web). Stub it to return a static expoConfig.
+      {
+        find: "expo-constants",
+        replacement: path.resolve(__dirname, "./mocks/expo-constants.js"),
+      },
       // Mock react-i18next — useTranslation returns key passthrough; no i18n
       // provider is set up in Storybook so this prevents render errors in views
       // that call t("namespace.key").
@@ -130,7 +156,8 @@ const config: StorybookConfig = {
           (a as { find: string }).find !== "@expo/vector-icons/MaterialIcons" &&
           (a as { find: string }).find !== "@stock-tracker/validation" &&
           (a as { find: string }).find !== "react-i18next" &&
-          (a as { find: string }).find !== "expo-router",
+          (a as { find: string }).find !== "expo-router" &&
+          (a as { find: string }).find !== "expo-constants",
       ),
     ];
     // @aramiworks/ui ships TypeScript source (.tsx files). Exclude from

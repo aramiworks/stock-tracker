@@ -5,7 +5,7 @@ import type {
   WatchlistEntry,
   WatchableState,
 } from "../../models/tracker-watchlist-list.type";
-import { TrackerWatchlistListStatePillView } from "../statePill/statePill";
+import { TrackerWatchlistListStatePillView } from "../statePill/tracker-watchlist-list-statePill.view";
 
 type Props = {
   entry: WatchlistEntry;

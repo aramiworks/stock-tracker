@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { TrackerWatchlistListStatePillView } from "../../../list/views/statePill/statePill";
+import { TrackerWatchlistListStatePillView } from "../../../list/views/statePill/tracker-watchlist-list-statePill.view";
 import type { DetailSku } from "../../models/tracker-watchlist-detail.type";
 
 type Props = {

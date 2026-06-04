@@ -1,6 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { TrackerWatchlistDetailViews } from "./views";
+import { TrackerWatchlistDetailViews } from "./tracker-watchlist-detail.views";
 import { WATCHLIST_DETAIL_MOCK } from "../models/tracker-watchlist-detail.mock";
 import { OverviewLayout } from "@aramiworks/ui";
 

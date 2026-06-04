@@ -6,15 +6,18 @@ import { WATCHLIST_LIST_MOCK_GROUPS } from "./models/tracker-watchlist-list.mock
 /**
  * Container-level Storybook entry for the watchlist list screen.
  *
- * Stamps the views composer directly with two fixed groups (Hermès / Bolide
- * + Hermès / Constance) covering all three watchable states:
- *   - in_stock  (Bolide 27)
- *   - out_of_stock (Bolide 31)
- *   - unknown   (Constance 18)
+ * Stamps the views composer directly with three full groups (Hermès / Bolide,
+ * Hermès / Evelyne, Cartier / Tank Must) mirroring Figma frame 845-2 exactly.
+ * All three watchable states are represented:
+ *   - in_stock     (Bolide 27, Tank Must Small Leather)
+ *   - out_of_stock (Bolide 31, Evelyne 29, Tank Must Large Steel)
+ *   - unknown      (Evelyne 16)
  *
- * Figma: https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=845-2
+ * Figma frames:
+ *   - Default: https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=845-2
+ *   - Empty:   https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=845-69
+ *   - Loading: https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=845-86
  */
-const GROUPS = WATCHLIST_LIST_MOCK_GROUPS.slice(0, 2);
 
 const meta: Meta<typeof TrackerWatchlistListViews> = {
   title: "tracker/watchlist/list",
@@ -32,5 +35,29 @@ export default meta;
 type Story = StoryObj<typeof TrackerWatchlistListViews>;
 
 export const Default: Story = {
-  args: { screenState: "default", groups: GROUPS },
+  args: { screenState: "default", groups: WATCHLIST_LIST_MOCK_GROUPS },
+};
+
+export const Empty: Story = {
+  parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=845-69",
+    },
+  },
+  args: { screenState: "empty", onAddProductsPress: () => {} },
+};
+
+export const Loading: Story = {
+  parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=845-86",
+    },
+  },
+  args: { screenState: "loading" },
+};
+
+export const Error: Story = {
+  args: { screenState: "error", onAddProductsPress: () => {} },
 };

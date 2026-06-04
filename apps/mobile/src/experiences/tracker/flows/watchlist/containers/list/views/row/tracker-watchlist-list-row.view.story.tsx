@@ -25,10 +25,10 @@ const OUT_OF_STOCK: WatchlistEntry = {
 
 const UNKNOWN: WatchlistEntry = {
   ...IN_STOCK,
-  id: "wl-constance-18",
-  watchableUnitId: "11111111-1111-1111-1111-000000000010",
-  productLine: "Constance",
-  modelName: "Constance 18",
+  id: "wl-evelyne-16",
+  watchableUnitId: "11111111-1111-1111-1111-000000000020",
+  productLine: "Evelyne",
+  modelName: "Evelyne 16",
   state: "unknown",
   lastRestockedAt: null,
 };

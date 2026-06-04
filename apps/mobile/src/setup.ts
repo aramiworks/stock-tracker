@@ -111,6 +111,7 @@ jest.mock("@aramiworks/ui", () => {
         accessibilityState: { checked: props.state === "checked" },
       }),
     Spacer: () => React.createElement(View),
+    Divider: () => React.createElement(View, { testID: "divider" }),
     EmptyStateTemplate: (props: Record<string, unknown>) =>
       React.createElement(
         View,
@@ -123,7 +124,11 @@ jest.mock("@aramiworks/ui", () => {
     Button: (props: Record<string, unknown>) =>
       React.createElement(
         View,
-        { testID: props.testID, onPress: props.onPress },
+        {
+          testID: props.testID,
+          onPress: props.onPress,
+          accessibilityState: { disabled: !!props.disabled },
+        },
         React.createElement(RNText, null, props.children),
       ),
     Card: (props: Record<string, unknown>) =>

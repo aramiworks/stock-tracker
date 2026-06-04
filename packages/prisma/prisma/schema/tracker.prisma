@@ -29,6 +29,7 @@ model skus {
   hardware          String? // e.g. "GHW", "PHW"
   size              String? // e.g. "25", "28", "30"
   reference_code    String?  @unique
+  source_url        String? // canonical product-page URL; used by scrapers when the URL isn't derivable from reference_code (e.g. non-Tank-Must Cartier lines)
   image_url         String?
   active            Boolean  @default(true)
   created_at        DateTime @default(now())

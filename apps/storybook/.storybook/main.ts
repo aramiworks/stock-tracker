@@ -62,10 +62,28 @@ const config: StorybookConfig = {
         }
       },
     };
+    // Virtual module plugin: stubs expo-constants — it pulls in expo-modules-core
+    // which imports TurboModuleRegistry from react-native, absent from
+    // react-native-web. Constants.expoConfig.version is replaced with "0.0.0".
+    const expoConstantsMockPlugin = {
+      name: "mock-expo-constants",
+      enforce: "pre" as const,
+      resolveId(id: string) {
+        if (id === "expo-constants") {
+          return "\0expo-constants-mock";
+        }
+      },
+      load(id: string) {
+        if (id === "\0expo-constants-mock") {
+          return 'const Constants = { expoConfig: { version: "0.0.0" } }; export default Constants;';
+        }
+      },
+    };
     config.plugins = [
       ...(config.plugins ?? []),
       reactFabricMockPlugin,
       codegenNativeComponentMockPlugin,
+      expoConstantsMockPlugin,
     ];
 
     config.resolve.alias = [
@@ -105,6 +123,14 @@ const config: StorybookConfig = {
         find: "expo-router",
         replacement: path.resolve(__dirname, "./mocks/expo-router.js"),
       },
+      // Mock expo-constants — its real implementation transitively imports
+      // expo-modules-core's `requireNativeModule`, which reads
+      // `TurboModuleRegistry` from react-native (a native-only API absent
+      // from react-native-web). Stub it to return a static expoConfig.
+      {
+        find: "expo-constants",
+        replacement: path.resolve(__dirname, "./mocks/expo-constants.js"),
+      },
       // Mock react-i18next — useTranslation returns key passthrough; no i18n
       // provider is set up in Storybook so this prevents render errors in views
       // that call t("namespace.key").
@@ -130,28 +156,23 @@ const config: StorybookConfig = {
           (a as { find: string }).find !== "@expo/vector-icons/MaterialIcons" &&
           (a as { find: string }).find !== "@stock-tracker/validation" &&
           (a as { find: string }).find !== "react-i18next" &&
-          (a as { find: string }).find !== "expo-router",
+          (a as { find: string }).find !== "expo-router" &&
+          (a as { find: string }).find !== "expo-constants",
       ),
-    ];
-    // @aramiworks/ui ships TypeScript source (.tsx files). Exclude from
-    // pre-bundling so Vite processes it through the regular TSX transform.
-    config.optimizeDeps = config.optimizeDeps || {};
-    config.optimizeDeps.exclude = [
-      ...(config.optimizeDeps.exclude || []),
-      "@aramiworks/ui",
     ];
     // React 19's CJS packages have no "import" ESM export condition, so Vite 8
     // serves them raw via @fs/... instead of pre-bundling them. .mjs files from
-    // framer-motion/Tamagui do named ESM imports (e.g. `import { jsx } from
-    // 'react/jsx-runtime'`, `import { createPortal } from 'react-dom'`) which
-    // fail against the raw CJS file. Force pre-bundling to convert CJS → ESM.
+    // framer-motion/Tamagui do named ESM imports which fail against the raw CJS
+    // file. Force pre-bundling to convert CJS → ESM.
     //
-    // @aramiworks/ui is excluded from pre-bundling (ships TypeScript), so Vite
-    // never discovers react-native-web transitively. This causes a cascade of
-    // @fs/... failures across react-native-web's entire CJS dep tree (including
-    // inline-style-prefixer subpaths, @react-native/normalize-colors, etc.).
-    // Adding react-native-web directly forces Vite to pre-bundle it and all its
-    // CJS internals in one esbuild pass, eliminating the cascade entirely.
+    // @aramiworks/ui ships TypeScript source and was previously excluded from
+    // pre-bundling, but that caused a cascade of CJS failures for all packages
+    // that Vite discovered transitively through it (inline-style-prefixer,
+    // @react-native/normalize-colors, Tamagui CJS utils, etc.). Removing the
+    // exclusion lets esbuild pre-bundle @aramiworks/ui and all its transitive
+    // CJS deps in one pass, eliminating the cascade. Esbuild handles TypeScript
+    // and TSX natively so no extra loader config is needed.
+    config.optimizeDeps = config.optimizeDeps || {};
     config.optimizeDeps.include = [
       ...(config.optimizeDeps.include || []),
       "react/jsx-runtime",
@@ -161,14 +182,14 @@ const config: StorybookConfig = {
     ];
     // @tamagui/constants and similar packages reference `process.env.*` directly
     // (e.g. `process.env.TEST_NATIVE_PLATFORM`). Vite doesn't define `process`
-    // in the browser — shim it so these reads return undefined instead of throwing
-    // `ReferenceError: process is not defined`.
+    // in the browser — shim it so these reads return undefined instead of
+    // throwing `ReferenceError: process is not defined`.
     config.define = {
       ...(config.define || {}),
-      "process.env": "{}",
       "process.env.NODE_ENV": JSON.stringify(
         process.env.NODE_ENV ?? "development",
       ),
+      "process.env": "{}",
     };
     return config;
   },

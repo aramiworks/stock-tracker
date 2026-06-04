@@ -12,8 +12,10 @@ export class CartierAdapter implements BrandAdapter {
   readonly brand = "Cartier" as const;
 
   buildUrl(sku: SkuRef): string {
-    // Cartier KR Tank Must product pages share one collection + slug; only the
-    // CR-prefixed reference code varies (WSTA0106/0107/0135/0136).
+    // Prefer the stored canonical URL when present. Cartier PDP paths vary by
+    // line (Santos/Panthère/Ballon Bleu use different, sometimes Korean-encoded
+    // slugs), so only Tank Must is derivable from the reference code.
+    if (sku.url) return sku.url;
     return `https://www.cartier.com/ko-kr/watches/collections/tank/tank-must-de-cartier-watch-CR${sku.referenceCode}.html`;
   }
 

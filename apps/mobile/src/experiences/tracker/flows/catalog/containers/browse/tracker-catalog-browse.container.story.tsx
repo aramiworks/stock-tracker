@@ -45,3 +45,15 @@ export const Default: Story = {
     selectedUnitIds: SELECTED_UNIT_IDS,
   },
 };
+
+export const Loading: Story = {
+  args: { screenState: "loading" },
+};
+
+export const Empty: Story = {
+  args: { screenState: "empty" },
+};
+
+export const Error: Story = {
+  args: { screenState: "error" },
+};

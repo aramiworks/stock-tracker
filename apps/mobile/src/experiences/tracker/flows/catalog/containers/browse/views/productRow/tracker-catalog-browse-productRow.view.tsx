@@ -12,6 +12,7 @@ type Props = {
 export const TrackerCatalogBrowseProductRowView = memo(
   ({ unit, checked, onTogglePress }: Props) => {
     const testID = `catalog-row-${unit.id}`;
+    const isUnknown = unit.stockState === "unknown";
     return (
       <Pressable
         onPress={onTogglePress}
@@ -25,7 +26,9 @@ export const TrackerCatalogBrowseProductRowView = memo(
             accessibilityLabel={unit.modelName}
             testID={`${testID}-checkbox`}
           />
-          <Text style={styles.name}>{unit.modelName}</Text>
+          <Text style={[styles.name, isUnknown && styles.nameUnknown]}>
+            {unit.modelName}
+          </Text>
         </View>
         <View style={styles.divider} />
       </Pressable>
@@ -45,11 +48,14 @@ const styles = StyleSheet.create({
   },
   name: {
     fontFamily: "Inter",
-    fontWeight: "400",
+    fontWeight: "500",
     fontSize: 15,
     color: "#1a1a1a",
     marginLeft: 4,
     flex: 1,
+  },
+  nameUnknown: {
+    color: "#999999",
   },
   divider: {
     height: 1,

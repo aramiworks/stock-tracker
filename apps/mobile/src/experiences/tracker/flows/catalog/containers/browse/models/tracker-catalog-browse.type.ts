@@ -8,11 +8,14 @@ export type TrackerCatalogBrowseScreenState =
   | "loading"
   | "error";
 
+export type StockState = "in_stock" | "out_of_stock" | "unknown";
+
 export type CatalogUnit = {
   id: string;
   brand: string;
   productLine: string;
   modelName: string;
+  stockState?: StockState;
 };
 
 export type CatalogGroup = {

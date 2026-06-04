@@ -1,3 +1,0 @@
-mutation DeletePurchase($id: ID!) {
-  deletePurchase(id: $id)
-}

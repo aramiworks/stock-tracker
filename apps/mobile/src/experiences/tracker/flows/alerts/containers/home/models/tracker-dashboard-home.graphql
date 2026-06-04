@@ -1,9 +1,0 @@
-mutation CreateAccount($input: CreateAccountInput!) {
-  createAccount(input: $input) {
-    id
-    storeName
-    saName
-    notes
-    createdAt
-  }
-}

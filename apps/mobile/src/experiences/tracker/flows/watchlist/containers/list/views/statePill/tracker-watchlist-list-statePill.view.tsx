@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
+import { colors } from "@aramiworks/ui";
 import { stateColors } from "@/shared/tokens";
 import type { WatchableState } from "../../models/tracker-watchlist-list.type";
 
@@ -13,14 +14,14 @@ type Props = {
  * State pill atom — 22px tall, 11px radius, 8px dot + 12pt Medium label.
  *
  *   in_stock      → stateColors.green  (iOS systemGreen, design hand-off)
- *   out_of_stock  → stateColors.red    (Cartier red)
+ *   out_of_stock  → colors.primary     (#0066FF brand primary)
  *   unknown       → stateColors.muted  (neutral grey)
  *
- * Spec: design hand-off for INF-1414 (frames 845-2 / 845-69 / 846-2).
+ * Spec: Figma frames 845-2 / 845-69 / 846-2 / 846-57.
  */
 const COLORS: Record<WatchableState, string> = {
   in_stock: stateColors.green,
-  out_of_stock: stateColors.red,
+  out_of_stock: colors.primary,
   unknown: stateColors.muted,
 };
 

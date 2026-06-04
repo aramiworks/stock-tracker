@@ -13,7 +13,8 @@ import type {
  *
  * Two canonical shapes:
  *   - HermesSingleSku   → single SKU + full history
- *   - CartierMultiSku   → 3 SKUs + history with both restock + sold-out events
+ *   - CartierMultiSku   → 3 SKUs (out_of_stock / in_stock / unknown — all three
+ *                         pill variants) + history with refCode · descriptor lines
  *
  * Both stamps the views composer directly with fixed payloads — bypasses the
  * live Apollo client so Chromatic captures stable snapshots.
@@ -44,18 +45,21 @@ const HERMES_BOLIDE: WatchlistDetailPayload = {
     {
       id: "drop-1",
       kind: "restocked",
+      referenceCode: null,
       skuDescriptor: "토고 · 골드 금장",
       occurredAt: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
     },
     {
       id: "drop-2",
       kind: "out_of_stock",
+      referenceCode: null,
       skuDescriptor: "토고 · 골드 금장",
       occurredAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
     },
     {
       id: "drop-3",
       kind: "restocked",
+      referenceCode: null,
       skuDescriptor: "토고 · 골드 금장",
       occurredAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     },
@@ -64,22 +68,22 @@ const HERMES_BOLIDE: WatchlistDetailPayload = {
 
 const CARTIER_TANK_SKUS: DetailSku[] = [
   {
-    id: "sku-tm-large-steel-leather",
+    id: "sku-tm-large-black",
+    referenceCode: "WSTA0041",
+    descriptor: "스틸 케이스 · 블랙 가죽",
+    state: "out_of_stock",
+  },
+  {
+    id: "sku-tm-large-brown",
     referenceCode: "WSTA0042",
     descriptor: "스틸 케이스 · 브라운 가죽",
     state: "in_stock",
   },
   {
-    id: "sku-tm-large-steel-black",
+    id: "sku-tm-large-grey",
     referenceCode: "WSTA0043",
-    descriptor: "스틸 케이스 · 블랙 가죽",
-    state: "out_of_stock",
-  },
-  {
-    id: "sku-tm-large-steel-bracelet",
-    referenceCode: "WSTA0029",
-    descriptor: "스틸 케이스 · 스틸 브레이슬릿",
-    state: "in_stock",
+    descriptor: "스틸 케이스 · 그레이 가죽",
+    state: "unknown",
   },
 ];
 
@@ -87,26 +91,30 @@ const CARTIER_TANK_DROPS: DetailDropEvent[] = [
   {
     id: "tank-drop-1",
     kind: "restocked",
-    skuDescriptor: "스틸 케이스 · 브라운 가죽",
-    occurredAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    referenceCode: "WSTA0042",
+    skuDescriptor: "브라운 가죽",
+    occurredAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     id: "tank-drop-2",
     kind: "out_of_stock",
-    skuDescriptor: "스틸 케이스 · 블랙 가죽",
-    occurredAt: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
+    referenceCode: "WSTA0041",
+    skuDescriptor: "블랙 가죽",
+    occurredAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     id: "tank-drop-3",
-    kind: "restocked",
-    skuDescriptor: "스틸 케이스 · 스틸 브레이슬릿",
-    occurredAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    kind: "out_of_stock",
+    referenceCode: "WSTA0042",
+    skuDescriptor: "브라운 가죽",
+    occurredAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     id: "tank-drop-4",
-    kind: "out_of_stock",
-    skuDescriptor: "스틸 케이스 · 브라운 가죽",
-    occurredAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    kind: "restocked",
+    referenceCode: "WSTA0041",
+    skuDescriptor: "블랙 가죽",
+    occurredAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ];
 
@@ -116,7 +124,7 @@ const CARTIER_TANK_MUST: WatchlistDetailPayload = {
     watchableUnitId: "22222222-2222-2222-2222-000000000001",
     brand: "Cartier",
     productLine: "Tank Must",
-    modelName: "Tank Must Large Steel",
+    modelName: "Tank Must Large",
     state: "in_stock",
     lastRestockedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
   },

@@ -21,6 +21,7 @@ type Props = {
 export const TrackerWatchlistDetailViews = memo(
   ({ screenState = "default", payload, onBack }: Props) => {
     const { t } = useTranslation("tracker");
+    const title = payload?.entry?.modelName ?? t("watchlist.detail.title");
 
     const content: Record<TrackerWatchlistDetailScreenState, ReactNode> = {
       loading: <TrackerWatchlistDetailSkeletonCardView />,
@@ -79,7 +80,7 @@ export const TrackerWatchlistDetailViews = memo(
       <View style={styles.screen} testID="watchlist-detail-screen">
         <TopAppBar
           type="small"
-          title={t("watchlist.detail.title")}
+          title={title}
           navigationIcon="arrow-back"
           onNavigationPress={onBack}
           testID="watchlist-detail-title"
@@ -116,9 +117,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: "600",
     fontSize: 13,
-    color: "#1a1a1a",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
+    color: "#808080",
     marginBottom: 8,
   },
   errorState: {

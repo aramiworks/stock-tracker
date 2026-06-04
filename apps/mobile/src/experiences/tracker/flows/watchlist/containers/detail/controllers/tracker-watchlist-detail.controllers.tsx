@@ -111,6 +111,9 @@ export const TrackerWatchlistDetailControllers =
           data.watchlistDetail.dropEvents.map((evt) => ({
             id: evt.id,
             kind: "restocked",
+            referenceCode:
+              /* istanbul ignore next -- defensive: every drop event has a sku */
+              skuById.get(evt.skuId)?.referenceCode ?? null,
             skuDescriptor:
               /* istanbul ignore next -- defensive: every drop event has a sku */
               skuById.get(evt.skuId)?.descriptor ?? "",

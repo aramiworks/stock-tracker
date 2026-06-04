@@ -11,7 +11,8 @@ type Props = {
  * Detail hero — Figma 846-2 / 846-57.
  *
  * Top: brand · product line eyebrow @ 12pt Regular #808080
- * Bottom: model name @ 22pt Semi Bold #1a1a1a
+ * Bottom: model name @ 24pt Semi Bold #1a1a1a
+ * Base: 1px #ededed divider separating the hero from the first section.
  */
 export const TrackerWatchlistDetailHeroView = memo(
   ({ brand, productLine, modelName }: Props) => {
@@ -21,6 +22,7 @@ export const TrackerWatchlistDetailHeroView = memo(
           {brand} · {productLine}
         </Text>
         <Text style={styles.name}>{modelName}</Text>
+        <View style={styles.divider} />
       </View>
     );
   },
@@ -43,8 +45,13 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: "Inter",
     fontWeight: "600",
-    fontSize: 22,
+    fontSize: 24,
     color: "#1a1a1a",
     marginTop: 4,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#ededed",
+    marginTop: 20,
   },
 });

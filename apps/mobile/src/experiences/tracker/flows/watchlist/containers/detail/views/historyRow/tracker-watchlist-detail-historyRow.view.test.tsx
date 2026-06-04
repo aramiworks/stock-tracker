@@ -5,6 +5,7 @@ import type { DetailDropEvent } from "../../models/tracker-watchlist-detail.type
 const base: DetailDropEvent = {
   id: "drop-1",
   kind: "restocked",
+  referenceCode: null,
   skuDescriptor: "토고 · 골드 금장",
   occurredAt: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
 };

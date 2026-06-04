@@ -25,6 +25,7 @@ export type DropEventKind = "restocked" | "out_of_stock";
 export type DetailDropEvent = {
   id: string;
   kind: DropEventKind;
+  referenceCode: string | null;
   skuDescriptor: string;
   occurredAt: string;
 };

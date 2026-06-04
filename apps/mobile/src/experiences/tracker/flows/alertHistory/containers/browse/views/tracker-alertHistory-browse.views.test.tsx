@@ -51,10 +51,7 @@ describe("TrackerAlertHistoryBrowseViews", () => {
   it("renders the dedicated error state with retry pill", () => {
     const onRetry = jest.fn();
     const { getByTestId } = render(
-      <TrackerAlertHistoryBrowseViews
-        screenState="error"
-        onRetry={onRetry}
-      />,
+      <TrackerAlertHistoryBrowseViews screenState="error" onRetry={onRetry} />,
     );
     expect(getByTestId("alert-history-error-state")).toBeTruthy();
     expect(getByTestId("alert-history-error-retry")).toBeTruthy();

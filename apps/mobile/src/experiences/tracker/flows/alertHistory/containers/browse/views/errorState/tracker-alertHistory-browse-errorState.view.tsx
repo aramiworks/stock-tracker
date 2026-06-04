@@ -45,9 +45,7 @@ export const TrackerAlertHistoryBrowseErrorStateView = memo(
           testID="alert-history-error-retry"
           style={styles.retry}
         >
-          <Text style={styles.retryLabel}>
-            {t("alertHistory.error.retry")}
-          </Text>
+          <Text style={styles.retryLabel}>{t("alertHistory.error.retry")}</Text>
         </Pressable>
       </View>
     );

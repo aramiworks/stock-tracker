@@ -87,3 +87,15 @@ type Story = StoryObj<typeof TrackerAlertHistoryBrowseViews>;
 export const Default: Story = {
   args: { screenState: "default", events: EVENTS },
 };
+
+export const Empty: Story = {
+  args: { screenState: "empty", events: [] },
+};
+
+export const Loading: Story = {
+  args: { screenState: "loading" },
+};
+
+export const Error: Story = {
+  args: { screenState: "error", onRetry: () => undefined },
+};

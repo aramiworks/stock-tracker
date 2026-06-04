@@ -12,12 +12,33 @@ import { getBrandAdapter } from "../src/brands/registry.js";
 import { HttpFetcher } from "../src/fetch/HttpFetcher.js";
 import { pollCartierSku } from "../src/poll/pollCartier.js";
 
-// The 4 seeded Cartier SKUs (packages/prisma/prisma/seed-catalog.ts).
-const SEEDED = [
+// The seeded Cartier SKUs (packages/prisma/prisma/seed-catalog.ts). The 4 Tank
+// Must references derive their URL from buildUrl; the rest carry a stored url.
+const SEEDED: Array<{ id: string; referenceCode: string; url?: string }> = [
   { id: "WSTA0106", referenceCode: "WSTA0106" },
   { id: "WSTA0107", referenceCode: "WSTA0107" },
   { id: "WSTA0135", referenceCode: "WSTA0135" },
   { id: "WSTA0136", referenceCode: "WSTA0136" },
+  {
+    id: "WSTA0116",
+    referenceCode: "WSTA0116",
+    url: "https://www.cartier.com/ko-kr/watches/all-collections/tank/탱크-아메리칸-워치-CRWSTA0116.html",
+  },
+  {
+    id: "WSSA0086",
+    referenceCode: "WSSA0086",
+    url: "https://www.cartier.com/ko-kr/시계/컬렉션/산토스-드-까르띠에/산토스-뒤몽-워치-CRWSSA0086.html",
+  },
+  {
+    id: "WSPN0012",
+    referenceCode: "WSPN0012",
+    url: "https://www.cartier.com/ko-kr/시계/컬렉션/팬더-드-까르띠에/팬더-드-까르띠에-워치-CRWSPN0012.html",
+  },
+  {
+    id: "WSBB0073",
+    referenceCode: "WSBB0073",
+    url: "https://www.cartier.com/ko-kr/시계/컬렉션/발롱-드-까르띠에/발롱-블루-드-까르띠에-워치-CRWSBB0073.html",
+  },
 ];
 
 function memoryStateBuffer(): StateBuffer {

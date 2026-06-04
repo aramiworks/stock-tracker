@@ -25,6 +25,10 @@ export interface SkuRef {
   id: string;
   brand: "Hermes" | "Cartier";
   referenceCode: string;
+  // Canonical product-page URL (skus.source_url). When present, adapters use it
+  // verbatim instead of deriving the URL from referenceCode — required for
+  // product lines whose URL isn't derivable (e.g. non-Tank-Must Cartier).
+  url?: string;
 }
 
 export interface BrandAdapter {

@@ -1,6 +1,7 @@
 /**
  * Catalog seed — creates MVP watchable_units + SKUs for local development.
- * MVP scope: Hermes bags (Birkin/Kelly excluded) + 4 Cartier Tank Must watches.
+ * MVP scope: Hermes bags (Birkin/Kelly excluded) + Cartier watches (Tank Must
+ * plus Tank Américaine / Santos / Panthère / Ballon Bleu with stored URLs).
  *
  * Safe to run multiple times (upsert on [brand, model_name] unique constraint).
  *
@@ -56,9 +57,20 @@ const hermesUnits = [
   { productLine: "In-the-Loop", modelName: "In-the-Loop 23" },
 ];
 
-// -- Cartier watches (exactly 4 references, all Tank Must) --------------------
+// -- Cartier watches ----------------------------------------------------------
+// The 4 Tank Must references have NO sourceUrl — their PDP URL is derivable from
+// the reference code (CartierAdapter.buildUrl). The remaining lines (Santos /
+// Panthère / Ballon Bleu / Tank Américaine) use non-derivable, Korean-slug PDP
+// paths, so they carry an explicit sourceUrl that buildUrl uses verbatim.
 
-const cartierUnits = [
+type CartierUnit = {
+  productLine: string;
+  modelName: string;
+  referenceCode: string;
+  sourceUrl?: string;
+};
+
+const cartierUnits: CartierUnit[] = [
   {
     productLine: "Tank",
     modelName: "Tank Must Large Steel",
@@ -78,6 +90,34 @@ const cartierUnits = [
     productLine: "Tank",
     modelName: "Tank Must Large Leather",
     referenceCode: "WSTA0136",
+  },
+  {
+    productLine: "Tank",
+    modelName: "Tank Américaine WSTA0116",
+    referenceCode: "WSTA0116",
+    sourceUrl:
+      "https://www.cartier.com/ko-kr/watches/all-collections/tank/탱크-아메리칸-워치-CRWSTA0116.html",
+  },
+  {
+    productLine: "Santos",
+    modelName: "Santos-Dumont WSSA0086",
+    referenceCode: "WSSA0086",
+    sourceUrl:
+      "https://www.cartier.com/ko-kr/시계/컬렉션/산토스-드-까르띠에/산토스-뒤몽-워치-CRWSSA0086.html",
+  },
+  {
+    productLine: "Panthère",
+    modelName: "Panthère de Cartier WSPN0012",
+    referenceCode: "WSPN0012",
+    sourceUrl:
+      "https://www.cartier.com/ko-kr/시계/컬렉션/팬더-드-까르띠에/팬더-드-까르띠에-워치-CRWSPN0012.html",
+  },
+  {
+    productLine: "Ballon Bleu",
+    modelName: "Ballon Bleu de Cartier WSBB0073",
+    referenceCode: "WSBB0073",
+    sourceUrl:
+      "https://www.cartier.com/ko-kr/시계/컬렉션/발롱-드-까르띠에/발롱-블루-드-까르띠에-워치-CRWSBB0073.html",
   },
 ];
 
@@ -135,6 +175,7 @@ async function main() {
         hardware,
         size,
         reference_code: unit.referenceCode,
+        source_url: unit.sourceUrl ?? null,
         active: true,
       },
       update: {
@@ -142,6 +183,7 @@ async function main() {
         color: "Silver",
         hardware,
         size,
+        source_url: unit.sourceUrl ?? null,
         active: true,
       },
     });

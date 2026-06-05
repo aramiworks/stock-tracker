@@ -12,6 +12,8 @@ import { TrackerAlertHistoryBrowseControllers } from "../tracker/flows/alertHist
 import { trackerAlertHistoryBrowseViews } from "../tracker/flows/alertHistory/browse/views/index.js";
 import { TrackerIngestDropEventControllers } from "../tracker/flows/ingest/dropEvent/controllers/index.js";
 import { trackerIngestDropEventViews } from "../tracker/flows/ingest/dropEvent/views/index.js";
+import { TrackerNotificationsDevicesControllers } from "../tracker/flows/notifications/devices/controllers/index.js";
+import { trackerNotificationsDevicesViews } from "../tracker/flows/notifications/devices/views/index.js";
 
 @Injectable()
 export class TrpcRouter {
@@ -25,6 +27,7 @@ export class TrpcRouter {
     private readonly alertsFeedControllers: TrackerAlertsFeedControllers,
     private readonly alertHistoryBrowseControllers: TrackerAlertHistoryBrowseControllers,
     private readonly ingestDropEventControllers: TrackerIngestDropEventControllers,
+    private readonly notificationsDevicesControllers: TrackerNotificationsDevicesControllers,
   ) {
     const dashboardRouter = this.trpc.router({
       home: this.trpc.router({
@@ -163,6 +166,29 @@ export class TrpcRouter {
       }),
     });
 
+    const notificationsRouter = this.trpc.router({
+      devices: this.trpc.router({
+        register: this.trpc.protectedProcedure
+          .input(trackerNotificationsDevicesViews.register.input)
+          .output(trackerNotificationsDevicesViews.register.output)
+          .mutation(async ({ ctx, input }) => {
+            return this.notificationsDevicesControllers.register(
+              input,
+              ctx.userId,
+            );
+          }),
+        unregister: this.trpc.protectedProcedure
+          .input(trackerNotificationsDevicesViews.unregister.input)
+          .output(trackerNotificationsDevicesViews.unregister.output)
+          .mutation(async ({ ctx, input }) => {
+            return this.notificationsDevicesControllers.unregister(
+              input,
+              ctx.userId,
+            );
+          }),
+      }),
+    });
+
     this.appRouter = this.trpc.router({
       tracker: this.trpc.router({
         dashboard: dashboardRouter,
@@ -171,6 +197,7 @@ export class TrpcRouter {
         alerts: alertsRouter,
         alertHistory: alertHistoryRouter,
         ingest: ingestRouter,
+        notifications: notificationsRouter,
       }),
     });
   }

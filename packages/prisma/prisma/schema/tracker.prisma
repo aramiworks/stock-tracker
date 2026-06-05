@@ -99,6 +99,29 @@ model alerts {
   @@index([drop_event_id])
 }
 
+// -- Push devices ------------------------------------------------------------
+
+/// One row per (device install × user). Stores the Expo push token used to
+/// deliver restock notifications. The token is globally unique, so an upsert
+/// keyed on `expo_token` handles device hand-off (a new user signing into a
+/// device previously used by someone else reassigns `auth_user_id`). Rows are
+/// soft-deactivated (`active=false`) on logout or when Expo reports the token
+/// as `DeviceNotRegistered`, never hard-deleted.
+model push_devices {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id String   @db.Uuid
+  expo_token   String   @unique // "ExponentPushToken[...]"
+  platform     String // "ios" | "android"
+  active       Boolean  @default(true)
+  last_seen_at DateTime @default(now())
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  auth_user auth_users @relation(fields: [auth_user_id], references: [supabase_id])
+
+  @@index([auth_user_id, active])
+}
+
 // -- Scraper state -----------------------------------------------------------
 
 model sku_stock_state {

@@ -162,6 +162,31 @@ export const trackerResolvers = {
         watchableUnitId: args.watchableUnitId,
       });
     },
+    registerPushDevice: async (
+      _: unknown,
+      args: { expoToken: string; platform: string },
+      context: SubgraphContext,
+    ) => {
+      const result =
+        await context.trackerTrpc.tracker.notifications.devices.register.mutate(
+          {
+            expoToken: args.expoToken,
+            platform: args.platform as "ios" | "android",
+          },
+        );
+      return result.registered;
+    },
+    unregisterPushDevice: async (
+      _: unknown,
+      args: { expoToken: string },
+      context: SubgraphContext,
+    ) => {
+      const result =
+        await context.trackerTrpc.tracker.notifications.devices.unregister.mutate(
+          { expoToken: args.expoToken },
+        );
+      return result.unregistered;
+    },
   },
   WatchableUnit: {
     __resolveReference: async (

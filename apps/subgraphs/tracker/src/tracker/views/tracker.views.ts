@@ -277,5 +277,18 @@ export const trackerTypeDefs = gql`
     returns { removed: false } if no entry existed.
     """
     watchlistRemove(watchableUnitId: ID!): WatchlistRemoveResult!
+
+    """
+    Register the calling device's Expo push token so the current user receives
+    restock push notifications. Idempotent — re-registering the same token is a
+    no-op (reassigns/reactivates). \`platform\` is "ios" or "android".
+    """
+    registerPushDevice(expoToken: String!, platform: String!): Boolean!
+
+    """
+    Deactivate the calling device's Expo push token (logout). Idempotent —
+    returns false if the token wasn't an active device for the current user.
+    """
+    unregisterPushDevice(expoToken: String!): Boolean!
   }
 `;

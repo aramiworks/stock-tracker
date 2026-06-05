@@ -9,6 +9,7 @@ import type {
 import { ALERT_HISTORY_MOCK } from "../models/tracker-alertHistory-browse.mock";
 import { TrackerAlertHistoryBrowseRowView } from "./row/tracker-alertHistory-browse-row.view";
 import { TrackerAlertHistoryBrowseEmptyStateView } from "./emptyState/tracker-alertHistory-browse-emptyState.view";
+import { TrackerAlertHistoryBrowseErrorStateView } from "./errorState/tracker-alertHistory-browse-errorState.view";
 import { TrackerAlertHistoryBrowseSkeletonCardView } from "./skeletonCard/tracker-alertHistory-browse-skeletonCard.view";
 
 type Props = {
@@ -16,6 +17,12 @@ type Props = {
   events?: AlertHistoryEvent[];
   isRefreshing?: boolean;
   onRefresh?: () => void;
+  /**
+   * Tap handler for the error-state retry pill (Figma 623:1216). Falls back to
+   * `onRefresh` when omitted — pull-to-refresh and the retry button drive the
+   * same refetch downstream.
+   */
+  onRetry?: () => void;
 };
 
 /**
@@ -23,9 +30,9 @@ type Props = {
  *
  * Mirrors the watchlist/list views shape (INF-1414):
  *   default → list of `Row` cards keyed by event id
- *   empty   → centered title + body (no CTA — see emptyState.view docstring)
- *   loading → 5 skeleton rows
- *   error   → re-use the empty state as a safe fallback
+ *   empty   → centered clipboard icon + title + body (no CTA)
+ *   loading → 5 skeleton rows with avatar + bars
+ *   error   → centered error icon + title + body + retry pill
  *
  * The screen testID is `alert-history-screen` (Maestro flow + container test
  * rely on this).
@@ -36,6 +43,7 @@ export const TrackerAlertHistoryBrowseViews = memo(
     events = ALERT_HISTORY_MOCK,
     isRefreshing = false,
     onRefresh,
+    onRetry,
   }: Props) => {
     const { t } = useTranslation("tracker");
 
@@ -49,7 +57,11 @@ export const TrackerAlertHistoryBrowseViews = memo(
       ),
       empty: <TrackerAlertHistoryBrowseEmptyStateView />,
       loading: <TrackerAlertHistoryBrowseSkeletonCardView count={5} />,
-      error: <TrackerAlertHistoryBrowseEmptyStateView />,
+      error: (
+        <TrackerAlertHistoryBrowseErrorStateView
+          onRetry={onRetry ?? onRefresh}
+        />
+      ),
     };
 
     return (
@@ -77,6 +89,7 @@ TrackerAlertHistoryBrowseViews.displayName = "TrackerAlertHistoryBrowseViews";
 
 const styles = StyleSheet.create({
   scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 80,

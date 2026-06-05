@@ -48,11 +48,24 @@ describe("TrackerAlertHistoryBrowseViews", () => {
     expect(getByTestId("alert-history-empty-state")).toBeTruthy();
   });
 
-  it("renders error state as empty state (shares fallback view)", () => {
+  it("renders the dedicated error state with retry pill", () => {
+    const onRetry = jest.fn();
     const { getByTestId } = render(
-      <TrackerAlertHistoryBrowseViews screenState="error" />,
+      <TrackerAlertHistoryBrowseViews screenState="error" onRetry={onRetry} />,
     );
-    expect(getByTestId("alert-history-empty-state")).toBeTruthy();
+    expect(getByTestId("alert-history-error-state")).toBeTruthy();
+    expect(getByTestId("alert-history-error-retry")).toBeTruthy();
+  });
+
+  it("falls back to onRefresh when onRetry is not supplied", () => {
+    const onRefresh = jest.fn();
+    const { getByTestId } = render(
+      <TrackerAlertHistoryBrowseViews
+        screenState="error"
+        onRefresh={onRefresh}
+      />,
+    );
+    expect(getByTestId("alert-history-error-state")).toBeTruthy();
   });
 
   it("renders loading skeletons", () => {

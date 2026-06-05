@@ -54,6 +54,11 @@ export class CapSolverDatadomeFetcher implements Fetcher {
     const r1 = await gotScraping({
       url,
       proxyUrl,
+      // Force HTTP/1.1 so the DataDome challenge arrives as a parseable 403
+      // body. Over HTTP/2 got throws HPE_INVALID_CONSTANT before the body is
+      // readable, so the interstitial is never detected and never solved
+      // (validated INF-1602).
+      http2: false,
       responseType: "text",
       headers,
       throwHttpErrors: false,
@@ -101,6 +106,9 @@ export class CapSolverDatadomeFetcher implements Fetcher {
     const r2 = await gotScraping({
       url,
       proxyUrl,
+      // Same HTTP/1.1 pin as r1 — the post-solve retry must use the identical
+      // transport (and sticky exit IP) the datadome cookie was issued against.
+      http2: false,
       responseType: "text",
       headers: { ...headers, Cookie: cookieHeader },
       throwHttpErrors: false,

@@ -179,18 +179,25 @@ model fetcher_bake_results {
 // discovered row into the curated catalog + poll loop is a separate, deliberate
 // step (not this job).
 model discovered_products {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  brand         String // "Hermes" (Cartier later)
-  article_code  String // trailing slug token, e.g. "H086915CK37"
-  url           String // full live product URL (the Korean-slug page)
-  model_hint    String? // slug text before the article code, human hint only
-  first_seen_at DateTime @default(now())
-  last_seen_at  DateTime @default(now())
-  is_stale      Boolean  @default(false)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brand           String // "Hermes" (Cartier later)
+  article_code    String // trailing slug token, e.g. "H086915CK37"
+  url             String // full live product URL (the Korean-slug page)
+  model_hint      String? // slug text before the article code, human hint only
+  first_seen_at   DateTime  @default(now())
+  last_seen_at    DateTime  @default(now())
+  is_stale        Boolean   @default(false)
+  // Availability (INF-1624): set by the discovered-products monitor, which
+  // resolves each non-stale row's stock through the hardened read path. Pure
+  // freshness/availability snapshot — NOT wired to drop_events/alerts.
+  in_stock        Boolean? // last observed purchasable state; null = not yet checked
+  last_checked_at DateTime? // last successful availability resolve
+  last_changed_at DateTime? // last time in_stock flipped
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
 
   @@unique([brand, article_code])
   @@index([brand, is_stale])
+  @@index([brand, in_stock])
   @@index([last_seen_at])
 }

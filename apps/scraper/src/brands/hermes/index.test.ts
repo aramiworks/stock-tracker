@@ -20,14 +20,28 @@ describe("HermesAdapter", () => {
   });
 
   describe("parse", () => {
-    it("throws ParseError on stub input (not yet implemented)", () => {
-      const raw: RawResponse = {
+    it("reads stock state from JSON-LD availability on a 200", () => {
+      const inStock: RawResponse = {
         status: 200,
-        body: "<html>test</html>",
+        body: `<script type="application/ld+json">{"offers":{"availability":"http://schema.org/InStock"}}</script>`,
+        headers: { "content-type": "text/html" },
+      };
+      expect(adapter.parse(inStock).inStock).toBe(true);
+
+      const outOfStock: RawResponse = {
+        ...inStock,
+        body: inStock.body.replace("InStock", "OutOfStock"),
+      };
+      expect(adapter.parse(outOfStock).inStock).toBe(false);
+    });
+
+    it("throws ParseError on a blocked / non-200 response", () => {
+      const raw: RawResponse = {
+        status: 403,
+        body: "<html>var dd={'t':'fe'}</html>",
         headers: { "content-type": "text/html" },
       };
       expect(() => adapter.parse(raw)).toThrow(ParseError);
-      expect(() => adapter.parse(raw)).toThrow("not implemented");
     });
   });
 });

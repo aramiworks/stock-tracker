@@ -2,6 +2,7 @@ import { schedules, task } from "@trigger.dev/sdk";
 import { PrismaClient } from "@stock-tracker/prisma";
 import { HttpFetcher } from "./fetch/HttpFetcher.js";
 import { HermesFetcher } from "./fetch/HermesFetcher.js";
+import { CapSolverDatadomeFetcher } from "./fetch/CapSolverDatadomeFetcher.js";
 import { getProxyFromEnv } from "./fetch/proxy.js";
 import { PrismaStateBuffer } from "./state/StateBuffer.js";
 import { pollCartier } from "./poll/pollCartier.js";
@@ -30,6 +31,16 @@ function ingestFromEnv() {
     process.env.TRACKER_INGEST_SERVICE_TOKEN
   ) {
     return createIngestClient();
+  }
+  return undefined;
+}
+
+// Build the paid DataDome solver only when its key is configured. Without it,
+// HermesFetcher stays on the free fresh-IP-rotation path; with it, a persistent
+// interstitial escalates to an inline CapSolver solve (INF-1602).
+function capsolverFromEnv() {
+  if (process.env["CAPSOLVER_API_KEY"]) {
+    return new CapSolverDatadomeFetcher(process.env["CAPSOLVER_API_KEY"]);
   }
   return undefined;
 }
@@ -97,11 +108,12 @@ export const pollCartierTask = schedules.task({
  *
  * Hermès KR sits behind DataDome (IP/time-bound blocks). HermesFetcher rotates
  * fresh Oxylabs KR sticky exit IPs — which clears blocks for free (INF-1507) —
- * and only escalates to the paid CapSolver solve when a fallback is wired. That
- * fallback is OFF by default: to enable it, pass
- * `capsolver: new CapSolverDatadomeFetcher(process.env.CAPSOLVER_API_KEY)` once
- * residual block rates justify the cost. Drop-event ingest is NOT wired yet
- * (tRPC client stubbed, INF-1356); transitions are recorded and logged.
+ * and escalates a persistent interstitial to the paid CapSolver solve. That
+ * escalation is env-gated: it turns on when CAPSOLVER_API_KEY is set
+ * (capsolverFromEnv), and stays off (free path only) otherwise. The solve needs
+ * HTTP/1.1 to read the challenge body — see the http2:false pins in
+ * CapSolverDatadomeFetcher / oxylabsSticky (INF-1602). Drop-event ingest is NOT
+ * wired yet (tRPC client stubbed, INF-1356); transitions are recorded and logged.
  */
 export const pollHermesTask = schedules.task({
   id: "poll-hermes",
@@ -110,9 +122,13 @@ export const pollHermesTask = schedules.task({
     const prisma = new PrismaClient();
     const logger = getScraperLogger();
     try {
+      const capsolver = capsolverFromEnv();
       const results = await pollHermes({
         prisma,
-        fetcher: new HermesFetcher({ proxy: getProxyFromEnv() }),
+        fetcher: new HermesFetcher({
+          proxy: getProxyFromEnv(),
+          ...(capsolver ? { capsolver } : {}),
+        }),
         stateBuffer: new PrismaStateBuffer(prisma),
         logger,
       });

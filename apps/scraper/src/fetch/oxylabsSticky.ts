@@ -87,6 +87,11 @@ export const stickyGet: StickyGet = async (url, opts) => {
   const response = await gotScraping({
     url,
     proxyUrl,
+    // Force HTTP/1.1. DataDome serves its challenge over HTTP/2, and got's
+    // parser throws HPE_INVALID_CONSTANT before the body is readable — so the
+    // interstitial is never seen and never solvable. Over h1 the challenge
+    // arrives as a parseable 403 body (validated INF-1602).
+    http2: false,
     responseType: "text",
     headers: { ...HERMES_BASE_HEADERS, ...opts.headers },
     throwHttpErrors: false,

@@ -7,6 +7,7 @@ import { getProxyFromEnv } from "./fetch/proxy.js";
 import { PrismaStateBuffer } from "./state/StateBuffer.js";
 import { pollCartier } from "./poll/pollCartier.js";
 import { pollHermes } from "./poll/pollHermes.js";
+import { discoverHermes } from "./discover/discoverHermes.js";
 import { createIngestClient } from "./ingest/trpcClient.js";
 import {
   getScraperLogger,
@@ -166,6 +167,36 @@ export const pollHermesTask = schedules.task({
   },
 });
 
+/**
+ * Daily catalog-freshness sweep for Hermès. Crawls the women's-bags category,
+ * extracts each live product's article code + URL, and upserts one
+ * `discovered_products` row per code (advancing last_seen_at); rows not seen
+ * within the 14-day TTL are flipped is_stale. A freshness substrate only — it
+ * never touches the curated watchable_units/skus. Reuses the INF-1602-hardened
+ * HermesFetcher (http2:false + env-gated CapSolver), same as poll-hermes.
+ */
+export const discoverHermesTask = schedules.task({
+  id: "discover-hermes-urls",
+  cron: "0 18 * * *", // ~03:00 KST daily; product owns the final cadence
+  run: async () => {
+    const prisma = new PrismaClient();
+    const logger = getScraperLogger();
+    try {
+      const capsolver = capsolverFromEnv();
+      return await discoverHermes({
+        prisma,
+        fetcher: new HermesFetcher({
+          proxy: getProxyFromEnv(),
+          ...(capsolver ? { capsolver } : {}),
+        }),
+        logger,
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  },
+});
+
 // Public API
 export * from "./brands/BrandAdapter.js";
 export * from "./brands/registry.js";
@@ -187,6 +218,7 @@ export {
   pollHermesSku,
   type PollHermesDeps,
 } from "./poll/pollHermes.js";
+export * from "./discover/discoverHermes.js";
 
 // Spike: fetcher bake test (INF-1360)
 export { bakeTestFetchers } from "./spikes/fetcher-bake-test/index.js";

@@ -146,3 +146,28 @@ model fetcher_bake_results {
   @@index([run_id, fetcher])
   @@index([created_at])
 }
+
+// -- Catalog discovery (INF-1558) --------------------------------------------
+
+// Live products seen in a brand's category sweep. A freshness substrate ONLY —
+// deliberately decoupled from the curated watchable_units/skus. The daily
+// discovery job upserts one row per live article code, advancing last_seen_at;
+// a row not seen for the stale TTL (14 days) is flipped is_stale. Promoting a
+// discovered row into the curated catalog + poll loop is a separate, deliberate
+// step (not this job).
+model discovered_products {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brand         String // "Hermes" (Cartier later)
+  article_code  String // trailing slug token, e.g. "H086915CK37"
+  url           String // full live product URL (the Korean-slug page)
+  model_hint    String? // slug text before the article code, human hint only
+  first_seen_at DateTime @default(now())
+  last_seen_at  DateTime @default(now())
+  is_stale      Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@unique([brand, article_code])
+  @@index([brand, is_stale])
+  @@index([last_seen_at])
+}

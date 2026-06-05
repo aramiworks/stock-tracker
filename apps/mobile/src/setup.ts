@@ -110,6 +110,31 @@ jest.mock("@aramiworks/ui", () => {
         accessibilityLabel: props.accessibilityLabel,
         accessibilityState: { checked: props.state === "checked" },
       }),
+    SegmentedButton: (props: Record<string, unknown>) =>
+      React.createElement(
+        View,
+        {
+          testID: props.testID,
+          accessibilityLabel: props.accessibilityLabel,
+        },
+        (props.segments as Array<{ value: string; label: string }>).map(
+          (segment) =>
+            React.createElement(
+              View,
+              {
+                key: segment.value,
+                testID: props.testID
+                  ? `${props.testID}-segment-${segment.value}`
+                  : undefined,
+                onPress: () => {
+                  const onChange = props.onSelectionChange;
+                  if (typeof onChange === "function") onChange(segment.value);
+                },
+              },
+              React.createElement(RNText, null, segment.label),
+            ),
+        ),
+      ),
     Spacer: () => React.createElement(View),
     Divider: () => React.createElement(View, { testID: "divider" }),
     EmptyStateTemplate: (props: Record<string, unknown>) =>

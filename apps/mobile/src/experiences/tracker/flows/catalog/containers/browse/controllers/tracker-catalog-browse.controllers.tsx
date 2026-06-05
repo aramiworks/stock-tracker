@@ -67,6 +67,12 @@ export const TrackerCatalogBrowseControllers =
     );
     const toggleUnit = useTrackerCatalogBrowseStore((s) => s.toggleUnit);
     const setUnits = useTrackerCatalogBrowseStore((s) => s.setUnits);
+    const selectedBrandRaw = useTrackerCatalogBrowseStore(
+      (s) => s.selectedBrand,
+    );
+    const setSelectedBrand = useTrackerCatalogBrowseStore(
+      (s) => s.setSelectedBrand,
+    );
 
     const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -88,6 +94,38 @@ export const TrackerCatalogBrowseControllers =
         void refetch().finally(() => setIsRefreshing(false));
       });
     }, [refetch]);
+
+    // Distinct brands across the whole catalog, preserving the backend sort
+    // order (brand ASC → product_line ASC). Drives the segmented brand filter.
+    const brands = useMemo<string[]>(() => {
+      const seen = new Set<string>();
+      const ordered: string[] = [];
+      for (const group of groups) {
+        if (!seen.has(group.brand)) {
+          seen.add(group.brand);
+          ordered.push(group.brand);
+        }
+      }
+      return ordered;
+    }, [groups]);
+
+    // Effective selection: the stored brand if it still exists, else the first
+    // brand. Empty string only when the catalog itself is empty.
+    const selectedBrand =
+      selectedBrandRaw && brands.includes(selectedBrandRaw)
+        ? selectedBrandRaw
+        : (brands[0] ?? "");
+
+    const onBrandChange = useCallback(
+      (brand: string) => setSelectedBrand(brand),
+      [setSelectedBrand],
+    );
+
+    // The catalog shows one brand at a time — filter to the selected brand.
+    const filteredGroups = useMemo<CatalogGroup[]>(
+      () => groups.filter((group) => group.brand === selectedBrand),
+      [groups, selectedBrand],
+    );
 
     const getGroupState = useCallback(
       (group: CatalogGroup) => computeGroupState(group, selectedUnitIds),
@@ -121,7 +159,10 @@ export const TrackerCatalogBrowseControllers =
 
     const value: TrackerCatalogBrowseControllersOutput = {
       screenState,
-      groups,
+      groups: filteredGroups,
+      brands,
+      selectedBrand,
+      onBrandChange,
       selectedUnitIds,
       getGroupState,
       onToggleUnit,

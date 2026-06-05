@@ -41,6 +41,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     height: 56,
+    // Indent items 32px under their product-line header (Figma 869:19 checkbox
+    // sits at left-32 vs the group header's left-0) so "Kelly" → "Kelly 28"
+    // reads as a hierarchy.
+    paddingLeft: 32,
     paddingRight: 16,
   },
   name: {
@@ -54,6 +58,8 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: "#ededed",
-    marginLeft: 56,
+    // Align under the (indented) checkbox left edge, matching Figma row-divider
+    // at left-32.
+    marginLeft: 32,
   },
 });

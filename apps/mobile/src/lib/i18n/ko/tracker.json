@@ -185,6 +185,7 @@
   "catalog": {
     "title": "카탈로그",
     "groupSubtitle": "전체",
+    "brandFilterA11y": "브랜드 필터",
     "empty": {
       "title": "표시할 품목이 없습니다",
       "body": "잠시 후 다시 시도해주세요"

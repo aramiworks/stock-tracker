@@ -85,6 +85,24 @@ describe("TrackerCatalogBrowseViews", () => {
     expect(getByTestId("catalog-browse-screen")).toBeTruthy();
   });
 
+  it("renders the brand filter when 2+ brands are provided", () => {
+    const onBrandChange = jest.fn();
+    const { getByTestId } = render(
+      <TrackerCatalogBrowseViews
+        screenState="default"
+        groups={sampleGroups}
+        brands={["Hermès", "Cartier"]}
+        selectedBrand="Hermès"
+        onBrandChange={onBrandChange}
+      />,
+    );
+    expect(getByTestId("catalog-brand-filter")).toBeTruthy();
+    fireEvent.press(
+      getByTestId("catalog-brand-filter-control-segment-Cartier"),
+    );
+    expect(onBrandChange).toHaveBeenCalledWith("Cartier");
+  });
+
   it("renders empty state", () => {
     const { getByTestId } = render(
       <TrackerCatalogBrowseViews screenState="empty" />,

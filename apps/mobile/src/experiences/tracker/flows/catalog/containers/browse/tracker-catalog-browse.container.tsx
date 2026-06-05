@@ -13,6 +13,9 @@ const ConnectedViews = memo(() => {
     <TrackerCatalogBrowseViews
       screenState={controllers.screenState}
       groups={controllers.groups}
+      brands={controllers.brands}
+      selectedBrand={controllers.selectedBrand}
+      onBrandChange={controllers.onBrandChange}
       selectedUnitIds={controllers.selectedUnitIds}
       getGroupState={controllers.getGroupState}
       onToggleUnit={controllers.onToggleUnit}

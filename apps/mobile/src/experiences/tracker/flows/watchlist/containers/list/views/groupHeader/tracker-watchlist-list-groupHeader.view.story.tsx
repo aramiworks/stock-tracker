@@ -42,11 +42,11 @@ export const Overview: Story = {
           ),
         },
         {
-          name: "hermès / constance",
+          name: "hermès / evelyne",
           render: () => (
             <TrackerWatchlistListGroupHeaderView
               brand="Hermès"
-              productLine="Constance"
+              productLine="Evelyne"
             />
           ),
         },

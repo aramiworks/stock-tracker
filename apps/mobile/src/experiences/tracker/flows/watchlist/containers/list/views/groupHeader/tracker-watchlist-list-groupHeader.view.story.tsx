@@ -4,7 +4,7 @@ import { TrackerWatchlistListGroupHeaderView } from "./tracker-watchlist-list-gr
 import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerWatchlistListGroupHeaderView> = {
-  title: "tracker/watchlist/list/groupHeader",
+  title: "tracker/watchlist/list/views/groupHeader",
   component: TrackerWatchlistListGroupHeaderView,
   parameters: {
     layout: "centered",
@@ -18,14 +18,6 @@ const meta: Meta<typeof TrackerWatchlistListGroupHeaderView> = {
 
 export default meta;
 type Story = StoryObj<typeof TrackerWatchlistListGroupHeaderView>;
-
-export const Hermes: Story = {
-  args: { brand: "Hermès", productLine: "Bolide" },
-};
-
-export const Cartier: Story = {
-  args: { brand: "Cartier", productLine: "Tank Must" },
-};
 
 export const Overview: Story = {
   render: () => (
@@ -62,4 +54,12 @@ export const Overview: Story = {
       ]}
     />
   ),
+};
+
+export const Hermes: Story = {
+  args: { brand: "Hermès", productLine: "Bolide" },
+};
+
+export const Cartier: Story = {
+  args: { brand: "Cartier", productLine: "Tank Must" },
 };

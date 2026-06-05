@@ -4,7 +4,7 @@ import { TrackerWatchlistListSkeletonCardView } from "./tracker-watchlist-list-s
 import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerWatchlistListSkeletonCardView> = {
-  title: "tracker/watchlist/list/skeletonCard",
+  title: "tracker/watchlist/list/views/skeletonCard",
   component: TrackerWatchlistListSkeletonCardView,
   parameters: {
     layout: "centered",
@@ -17,8 +17,6 @@ const meta: Meta<typeof TrackerWatchlistListSkeletonCardView> = {
 
 export default meta;
 type Story = StoryObj<typeof TrackerWatchlistListSkeletonCardView>;
-
-export const Default: Story = {};
 
 export const Overview: Story = {
   render: () => (
@@ -33,3 +31,5 @@ export const Overview: Story = {
     />
   ),
 };
+
+export const Default: Story = {};

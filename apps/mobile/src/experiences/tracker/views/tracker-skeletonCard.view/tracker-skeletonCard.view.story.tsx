@@ -4,7 +4,7 @@ import { TrackerSkeletonCardView } from "../tracker-skeletonCard.view";
 import { OverviewLayout, XStack, YStack, Skeleton } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerSkeletonCardView> = {
-  title: "tracker/shared/skeletonCard.view",
+  title: "tracker/shared/views/skeletonCard",
   component: TrackerSkeletonCardView,
   parameters: { layout: "centered" },
 };
@@ -23,14 +23,6 @@ const AvatarLineSkeleton = () => (
   </XStack>
 );
 
-export const Default: Story = {
-  render: () => (
-    <TrackerSkeletonCardView>
-      <AvatarLineSkeleton />
-    </TrackerSkeletonCardView>
-  ),
-};
-
 export const Overview: Story = {
   render: () => (
     <OverviewLayout
@@ -46,5 +38,13 @@ export const Overview: Story = {
         },
       ]}
     />
+  ),
+};
+
+export const Default: Story = {
+  render: () => (
+    <TrackerSkeletonCardView>
+      <AvatarLineSkeleton />
+    </TrackerSkeletonCardView>
   ),
 };

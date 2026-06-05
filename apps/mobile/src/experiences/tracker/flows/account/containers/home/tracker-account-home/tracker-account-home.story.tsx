@@ -24,16 +24,6 @@ const meta: Meta<typeof TrackerAccountHomeViews> = {
 export default meta;
 type Story = StoryObj<typeof TrackerAccountHomeViews>;
 
-export const Default: Story = {
-  args: {
-    screenState: "default",
-    email: "user@example.com",
-    createdAt: "2024-01-15T00:00:00Z",
-  },
-};
-export const Loading: Story = { args: { screenState: "loading" } };
-export const Error: Story = { args: { screenState: "error" } };
-
 export const Overview: Story = {
   render: () => (
     <OverviewLayout
@@ -61,3 +51,13 @@ export const Overview: Story = {
     />
   ),
 };
+
+export const Default: Story = {
+  args: {
+    screenState: "default",
+    email: "user@example.com",
+    createdAt: "2024-01-15T00:00:00Z",
+  },
+};
+export const Loading: Story = { args: { screenState: "loading" } };
+export const Error: Story = { args: { screenState: "error" } };

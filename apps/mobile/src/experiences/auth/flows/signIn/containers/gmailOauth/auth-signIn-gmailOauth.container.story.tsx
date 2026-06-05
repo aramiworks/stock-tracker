@@ -24,10 +24,6 @@ const meta: Meta<typeof AuthSignInGmailOauthViews> = {
 export default meta;
 type Story = StoryObj<typeof AuthSignInGmailOauthViews>;
 
-export const Default: Story = { args: { screenState: "default" } };
-export const Loading: Story = { args: { screenState: "loading" } };
-export const Error: Story = { args: { screenState: "error" } };
-
 export const Overview: Story = {
   render: () => (
     <OverviewLayout
@@ -49,3 +45,7 @@ export const Overview: Story = {
     />
   ),
 };
+
+export const Default: Story = { args: { screenState: "default" } };
+export const Loading: Story = { args: { screenState: "loading" } };
+export const Error: Story = { args: { screenState: "error" } };

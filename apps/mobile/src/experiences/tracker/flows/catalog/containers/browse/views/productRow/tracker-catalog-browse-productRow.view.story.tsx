@@ -10,6 +10,14 @@ const UNIT = {
   modelName: "Bolide 27",
 };
 
+const UNIT_UNKNOWN = {
+  id: "u2",
+  brand: "Hermès",
+  productLine: "Bolide",
+  modelName: "Bolide 31",
+  stockState: "unknown" as const,
+};
+
 const meta: Meta<typeof TrackerCatalogBrowseProductRowView> = {
   title: "tracker/catalog/browse/productRow",
   component: TrackerCatalogBrowseProductRowView,
@@ -28,6 +36,10 @@ type Story = StoryObj<typeof TrackerCatalogBrowseProductRowView>;
 
 export const Unchecked: Story = { args: { unit: UNIT, checked: false } };
 export const Checked: Story = { args: { unit: UNIT, checked: true } };
+export const Unknown: Story = { args: { unit: UNIT_UNKNOWN, checked: false } };
+export const UnknownChecked: Story = {
+  args: { unit: UNIT_UNKNOWN, checked: true },
+};
 
 export const Overview: Story = {
   render: () => (
@@ -44,6 +56,24 @@ export const Overview: Story = {
           name: "checked",
           render: () => (
             <TrackerCatalogBrowseProductRowView unit={UNIT} checked={true} />
+          ),
+        },
+        {
+          name: "unknown",
+          render: () => (
+            <TrackerCatalogBrowseProductRowView
+              unit={UNIT_UNKNOWN}
+              checked={false}
+            />
+          ),
+        },
+        {
+          name: "unknown-checked",
+          render: () => (
+            <TrackerCatalogBrowseProductRowView
+              unit={UNIT_UNKNOWN}
+              checked={true}
+            />
           ),
         },
       ]}

@@ -7,6 +7,10 @@ import { PrismaStateBuffer } from "./state/StateBuffer.js";
 import { pollCartier } from "./poll/pollCartier.js";
 import { pollHermes } from "./poll/pollHermes.js";
 import { createIngestClient } from "./ingest/trpcClient.js";
+import {
+  getScraperLogger,
+  pageOnConsecutiveFailures,
+} from "./observability/index.js";
 
 // Smoke-test task from scaffold — keep until real tasks land
 export const helloScraper = task({
@@ -44,19 +48,44 @@ export const pollCartierTask = schedules.task({
   cron: "*/5 * * * *", // placeholder cadence; product owns the final interval
   run: async () => {
     const prisma = new PrismaClient();
+    const logger = getScraperLogger();
     try {
       const results = await pollCartier({
         prisma,
         fetcher: new HttpFetcher(),
         stateBuffer: new PrismaStateBuffer(prisma),
+        logger,
         ingest: ingestFromEnv(),
       });
-      return {
+
+      const summary = {
         polled: results.length,
         inStock: results.filter((r) => r.inStock === true).length,
         transitions: results.filter((r) => r.transitioned).length,
         errors: results.filter((r) => r.error).length,
       };
+      logger.info(
+        { event: "scraper.poll_summary", brand: "Cartier", ...summary },
+        "poll-cartier summary",
+      );
+
+      const page = await pageOnConsecutiveFailures(
+        {
+          prisma,
+          logger,
+          ...(process.env["SLACK_PAGER_WEBHOOK_URL"]
+            ? { webhookUrl: process.env["SLACK_PAGER_WEBHOOK_URL"] }
+            : {}),
+          ...(process.env["SLACK_PAGE_FAILURE_THRESHOLD"]
+            ? {
+                threshold: Number(process.env["SLACK_PAGE_FAILURE_THRESHOLD"]),
+              }
+            : {}),
+        },
+        "Cartier",
+      );
+
+      return { ...summary, paged: page.paged.length };
     } finally {
       await prisma.$disconnect();
     }
@@ -79,18 +108,42 @@ export const pollHermesTask = schedules.task({
   cron: "*/5 * * * *", // placeholder cadence; product owns the final interval
   run: async () => {
     const prisma = new PrismaClient();
+    const logger = getScraperLogger();
     try {
       const results = await pollHermes({
         prisma,
         fetcher: new HermesFetcher({ proxy: getProxyFromEnv() }),
         stateBuffer: new PrismaStateBuffer(prisma),
+        logger,
       });
-      return {
+      const summary = {
         polled: results.length,
         inStock: results.filter((r) => r.inStock === true).length,
         transitions: results.filter((r) => r.transitioned).length,
         errors: results.filter((r) => r.error).length,
       };
+      logger.info(
+        { event: "scraper.poll_summary", brand: "Hermes", ...summary },
+        "poll-hermes summary",
+      );
+
+      const page = await pageOnConsecutiveFailures(
+        {
+          prisma,
+          logger,
+          ...(process.env["SLACK_PAGER_WEBHOOK_URL"]
+            ? { webhookUrl: process.env["SLACK_PAGER_WEBHOOK_URL"] }
+            : {}),
+          ...(process.env["SLACK_PAGE_FAILURE_THRESHOLD"]
+            ? {
+                threshold: Number(process.env["SLACK_PAGE_FAILURE_THRESHOLD"]),
+              }
+            : {}),
+        },
+        "Hermes",
+      );
+
+      return { ...summary, paged: page.paged.length };
     } finally {
       await prisma.$disconnect();
     }
@@ -108,6 +161,7 @@ export * from "./fetch/oxylabsSticky.js";
 export * from "./fetch/HermesFetcher.js";
 export * from "./state/StateBuffer.js";
 export * from "./ingest/trpcClient.js";
+export * from "./observability/index.js";
 export * from "./poll/pollCartier.js";
 // pollHermes shares structural type names (IngestClient, PollSkuDeps,
 // PollSkuResult) with pollCartier — re-export only its distinct surface to

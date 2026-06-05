@@ -5,6 +5,8 @@ import { getBrandAdapter } from "../brands/registry.js";
 import type { Fetcher } from "../fetch/Fetcher.js";
 import type { StateBuffer } from "../state/StateBuffer.js";
 import type { DropEventUpsertOutput } from "../ingest/trpcClient.js";
+import { reportParseError } from "../observability/parseErrorReporter.js";
+import type { Logger } from "@stock-tracker/config";
 
 const BRAND = "Hermes" as const;
 
@@ -38,6 +40,13 @@ export interface PollSkuDeps {
   ingest?: IngestClient;
   /** Injectable clock for deterministic tests. */
   now?: () => Date;
+  /**
+   * Optional observability hooks. When the prisma client and logger are
+   * supplied, parse failures are persisted to `parse_errors` and emitted to
+   * Better Stack. Polling continues even if the reporter itself fails.
+   */
+  prisma?: PrismaClient;
+  logger?: Logger;
 }
 
 export interface PollHermesDeps extends PollSkuDeps {
@@ -112,8 +121,10 @@ export async function pollHermesSku(
   };
   const url = adapter.buildUrl(ref);
 
+  let rawForReport: unknown;
   try {
     const raw = await adapter.fetch(url, deps.fetcher);
+    rawForReport = raw;
     const state = adapter.parse(raw);
     const { transitioned } = await deps.stateBuffer.recordCheck(sku.id, state);
 
@@ -133,6 +144,20 @@ export async function pollHermesSku(
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     await deps.stateBuffer.recordError(sku.id);
+
+    if (deps.prisma && deps.logger) {
+      await reportParseError(
+        { prisma: deps.prisma, logger: deps.logger },
+        {
+          brand: BRAND,
+          skuId: sku.id,
+          sourceUrl: url,
+          error: err,
+          rawPayload: rawForReport,
+        },
+      );
+    }
+
     return {
       skuId: sku.id,
       referenceCode: sku.referenceCode,

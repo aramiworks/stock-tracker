@@ -1,5 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { OverviewLayout } from "@aramiworks/ui";
 import { TrackerWatchlistListViews } from "./views";
 import { WATCHLIST_LIST_MOCK_GROUPS } from "./models/tracker-watchlist-list.mock";
 
@@ -31,6 +32,48 @@ const meta: Meta<typeof TrackerWatchlistListViews> = {
 export default meta;
 type Story = StoryObj<typeof TrackerWatchlistListViews>;
 
+export const Overview: Story = {
+  render: () => (
+    <OverviewLayout
+      viewName="tracker/watchlist/list"
+      variants={[
+        {
+          name: "default",
+          render: () => (
+            <TrackerWatchlistListViews screenState="default" groups={GROUPS} />
+          ),
+        },
+        {
+          name: "empty",
+          render: () => (
+            <TrackerWatchlistListViews screenState="empty" groups={[]} />
+          ),
+        },
+        {
+          name: "loading",
+          render: () => <TrackerWatchlistListViews screenState="loading" />,
+        },
+        {
+          name: "error",
+          render: () => <TrackerWatchlistListViews screenState="error" />,
+        },
+      ]}
+    />
+  ),
+};
+
 export const Default: Story = {
   args: { screenState: "default", groups: GROUPS },
+};
+
+export const Empty: Story = {
+  args: { screenState: "empty", groups: [] },
+};
+
+export const Loading: Story = {
+  args: { screenState: "loading" },
+};
+
+export const Error: Story = {
+  args: { screenState: "error" },
 };

@@ -2,7 +2,6 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerAlertHistoryBrowseRowView } from "./tracker-alertHistory-browse-row.view";
 import type { AlertHistoryEvent } from "../../models/tracker-alertHistory-browse.type";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const RESTOCKED: AlertHistoryEvent = {
   id: "ah-bolide-27-restock-1",
@@ -24,7 +23,7 @@ const SOLD_OUT: AlertHistoryEvent = {
 };
 
 const meta: Meta<typeof TrackerAlertHistoryBrowseRowView> = {
-  title: "tracker/alertHistory/browse/row",
+  title: "tracker/alertHistory/browse/views/row",
   component: TrackerAlertHistoryBrowseRowView,
   parameters: {
     layout: "centered",
@@ -41,21 +40,3 @@ type Story = StoryObj<typeof TrackerAlertHistoryBrowseRowView>;
 
 export const Restocked: Story = { args: { event: RESTOCKED } };
 export const SoldOut: Story = { args: { event: SOLD_OUT } };
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker/alertHistory/browse/row"
-      variants={[
-        {
-          name: "restocked",
-          render: () => <TrackerAlertHistoryBrowseRowView event={RESTOCKED} />,
-        },
-        {
-          name: "soldOut",
-          render: () => <TrackerAlertHistoryBrowseRowView event={SOLD_OUT} />,
-        },
-      ]}
-    />
-  ),
-};

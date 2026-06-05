@@ -1,10 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerPurchaseRowView } from "../tracker-purchaseRow.view";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerPurchaseRowView> = {
-  title: "tracker/shared/purchaseRow.view",
+  title: "tracker/views/purchaseRow",
   component: TrackerPurchaseRowView,
   parameters: { layout: "centered" },
   argTypes: {
@@ -31,36 +30,4 @@ export const Tank: Story = {
     date: "2024.03.15",
     amount: 3200000,
   },
-};
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker-purchaseRow.view"
-      variants={[
-        {
-          name: "regular",
-          render: () => (
-            <TrackerPurchaseRowView
-              type="regular"
-              productName="트리니티 링"
-              date="2024.03.15"
-              amount={3200000}
-            />
-          ),
-        },
-        {
-          name: "tank",
-          render: () => (
-            <TrackerPurchaseRowView
-              type="tank"
-              productName="트리니티 링"
-              date="2024.03.15"
-              amount={3200000}
-            />
-          ),
-        },
-      ]}
-    />
-  ),
 };

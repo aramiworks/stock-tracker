@@ -2,7 +2,6 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerWatchlistListRowView } from "./tracker-watchlist-list-row.view";
 import type { WatchlistEntry } from "../../models/tracker-watchlist-list.type";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const IN_STOCK: WatchlistEntry = {
   id: "wl-bolide-27",
@@ -34,7 +33,7 @@ const UNKNOWN: WatchlistEntry = {
 };
 
 const meta: Meta<typeof TrackerWatchlistListRowView> = {
-  title: "tracker/watchlist/list/row",
+  title: "tracker/watchlist/list/views/row",
   component: TrackerWatchlistListRowView,
   parameters: {
     layout: "centered",
@@ -52,25 +51,3 @@ type Story = StoryObj<typeof TrackerWatchlistListRowView>;
 export const InStock: Story = { args: { entry: IN_STOCK } };
 export const OutOfStock: Story = { args: { entry: OUT_OF_STOCK } };
 export const Unknown: Story = { args: { entry: UNKNOWN } };
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker/watchlist/list/row"
-      variants={[
-        {
-          name: "in_stock",
-          render: () => <TrackerWatchlistListRowView entry={IN_STOCK} />,
-        },
-        {
-          name: "out_of_stock",
-          render: () => <TrackerWatchlistListRowView entry={OUT_OF_STOCK} />,
-        },
-        {
-          name: "unknown",
-          render: () => <TrackerWatchlistListRowView entry={UNKNOWN} />,
-        },
-      ]}
-    />
-  ),
-};

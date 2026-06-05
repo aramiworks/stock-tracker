@@ -1,5 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { OverviewLayout } from "@aramiworks/ui";
 import { TrackerAlertHistoryBrowseViews } from "./views";
 import type { AlertHistoryEvent } from "./models/tracker-alertHistory-browse.type";
 
@@ -83,6 +84,46 @@ const meta: Meta<typeof TrackerAlertHistoryBrowseViews> = {
 
 export default meta;
 type Story = StoryObj<typeof TrackerAlertHistoryBrowseViews>;
+
+export const Overview: Story = {
+  render: () => (
+    <OverviewLayout
+      viewName="tracker/alertHistory/browse"
+      variants={[
+        {
+          name: "default",
+          render: () => (
+            <TrackerAlertHistoryBrowseViews
+              screenState="default"
+              events={EVENTS}
+            />
+          ),
+        },
+        {
+          name: "empty",
+          render: () => (
+            <TrackerAlertHistoryBrowseViews screenState="empty" events={[]} />
+          ),
+        },
+        {
+          name: "loading",
+          render: () => (
+            <TrackerAlertHistoryBrowseViews screenState="loading" />
+          ),
+        },
+        {
+          name: "error",
+          render: () => (
+            <TrackerAlertHistoryBrowseViews
+              screenState="error"
+              onRetry={() => undefined}
+            />
+          ),
+        },
+      ]}
+    />
+  ),
+};
 
 export const Default: Story = {
   args: { screenState: "default", events: EVENTS },

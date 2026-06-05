@@ -1,10 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerWatchlistListEmptyStateView } from "./tracker-watchlist-list-emptyState.view";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerWatchlistListEmptyStateView> = {
-  title: "tracker/watchlist/list/emptyState",
+  title: "tracker/watchlist/list/views/emptyState",
   component: TrackerWatchlistListEmptyStateView,
   parameters: {
     layout: "centered",
@@ -23,23 +22,3 @@ type Story = StoryObj<typeof TrackerWatchlistListEmptyStateView>;
 // (e.g. when the catalog destination is unreachable).
 export const Default: Story = { args: { onAddPress: () => {} } };
 export const NoCta: Story = { args: {} };
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker/watchlist/list/emptyState"
-      variants={[
-        {
-          name: "with-cta (figma)",
-          render: () => (
-            <TrackerWatchlistListEmptyStateView onAddPress={() => {}} />
-          ),
-        },
-        {
-          name: "no-cta",
-          render: () => <TrackerWatchlistListEmptyStateView />,
-        },
-      ]}
-    />
-  ),
-};

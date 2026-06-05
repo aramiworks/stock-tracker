@@ -1,10 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerAlertHistoryBrowseSkeletonCardView } from "./tracker-alertHistory-browse-skeletonCard.view";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerAlertHistoryBrowseSkeletonCardView> = {
-  title: "tracker/alertHistory/browse/skeletonCard",
+  title: "tracker/alertHistory/browse/views/skeletonCard",
   component: TrackerAlertHistoryBrowseSkeletonCardView,
   parameters: {
     layout: "centered",
@@ -20,21 +19,3 @@ type Story = StoryObj<typeof TrackerAlertHistoryBrowseSkeletonCardView>;
 
 export const Default: Story = { args: { count: 1 } };
 export const FiveRows: Story = { args: { count: 5 } };
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker/alertHistory/browse/skeletonCard"
-      variants={[
-        {
-          name: "one row",
-          render: () => <TrackerAlertHistoryBrowseSkeletonCardView count={1} />,
-        },
-        {
-          name: "five rows (figma 623:1183)",
-          render: () => <TrackerAlertHistoryBrowseSkeletonCardView count={5} />,
-        },
-      ]}
-    />
-  ),
-};

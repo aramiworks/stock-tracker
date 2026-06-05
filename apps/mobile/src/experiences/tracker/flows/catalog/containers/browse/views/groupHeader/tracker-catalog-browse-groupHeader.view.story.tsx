@@ -1,7 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerCatalogBrowseGroupHeaderView } from "./tracker-catalog-browse-groupHeader.view";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const BOLIDE_GROUP = {
   brand: "Hermès",
@@ -29,7 +28,7 @@ const BOLIDE_GROUP = {
 };
 
 const meta: Meta<typeof TrackerCatalogBrowseGroupHeaderView> = {
-  title: "tracker/catalog/browse/groupHeader",
+  title: "tracker/catalog/browse/views/groupHeader",
   component: TrackerCatalogBrowseGroupHeaderView,
   parameters: {
     layout: "centered",
@@ -53,40 +52,3 @@ type Story = StoryObj<typeof TrackerCatalogBrowseGroupHeaderView>;
 export const None: Story = { args: { group: BOLIDE_GROUP, state: "none" } };
 export const Some: Story = { args: { group: BOLIDE_GROUP, state: "some" } };
 export const All: Story = { args: { group: BOLIDE_GROUP, state: "all" } };
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker/catalog/browse/groupHeader"
-      variants={[
-        {
-          name: "none",
-          render: () => (
-            <TrackerCatalogBrowseGroupHeaderView
-              group={BOLIDE_GROUP}
-              state="none"
-            />
-          ),
-        },
-        {
-          name: "some",
-          render: () => (
-            <TrackerCatalogBrowseGroupHeaderView
-              group={BOLIDE_GROUP}
-              state="some"
-            />
-          ),
-        },
-        {
-          name: "all",
-          render: () => (
-            <TrackerCatalogBrowseGroupHeaderView
-              group={BOLIDE_GROUP}
-              state="all"
-            />
-          ),
-        },
-      ]}
-    />
-  ),
-};

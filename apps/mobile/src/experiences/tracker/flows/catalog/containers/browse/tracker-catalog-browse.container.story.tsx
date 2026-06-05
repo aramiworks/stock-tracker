@@ -1,5 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { OverviewLayout } from "@aramiworks/ui";
 import { TrackerCatalogBrowseViews } from "./views";
 import { CATALOG_MOCK_GROUPS } from "./models/tracker-catalog-browse.mock";
 
@@ -38,10 +39,56 @@ const meta: Meta<typeof TrackerCatalogBrowseViews> = {
 export default meta;
 type Story = StoryObj<typeof TrackerCatalogBrowseViews>;
 
+export const Overview: Story = {
+  render: () => (
+    <OverviewLayout
+      viewName="tracker/catalog/browse"
+      variants={[
+        {
+          name: "default",
+          render: () => (
+            <TrackerCatalogBrowseViews
+              screenState="default"
+              groups={GROUPS}
+              selectedUnitIds={SELECTED_UNIT_IDS}
+            />
+          ),
+        },
+        {
+          name: "empty",
+          render: () => (
+            <TrackerCatalogBrowseViews screenState="empty" groups={[]} />
+          ),
+        },
+        {
+          name: "loading",
+          render: () => <TrackerCatalogBrowseViews screenState="loading" />,
+        },
+        {
+          name: "error",
+          render: () => <TrackerCatalogBrowseViews screenState="error" />,
+        },
+      ]}
+    />
+  ),
+};
+
 export const Default: Story = {
   args: {
     screenState: "default",
     groups: GROUPS,
     selectedUnitIds: SELECTED_UNIT_IDS,
   },
+};
+
+export const Empty: Story = {
+  args: { screenState: "empty", groups: [] },
+};
+
+export const Loading: Story = {
+  args: { screenState: "loading" },
+};
+
+export const Error: Story = {
+  args: { screenState: "error" },
 };

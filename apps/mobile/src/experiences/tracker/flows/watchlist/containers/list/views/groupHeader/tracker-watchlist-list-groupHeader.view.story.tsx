@@ -1,10 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerWatchlistListGroupHeaderView } from "./tracker-watchlist-list-groupHeader.view";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerWatchlistListGroupHeaderView> = {
-  title: "tracker/watchlist/list/groupHeader",
+  title: "tracker/watchlist/list/views/groupHeader",
   component: TrackerWatchlistListGroupHeaderView,
   parameters: {
     layout: "centered",
@@ -25,41 +24,4 @@ export const Hermes: Story = {
 
 export const Cartier: Story = {
   args: { brand: "Cartier", productLine: "Tank Must" },
-};
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker/watchlist/list/groupHeader"
-      variants={[
-        {
-          name: "hermès / bolide",
-          render: () => (
-            <TrackerWatchlistListGroupHeaderView
-              brand="Hermès"
-              productLine="Bolide"
-            />
-          ),
-        },
-        {
-          name: "hermès / constance",
-          render: () => (
-            <TrackerWatchlistListGroupHeaderView
-              brand="Hermès"
-              productLine="Constance"
-            />
-          ),
-        },
-        {
-          name: "cartier / tank must",
-          render: () => (
-            <TrackerWatchlistListGroupHeaderView
-              brand="Cartier"
-              productLine="Tank Must"
-            />
-          ),
-        },
-      ]}
-    />
-  ),
 };

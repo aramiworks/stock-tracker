@@ -1,10 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerWatchlistListStatePillView } from "./tracker-watchlist-list-statePill.view";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerWatchlistListStatePillView> = {
-  title: "tracker/watchlist/list/statePill",
+  title: "tracker/watchlist/list/views/statePill",
   component: TrackerWatchlistListStatePillView,
   parameters: {
     layout: "centered",
@@ -28,27 +27,3 @@ type Story = StoryObj<typeof TrackerWatchlistListStatePillView>;
 export const InStock: Story = { args: { state: "in_stock" } };
 export const OutOfStock: Story = { args: { state: "out_of_stock" } };
 export const Unknown: Story = { args: { state: "unknown" } };
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker/watchlist/list/statePill"
-      variants={[
-        {
-          name: "in_stock",
-          render: () => <TrackerWatchlistListStatePillView state="in_stock" />,
-        },
-        {
-          name: "out_of_stock",
-          render: () => (
-            <TrackerWatchlistListStatePillView state="out_of_stock" />
-          ),
-        },
-        {
-          name: "unknown",
-          render: () => <TrackerWatchlistListStatePillView state="unknown" />,
-        },
-      ]}
-    />
-  ),
-};

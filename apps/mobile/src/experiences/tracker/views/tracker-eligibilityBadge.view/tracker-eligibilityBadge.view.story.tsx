@@ -1,10 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerEligibilityBadgeView } from "../tracker-eligibilityBadge.view";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerEligibilityBadgeView> = {
-  title: "tracker/shared/eligibilityBadge.view",
+  title: "tracker/views/eligibilityBadge",
   component: TrackerEligibilityBadgeView,
   parameters: { layout: "centered" },
   argTypes: {
@@ -20,21 +19,3 @@ type Story = StoryObj<typeof TrackerEligibilityBadgeView>;
 
 export const Eligible: Story = { args: { status: "eligible" } };
 export const NotEligible: Story = { args: { status: "notEligible" } };
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker-eligibilityBadge.view"
-      variants={[
-        {
-          name: "eligible",
-          render: () => <TrackerEligibilityBadgeView status="eligible" />,
-        },
-        {
-          name: "notEligible",
-          render: () => <TrackerEligibilityBadgeView status="notEligible" />,
-        },
-      ]}
-    />
-  ),
-};

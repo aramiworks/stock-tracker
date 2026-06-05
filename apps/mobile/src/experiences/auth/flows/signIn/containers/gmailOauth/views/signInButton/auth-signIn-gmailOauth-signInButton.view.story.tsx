@@ -1,6 +1,5 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { OverviewLayout } from "@aramiworks/ui";
 import { AuthSignInGmailOauthSignInButtonView } from "./auth-signIn-gmailOauth-signInButton.view";
 
 const meta: Meta<typeof AuthSignInGmailOauthSignInButtonView> = {
@@ -21,24 +20,6 @@ const meta: Meta<typeof AuthSignInGmailOauthSignInButtonView> = {
 
 export default meta;
 type Story = StoryObj<typeof AuthSignInGmailOauthSignInButtonView>;
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="auth-signIn-gmailOauth-signInButton"
-      variants={[
-        {
-          name: "enabled",
-          render: () => <AuthSignInGmailOauthSignInButtonView />,
-        },
-        {
-          name: "disabled",
-          render: () => <AuthSignInGmailOauthSignInButtonView disabled />,
-        },
-      ]}
-    />
-  ),
-};
 
 export const Default: Story = { args: { disabled: false } };
 export const Disabled: Story = { args: { disabled: true } };

@@ -1,10 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerAlertHistoryBrowseEmptyStateView } from "./tracker-alertHistory-browse-emptyState.view";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerAlertHistoryBrowseEmptyStateView> = {
-  title: "tracker/alertHistory/browse/emptyState",
+  title: "tracker/alertHistory/browse/views/emptyState",
   component: TrackerAlertHistoryBrowseEmptyStateView,
   parameters: {
     layout: "centered",
@@ -19,17 +18,3 @@ export default meta;
 type Story = StoryObj<typeof TrackerAlertHistoryBrowseEmptyStateView>;
 
 export const Default: Story = {};
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker/alertHistory/browse/emptyState"
-      variants={[
-        {
-          name: "default (figma 623:1150)",
-          render: () => <TrackerAlertHistoryBrowseEmptyStateView />,
-        },
-      ]}
-    />
-  ),
-};

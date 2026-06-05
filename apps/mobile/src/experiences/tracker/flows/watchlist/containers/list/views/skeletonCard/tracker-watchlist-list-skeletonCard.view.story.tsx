@@ -1,10 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TrackerWatchlistListSkeletonCardView } from "./tracker-watchlist-list-skeletonCard.view";
-import { OverviewLayout } from "@aramiworks/ui";
 
 const meta: Meta<typeof TrackerWatchlistListSkeletonCardView> = {
-  title: "tracker/watchlist/list/skeletonCard",
+  title: "tracker/watchlist/list/views/skeletonCard",
   component: TrackerWatchlistListSkeletonCardView,
   parameters: {
     layout: "centered",
@@ -19,17 +18,3 @@ export default meta;
 type Story = StoryObj<typeof TrackerWatchlistListSkeletonCardView>;
 
 export const Default: Story = {};
-
-export const Overview: Story = {
-  render: () => (
-    <OverviewLayout
-      viewName="tracker/watchlist/list/skeletonCard"
-      variants={[
-        {
-          name: "default",
-          render: () => <TrackerWatchlistListSkeletonCardView />,
-        },
-      ]}
-    />
-  ),
-};

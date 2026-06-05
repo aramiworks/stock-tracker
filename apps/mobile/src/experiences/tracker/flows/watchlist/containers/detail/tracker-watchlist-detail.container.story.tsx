@@ -1,5 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { OverviewLayout } from "@aramiworks/ui";
 import { TrackerWatchlistDetailViews } from "./views";
 import type {
   WatchlistDetailPayload,
@@ -132,6 +133,42 @@ const meta: Meta<typeof TrackerWatchlistDetailViews> = {
 export default meta;
 type Story = StoryObj<typeof TrackerWatchlistDetailViews>;
 
+export const Overview: Story = {
+  render: () => (
+    <OverviewLayout
+      viewName="tracker/watchlist/detail"
+      variants={[
+        {
+          name: "default — single sku (hermès bolide 27)",
+          render: () => (
+            <TrackerWatchlistDetailViews
+              screenState="default"
+              payload={HERMES_BOLIDE}
+            />
+          ),
+        },
+        {
+          name: "default — multi sku (cartier tank must)",
+          render: () => (
+            <TrackerWatchlistDetailViews
+              screenState="default"
+              payload={CARTIER_TANK_MUST}
+            />
+          ),
+        },
+        {
+          name: "loading",
+          render: () => <TrackerWatchlistDetailViews screenState="loading" />,
+        },
+        {
+          name: "error",
+          render: () => <TrackerWatchlistDetailViews screenState="error" />,
+        },
+      ]}
+    />
+  ),
+};
+
 export const HermesSingleSku: Story = {
   args: { screenState: "default", payload: HERMES_BOLIDE },
   parameters: {
@@ -151,3 +188,6 @@ export const CartierMultiSku: Story = {
     },
   },
 };
+
+export const Loading: Story = { args: { screenState: "loading" } };
+export const Error: Story = { args: { screenState: "error" } };

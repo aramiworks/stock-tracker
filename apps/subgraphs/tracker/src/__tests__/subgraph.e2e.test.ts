@@ -1113,6 +1113,117 @@ describe("alertHistory query (INF-1479)", () => {
   });
 });
 
+describe("push device mutations (INF-1612)", () => {
+  const PUSH_USER_ID = "00000000-0000-0000-0000-000000000004";
+  const EXPO_TOKEN = "ExponentPushToken[e2e-aaaaaaaaaaaaaaaaaaaa]";
+
+  beforeAll(async () => {
+    await prisma.auth_users.upsert({
+      where: { id: PUSH_USER_ID },
+      update: {},
+      create: {
+        id: PUSH_USER_ID,
+        supabase_id: PUSH_USER_ID,
+        email: "push-device-e2e@test.local",
+      },
+    });
+  });
+
+  afterAll(async () => {
+    await prisma.push_devices.deleteMany({
+      where: { auth_user_id: PUSH_USER_ID },
+    });
+    await prisma.auth_users.deleteMany({ where: { id: PUSH_USER_ID } });
+  });
+
+  function execAsPushUser(query: string, variables?: Record<string, unknown>) {
+    return executeAs({
+      server,
+      query,
+      variables,
+      trackerUrl,
+      userId: PUSH_USER_ID,
+    });
+  }
+
+  it("registers a device token, then re-registers idempotently", async () => {
+    const res = await execAsPushUser(
+      `
+        mutation Register($expoToken: String!, $platform: String!) {
+          registerPushDevice(expoToken: $expoToken, platform: $platform)
+        }
+      `,
+      { expoToken: EXPO_TOKEN, platform: "ios" },
+    );
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.registerPushDevice).toBe(true);
+
+    const row = await prisma.push_devices.findUnique({
+      where: { expo_token: EXPO_TOKEN },
+    });
+    expect(row?.auth_user_id).toBe(PUSH_USER_ID);
+    expect(row?.active).toBe(true);
+
+    // Re-register the same token → still true, single row (upsert).
+    const again = await execAsPushUser(
+      `
+        mutation Register($expoToken: String!, $platform: String!) {
+          registerPushDevice(expoToken: $expoToken, platform: $platform)
+        }
+      `,
+      { expoToken: EXPO_TOKEN, platform: "android" },
+    );
+    expect(getData(again).data?.registerPushDevice).toBe(true);
+    const count = await prisma.push_devices.count({
+      where: { expo_token: EXPO_TOKEN },
+    });
+    expect(count).toBe(1);
+  });
+
+  it("unregisters the device token (and is idempotent)", async () => {
+    const res = await execAsPushUser(
+      `
+        mutation Unregister($expoToken: String!) {
+          unregisterPushDevice(expoToken: $expoToken)
+        }
+      `,
+      { expoToken: EXPO_TOKEN },
+    );
+    expect(getData(res).data?.unregisterPushDevice).toBe(true);
+
+    const row = await prisma.push_devices.findUnique({
+      where: { expo_token: EXPO_TOKEN },
+    });
+    expect(row?.active).toBe(false);
+
+    // Already inactive → false on second call.
+    const again = await execAsPushUser(
+      `
+        mutation Unregister($expoToken: String!) {
+          unregisterPushDevice(expoToken: $expoToken)
+        }
+      `,
+      { expoToken: EXPO_TOKEN },
+    );
+    expect(getData(again).data?.unregisterPushDevice).toBe(false);
+  });
+
+  it("rejects registerPushDevice without auth", async () => {
+    const res = await execUnauth(
+      `
+        mutation Register($expoToken: String!, $platform: String!) {
+          registerPushDevice(expoToken: $expoToken, platform: $platform)
+        }
+      `,
+      { expoToken: EXPO_TOKEN, platform: "ios" },
+    );
+    const { errors } = getData(res);
+    expect(errors).toBeDefined();
+    expect(errors!.length).toBeGreaterThan(0);
+  });
+});
+
 describe("error propagation", () => {
   it("includes error info on unauthorized queries", async () => {
     const res = await execUnauth(`

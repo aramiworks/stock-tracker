@@ -5,6 +5,7 @@ import { WatchlistManageModule } from "./flows/watchlist/manage/watchlistManage.
 import { AlertsFeedModule } from "./flows/alerts/feed/alertsFeed.module.js";
 import { AlertHistoryBrowseModule } from "./flows/alertHistory/browse/alertHistoryBrowse.module.js";
 import { IngestDropEventModule } from "./flows/ingest/dropEvent/ingestDropEvent.module.js";
+import { NotificationsDevicesModule } from "./flows/notifications/devices/notificationsDevices.module.js";
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { IngestDropEventModule } from "./flows/ingest/dropEvent/ingestDropEvent.
     AlertsFeedModule,
     AlertHistoryBrowseModule,
     IngestDropEventModule,
+    NotificationsDevicesModule,
   ],
   exports: [
     DashboardHomeModule,
@@ -22,6 +24,7 @@ import { IngestDropEventModule } from "./flows/ingest/dropEvent/ingestDropEvent.
     AlertsFeedModule,
     AlertHistoryBrowseModule,
     IngestDropEventModule,
+    NotificationsDevicesModule,
   ],
 })
 export class TrackerModule {}

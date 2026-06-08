@@ -45,7 +45,6 @@ export const TrackerCatalogBrowseGroupHeaderView = memo(
             <Text style={styles.line}>{group.productLine}</Text>
             <Text style={styles.subtitle}>
               {t("catalog.groupSubtitle", "전체")}
-              <Text style={styles.brand}> · {group.brand}</Text>
             </Text>
           </View>
         </View>
@@ -80,8 +79,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#808080",
     marginTop: 2,
-  },
-  brand: {
-    color: "#999999",
   },
 });

@@ -8,6 +8,7 @@ import type {
   TrackerCatalogBrowseScreenState,
 } from "../models/tracker-catalog-browse.type";
 import { CATALOG_MOCK_GROUPS } from "../models/tracker-catalog-browse.mock";
+import { TrackerCatalogBrowseBrandFilterView } from "./brandFilter/tracker-catalog-browse-brandFilter.view";
 import { TrackerCatalogBrowseGroupHeaderView } from "./groupHeader/tracker-catalog-browse-groupHeader.view";
 import { TrackerCatalogBrowseProductRowView } from "./productRow/tracker-catalog-browse-productRow.view";
 import { TrackerCatalogBrowseEmptyStateView } from "./emptyState/tracker-catalog-browse-emptyState.view";
@@ -16,6 +17,9 @@ import { TrackerCatalogBrowseSkeletonCardView } from "./skeletonCard/tracker-cat
 type Props = {
   screenState?: TrackerCatalogBrowseScreenState;
   groups?: CatalogGroup[];
+  brands?: string[];
+  selectedBrand?: string;
+  onBrandChange?: (brand: string) => void;
   selectedUnitIds?: ReadonlySet<string>;
   getGroupState?: (group: CatalogGroup) => GroupSelectionState;
   onToggleUnit?: (unitId: string) => void | Promise<void>;
@@ -43,6 +47,9 @@ export const TrackerCatalogBrowseViews = memo(
   ({
     screenState = "default",
     groups = CATALOG_MOCK_GROUPS,
+    brands = [],
+    selectedBrand = "",
+    onBrandChange,
     selectedUnitIds = EMPTY_SET,
     getGroupState,
     onToggleUnit,
@@ -59,6 +66,11 @@ export const TrackerCatalogBrowseViews = memo(
     const content: Record<TrackerCatalogBrowseScreenState, ReactNode> = {
       default: (
         <>
+          <TrackerCatalogBrowseBrandFilterView
+            brands={brands}
+            selectedBrand={selectedBrand}
+            onBrandChange={onBrandChange}
+          />
           {groups.map((group) => (
             <View
               key={`${group.brand}-${group.productLine}`}

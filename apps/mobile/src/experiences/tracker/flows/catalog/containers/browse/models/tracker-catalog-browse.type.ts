@@ -30,7 +30,13 @@ export type GroupSelectionState = "all" | "some" | "none";
 
 export type TrackerCatalogBrowseControllersOutput = {
   screenState: TrackerCatalogBrowseScreenState;
+  /** Groups for the currently selected brand only (already filtered). */
   groups: CatalogGroup[];
+  /** Distinct brands across the whole catalog, in catalog sort order. */
+  brands: string[];
+  /** Brand currently shown (drives the segmented filter + `groups`). */
+  selectedBrand: string;
+  onBrandChange: (brand: string) => void;
   selectedUnitIds: ReadonlySet<string>;
   getGroupState: (group: CatalogGroup) => GroupSelectionState;
   onToggleUnit: (unitId: string) => Promise<void>;

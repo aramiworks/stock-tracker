@@ -3,6 +3,7 @@ import { supabase } from "../../../lib/supabase";
 import { identifyUser, resetAnalytics } from "../../../lib/analytics";
 import { identifySentryUser, resetSentryUser } from "../../../lib/sentry";
 import { setSession } from "../models/auth.store";
+import { registerForPushNotifications } from "@/experiences/notifications";
 
 const SESSION_TIMEOUT_MS = 5000;
 
@@ -28,6 +29,7 @@ export const useAuthLifecycle = () => {
           if (session?.user.id) {
             void identifyUser(session.user.id);
             identifySentryUser(session.user.id);
+            void registerForPushNotifications();
           }
         }
       })
@@ -50,6 +52,7 @@ export const useAuthLifecycle = () => {
       } else if (session?.user.id) {
         void identifyUser(session.user.id);
         identifySentryUser(session.user.id);
+        void registerForPushNotifications();
       }
     });
 

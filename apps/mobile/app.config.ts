@@ -21,6 +21,10 @@ const appEnv = process.env.APP_ENV ?? "local";
 const suffix = ENV_SUFFIX[appEnv] ?? ".local";
 const nameSuffix = ENV_NAME[appEnv] ?? " (Local)";
 
+// APNs entitlement environment: only the production trunk (`master`) talks to
+// Apple's production push gateway; every other env uses the sandbox gateway.
+const apsEnvironment = appEnv === "master" ? "production" : "development";
+
 function reverseClientId(clientId?: string): string | undefined {
   return clientId ? clientId.split(".").reverse().join(".") : undefined;
 }
@@ -40,6 +44,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: false,
     bundleIdentifier: `so.arami.stocktracker.app${suffix}`,
+    entitlements: {
+      "aps-environment": apsEnvironment,
+    },
   },
   android: {
     adaptiveIcon: {
@@ -56,6 +63,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-updates",
     "expo-secure-store",
     "expo-web-browser",
+    // Restock push notifications (INF-1615). `icon` is intentionally omitted —
+    // no notification asset is committed yet; the brand color tints the small
+    // icon on Android. Add a 96x96 mono `icon` here when the asset lands.
+    [
+      "expo-notifications",
+      {
+        color: "#0066FF",
+      },
+    ],
     [
       "@sentry/react-native/expo",
       {

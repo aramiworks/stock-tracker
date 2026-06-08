@@ -41,6 +41,37 @@ jest.mock("expo-secure-store", () => ({
   deleteItemAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
+// expo-notifications / expo-device / expo-constants — global safe defaults so
+// any test that transitively imports the notifications experience (INF-1615)
+// doesn't crash. `isDevice: false` makes register/unregister no-ops by default;
+// the dedicated notifications tests re-mock these locally to drive real paths.
+jest.mock("expo-device", () => ({
+  isDevice: false,
+}));
+
+jest.mock("expo-notifications", () => ({
+  setNotificationHandler: jest.fn(),
+  setNotificationChannelAsync: jest.fn().mockResolvedValue(undefined),
+  getPermissionsAsync: jest.fn().mockResolvedValue({ status: "granted" }),
+  requestPermissionsAsync: jest.fn().mockResolvedValue({ status: "granted" }),
+  getExpoPushTokenAsync: jest
+    .fn()
+    .mockResolvedValue({ data: "ExponentPushToken[setup]" }),
+  addNotificationReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+  addNotificationResponseReceivedListener: jest.fn(() => ({
+    remove: jest.fn(),
+  })),
+  getLastNotificationResponseAsync: jest.fn().mockResolvedValue(null),
+  AndroidImportance: { DEFAULT: 3, HIGH: 4 },
+}));
+
+jest.mock("expo-constants", () => ({
+  __esModule: true,
+  default: {
+    expoConfig: { extra: { eas: { projectId: "test-project-id" } } },
+  },
+}));
+
 // expo-auth-session
 jest.mock("expo-auth-session/providers/google", () => ({
   useAuthRequest: jest.fn(() => [null, null, jest.fn()]),
@@ -110,6 +141,31 @@ jest.mock("@aramiworks/ui", () => {
         accessibilityLabel: props.accessibilityLabel,
         accessibilityState: { checked: props.state === "checked" },
       }),
+    SegmentedButton: (props: Record<string, unknown>) =>
+      React.createElement(
+        View,
+        {
+          testID: props.testID,
+          accessibilityLabel: props.accessibilityLabel,
+        },
+        (props.segments as Array<{ value: string; label: string }>).map(
+          (segment) =>
+            React.createElement(
+              View,
+              {
+                key: segment.value,
+                testID: props.testID
+                  ? `${props.testID}-segment-${segment.value}`
+                  : undefined,
+                onPress: () => {
+                  const onChange = props.onSelectionChange;
+                  if (typeof onChange === "function") onChange(segment.value);
+                },
+              },
+              React.createElement(RNText, null, segment.label),
+            ),
+        ),
+      ),
     Spacer: () => React.createElement(View),
     Divider: () => React.createElement(View, { testID: "divider" }),
     EmptyStateTemplate: (props: Record<string, unknown>) =>

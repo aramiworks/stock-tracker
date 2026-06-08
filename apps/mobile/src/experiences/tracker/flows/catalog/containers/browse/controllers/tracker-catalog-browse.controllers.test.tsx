@@ -56,13 +56,38 @@ describe("TrackerCatalogBrowseControllers", () => {
     setQueryData();
     useTrackerCatalogBrowseStore.setState({
       selectedUnitIds: new Set<string>(),
+      selectedBrand: null,
     });
   });
 
   it("exposes screenState=default when catalog.list returns groups", () => {
     renderControllers();
     expect(captured?.screenState).toBe("default");
-    expect(captured?.groups).toEqual(CATALOG_MOCK_GROUPS);
+    // groups are filtered to the default (first) brand.
+    expect(captured?.groups.length).toBeGreaterThan(0);
+    expect(captured?.groups.every((g) => g.brand === "Hermès")).toBe(true);
+  });
+
+  it("derives the distinct brand list and defaults to the first brand", () => {
+    renderControllers();
+    expect(captured?.brands).toEqual(["Hermès", "Cartier"]);
+    expect(captured?.selectedBrand).toBe("Hermès");
+  });
+
+  it("onBrandChange switches the selected brand and filters groups", async () => {
+    renderControllers();
+    await act(async () => {
+      captured?.onBrandChange("Cartier");
+    });
+    expect(captured?.selectedBrand).toBe("Cartier");
+    expect(captured?.groups.length).toBeGreaterThan(0);
+    expect(captured?.groups.every((g) => g.brand === "Cartier")).toBe(true);
+  });
+
+  it("falls back to the first brand when the stored brand is not in the catalog", () => {
+    useTrackerCatalogBrowseStore.setState({ selectedBrand: "Chanel" });
+    renderControllers();
+    expect(captured?.selectedBrand).toBe("Hermès");
   });
 
   it("exposes screenState=empty when catalog.list returns no groups", () => {
@@ -70,6 +95,8 @@ describe("TrackerCatalogBrowseControllers", () => {
     renderControllers();
     expect(captured?.screenState).toBe("empty");
     expect(captured?.groups).toEqual([]);
+    expect(captured?.brands).toEqual([]);
+    expect(captured?.selectedBrand).toBe("");
   });
 
   it("getGroupState returns 'none' when no units selected", () => {

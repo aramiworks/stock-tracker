@@ -7,6 +7,7 @@ import { getProxyFromEnv } from "./fetch/proxy.js";
 import { PrismaStateBuffer } from "./state/StateBuffer.js";
 import { pollCartier } from "./poll/pollCartier.js";
 import { pollHermes } from "./poll/pollHermes.js";
+import { pollDiscoveredHermes } from "./poll/pollDiscoveredHermes.js";
 import { discoverHermes } from "./discover/discoverHermes.js";
 import { createIngestClient } from "./ingest/trpcClient.js";
 import {
@@ -197,6 +198,35 @@ export const discoverHermesTask = schedules.task({
   },
 });
 
+/**
+ * Resolve the live purchasable state of every non-stale Hermès
+ * `discovered_products` row and store it on the row (in_stock, last_checked_at,
+ * last_changed_at) — so "what's in stock now" is a DB query, not a live scrape.
+ * A pure availability snapshot; NOT wired to drop_events/alerts (INF-1624).
+ * Reuses the INF-1602-hardened HermesFetcher, same as the other Hermès tasks.
+ */
+export const pollDiscoveredHermesTask = schedules.task({
+  id: "poll-discovered-hermes",
+  cron: "0 * * * *", // hourly placeholder; product owns the final cadence
+  run: async () => {
+    const prisma = new PrismaClient();
+    const logger = getScraperLogger();
+    try {
+      const capsolver = capsolverFromEnv();
+      return await pollDiscoveredHermes({
+        prisma,
+        fetcher: new HermesFetcher({
+          proxy: getProxyFromEnv(),
+          ...(capsolver ? { capsolver } : {}),
+        }),
+        logger,
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  },
+});
+
 // Public API
 export * from "./brands/BrandAdapter.js";
 export * from "./brands/registry.js";
@@ -219,6 +249,7 @@ export {
   type PollHermesDeps,
 } from "./poll/pollHermes.js";
 export * from "./discover/discoverHermes.js";
+export * from "./poll/pollDiscoveredHermes.js";
 
 // Spike: fetcher bake test (INF-1360)
 export { bakeTestFetchers } from "./spikes/fetcher-bake-test/index.js";

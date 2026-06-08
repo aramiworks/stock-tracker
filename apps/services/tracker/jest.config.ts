@@ -17,6 +17,7 @@ const config: Config = {
       "<rootDir>/../../../packages/config/src/index.ts",
     "^@stock-tracker/nestjs-common$":
       "<rootDir>/../../../packages/nestjs-common/src/index.ts",
+    "^@stock-tracker/push$": "<rootDir>/../../../packages/push/src/index.ts",
   },
   transform: {
     "^.+\\.tsx?$": [

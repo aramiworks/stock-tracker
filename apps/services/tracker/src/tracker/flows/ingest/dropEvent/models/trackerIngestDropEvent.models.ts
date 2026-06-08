@@ -96,4 +96,86 @@ export class TrackerIngestDropEventModels {
       where: { drop_event_id: dropEventId },
     });
   }
+
+  /**
+   * Loads the undelivered push alerts for a drop event, joined to each watch's
+   * owner, their active device tokens, and the watchable unit's display fields.
+   * One entry per alert; `tokens` is the set of active Expo tokens to notify.
+   */
+  async findPendingPushAlertsForDropEvent(dropEventId: string): Promise<
+    Array<{
+      alertId: string;
+      userId: string;
+      watchableUnitId: string;
+      brand: string;
+      productLine: string;
+      modelName: string;
+      tokens: string[];
+    }>
+  > {
+    const alerts = await this.prisma.alerts.findMany({
+      where: {
+        drop_event_id: dropEventId,
+        channel: "push",
+        sent_at: null,
+      },
+      select: {
+        id: true,
+        watch: {
+          select: {
+            auth_user_id: true,
+            watchable_unit_id: true,
+            watchable_unit: {
+              select: { brand: true, product_line: true, model_name: true },
+            },
+            auth_user: {
+              select: {
+                push_devices: {
+                  where: { active: true },
+                  select: { expo_token: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return alerts.map((a) => ({
+      alertId: a.id,
+      userId: a.watch.auth_user_id,
+      watchableUnitId: a.watch.watchable_unit_id,
+      brand: a.watch.watchable_unit.brand,
+      productLine: a.watch.watchable_unit.product_line,
+      modelName: a.watch.watchable_unit.model_name,
+      tokens: a.watch.auth_user.push_devices.map((d) => d.expo_token),
+    }));
+  }
+
+  /**
+   * Stamps `sent_at=now` for the given alerts — but only those still unsent.
+   * The `sent_at: null` guard is mandatory: it makes the inline dispatcher and
+   * the Phase C retry sweep race-safe (worst case one duplicate push, never a
+   * double-stamp). Returns the number of rows actually stamped.
+   */
+  async markAlertsSent(alertIds: string[]): Promise<number> {
+    if (alertIds.length === 0) {
+      return 0;
+    }
+    const result = await this.prisma.alerts.updateMany({
+      where: { id: { in: alertIds }, sent_at: null },
+      data: { sent_at: new Date() },
+    });
+    return result.count;
+  }
+
+  /**
+   * Soft-deactivate a device token Expo reported as `DeviceNotRegistered`.
+   */
+  deactivateByToken(expoToken: string) {
+    return this.prisma.push_devices.updateMany({
+      where: { expo_token: expoToken, active: true },
+      data: { active: false },
+    });
+  }
 }

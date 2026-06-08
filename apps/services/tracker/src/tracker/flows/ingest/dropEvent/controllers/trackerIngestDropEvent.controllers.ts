@@ -1,9 +1,15 @@
 import { Injectable } from "@nestjs/common";
+import { PinoLoggerService } from "@stock-tracker/nestjs-common";
 import { TrackerIngestDropEventModels } from "../models/index.js";
+import { ExpoPushService } from "../lifecycles/index.js";
 
 @Injectable()
 export class TrackerIngestDropEventControllers {
-  constructor(private readonly models: TrackerIngestDropEventModels) {}
+  constructor(
+    private readonly models: TrackerIngestDropEventModels,
+    private readonly expoPush: ExpoPushService,
+    private readonly logger: PinoLoggerService,
+  ) {}
 
   async upsert(input: {
     skuId: string;
@@ -56,6 +62,21 @@ export class TrackerIngestDropEventControllers {
     }
 
     await this.models.updateSkuStockState(input.skuId);
+
+    // Inline push dispatch. The provider already swallows its own errors; the
+    // extra guard here is belt-and-braces so a misbehaving dispatcher can never
+    // fail the ingest mutation (alerts are committed; the sweep retries).
+    if (alertRows.some((r) => r.channel === "push")) {
+      try {
+        await this.expoPush.dispatchForDropEvent(dropEvent.id);
+      } catch (err) {
+        this.logger.error(
+          `inline push dispatch threw for dropEvent=${dropEvent.id}: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+        );
+      }
+    }
 
     return { dropEventId: dropEvent.id, alertsCreated: alertRows.length };
   }

@@ -17,6 +17,7 @@
       "@stock-tracker/types",
       "@stock-tracker/validation",
       "@stock-tracker/config",
+      "@stock-tracker/push",
       "@stock-tracker/eslint-config",
       "@stock-tracker/typescript-config",
       "@stock-tracker/scraper"

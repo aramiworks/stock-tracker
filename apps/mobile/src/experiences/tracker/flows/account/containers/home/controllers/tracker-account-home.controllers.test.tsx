@@ -16,6 +16,11 @@ jest.mock("expo-router", () => ({
   useRouter: () => ({ back: jest.fn() }),
 }));
 
+const mockUnregister = jest.fn().mockResolvedValue(undefined);
+jest.mock("@/experiences/notifications", () => ({
+  unregisterFromPushNotifications: () => mockUnregister(),
+}));
+
 import { useSuspenseQuery } from "@apollo/client/react";
 import { useAuthControllers } from "@/experiences/auth/controllers";
 import {
@@ -122,7 +127,15 @@ describe("TrackerAccountHomeControllers", () => {
     expect(getByTestId("isSigningOut").props.children).toBe("true");
   });
 
-  it("signOut calls auth signOut", async () => {
+  it("unregisters the push device before calling auth signOut", async () => {
+    const order: string[] = [];
+    mockUnregister.mockImplementationOnce(async () => {
+      order.push("unregister");
+    });
+    mockSignOut.mockImplementationOnce(async () => {
+      order.push("signOut");
+    });
+
     const ref = React.createRef<ConsumerHandle>();
     render(
       <TrackerAccountHomeControllers>
@@ -132,6 +145,25 @@ describe("TrackerAccountHomeControllers", () => {
     await act(async () => {
       await ref.current!.signOut();
     });
+
+    expect(mockUnregister).toHaveBeenCalled();
+    expect(mockSignOut).toHaveBeenCalled();
+    expect(order).toEqual(["unregister", "signOut"]);
+  });
+
+  it("still signs out when push unregister fails", async () => {
+    mockUnregister.mockRejectedValueOnce(new Error("network"));
+
+    const ref = React.createRef<ConsumerHandle>();
+    render(
+      <TrackerAccountHomeControllers>
+        <Consumer ref={ref} />
+      </TrackerAccountHomeControllers>,
+    );
+    await act(async () => {
+      await ref.current!.signOut();
+    });
+
     expect(mockSignOut).toHaveBeenCalled();
   });
 

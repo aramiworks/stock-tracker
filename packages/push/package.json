@@ -1,0 +1,28 @@
+{
+  "name": "@stock-tracker/push",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.0.0",
+    "@stock-tracker/eslint-config": "*",
+    "@stock-tracker/typescript-config": "*",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.3.0",
+    "typescript": "5.9.2"
+  }
+}

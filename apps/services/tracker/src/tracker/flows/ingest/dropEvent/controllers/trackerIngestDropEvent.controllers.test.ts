@@ -1,6 +1,8 @@
-import { describe, it, expect, beforeEach } from "@jest/globals";
+import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import { TrackerIngestDropEventControllers } from "./trackerIngestDropEvent.controllers.js";
 import type { TrackerIngestDropEventModels } from "../models/trackerIngestDropEvent.models.js";
+import type { ExpoPushService } from "../lifecycles/trackerIngestDropEvent.lifecycles.js";
+import type { PinoLoggerService } from "@stock-tracker/nestjs-common";
 
 const DROP_EVENT_ID = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
 
@@ -42,6 +44,26 @@ function createMockModels(
   } as unknown as TrackerIngestDropEventModels;
 }
 
+function createMockExpoPush(
+  dispatch: ExpoPushService["dispatchForDropEvent"] = async () => undefined,
+) {
+  return {
+    dispatchForDropEvent: jest.fn(dispatch),
+  } as unknown as ExpoPushService & {
+    dispatchForDropEvent: jest.Mock;
+  };
+}
+
+function createMockLogger() {
+  return {
+    log: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+    verbose: jest.fn(),
+  } as unknown as PinoLoggerService;
+}
+
 const INPUT = {
   skuId: "sku-1",
   sourceUrl: "https://hermes.com/kr/item",
@@ -53,8 +75,15 @@ describe("TrackerIngestDropEventControllers", () => {
   let controller: TrackerIngestDropEventControllers;
 
   describe("first call", () => {
+    let expoPush: ReturnType<typeof createMockExpoPush>;
+
     beforeEach(() => {
-      controller = new TrackerIngestDropEventControllers(createMockModels());
+      expoPush = createMockExpoPush();
+      controller = new TrackerIngestDropEventControllers(
+        createMockModels(),
+        expoPush,
+        createMockLogger(),
+      );
     });
 
     it("creates alerts and returns count", async () => {
@@ -62,14 +91,25 @@ describe("TrackerIngestDropEventControllers", () => {
       expect(result.dropEventId).toBe(DROP_EVENT_ID);
       expect(result.alertsCreated).toBe(1);
     });
+
+    it("dispatches push for the drop event after creating alerts", async () => {
+      await controller.upsert(INPUT);
+      expect(expoPush.dispatchForDropEvent).toHaveBeenCalledTimes(1);
+      expect(expoPush.dispatchForDropEvent).toHaveBeenCalledWith(DROP_EVENT_ID);
+    });
   });
 
   describe("idempotent retry (same idempotencyKey)", () => {
+    let expoPush: ReturnType<typeof createMockExpoPush>;
+
     beforeEach(() => {
+      expoPush = createMockExpoPush();
       controller = new TrackerIngestDropEventControllers(
         createMockModels({
           countAlertsForDropEvent: async () => 1,
         }),
+        expoPush,
+        createMockLogger(),
       );
     });
 
@@ -77,6 +117,11 @@ describe("TrackerIngestDropEventControllers", () => {
       const result = await controller.upsert(INPUT);
       expect(result.dropEventId).toBe(DROP_EVENT_ID);
       expect(result.alertsCreated).toBe(0);
+    });
+
+    it("does not dispatch on an idempotent retry", async () => {
+      await controller.upsert(INPUT);
+      expect(expoPush.dispatchForDropEvent).not.toHaveBeenCalled();
     });
   });
 
@@ -115,6 +160,8 @@ describe("TrackerIngestDropEventControllers", () => {
             return { count: rows.length };
           },
         }),
+        createMockExpoPush(),
+        createMockLogger(),
       );
     });
 
@@ -126,6 +173,63 @@ describe("TrackerIngestDropEventControllers", () => {
         "email",
         "push",
       ]);
+    });
+  });
+
+  describe("email-only watch (no push channel)", () => {
+    let expoPush: ReturnType<typeof createMockExpoPush>;
+
+    beforeEach(() => {
+      expoPush = createMockExpoPush();
+      controller = new TrackerIngestDropEventControllers(
+        createMockModels({
+          findMatchingWatches: async () => [
+            {
+              id: "watch-3",
+              auth_user_id: "user-3",
+              watchable_unit_id: "wu-1",
+              sku_id: "sku-1",
+              notify_push: false,
+              notify_email: true,
+              active: true,
+              created_at: new Date(),
+              updated_at: new Date(),
+            },
+          ],
+        }),
+        expoPush,
+        createMockLogger(),
+      );
+    });
+
+    it("does not dispatch push when no push alert was created", async () => {
+      const result = await controller.upsert(INPUT);
+      expect(result.alertsCreated).toBe(1);
+      expect(expoPush.dispatchForDropEvent).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("dispatch failure resilience", () => {
+    let logger: PinoLoggerService;
+
+    beforeEach(() => {
+      logger = createMockLogger();
+      controller = new TrackerIngestDropEventControllers(
+        createMockModels(),
+        createMockExpoPush(async () => {
+          throw new Error("expo exploded");
+        }),
+        logger,
+      );
+    });
+
+    it("does not fail the ingest mutation when dispatch throws", async () => {
+      const result = await controller.upsert(INPUT);
+      expect(result).toEqual({
+        dropEventId: DROP_EVENT_ID,
+        alertsCreated: 1,
+      });
+      expect(logger.error).toHaveBeenCalled();
     });
   });
 });

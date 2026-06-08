@@ -195,7 +195,8 @@
     "alerts": "알림",
     "catalog": "카탈로그",
     "watchlist": "관심목록",
-    "history": "내역"
+    "history": "내역",
+    "account": "계정"
   },
   "notifications": {
     "restock": {

@@ -1,14 +1,18 @@
-import { Text } from "react-native";
 import { Redirect, Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { NavigationBar } from "@aramiworks/ui";
 import { useAuthStore } from "../../src/experiences/auth/models/auth.store";
 import { useNotificationHandlers } from "../../src/experiences/notifications";
 
-function TabIcon({ label, focused }: { label: string; focused: boolean }) {
-  return (
-    <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.4 }}>{label}</Text>
-  );
-}
+// Canonical 4-tab bottom nav (INF-1610, Figma INF-1605/INF-1621).
+// Order is index-bound: the Tabs.Screen entries, the NavigationBar
+// destinations, and `ROUTE_NAMES` must all stay in the same order.
+const ROUTE_NAMES = [
+  "tracker/watchlist",
+  "tracker/catalog",
+  "tracker/history",
+  "tracker/account",
+] as const;
 
 export default function AppLayout() {
   const { t } = useTranslation("tracker");
@@ -24,57 +28,38 @@ export default function AppLayout() {
     return <Redirect href="/auth/signIn/gmailOauth" />;
   }
 
-  // Shengsho-strict bottom nav per INF-1391 (Jace decision):
-  //   Watchlist → History (2 tabs only)
-  // Catalog is reached via the "+ Add products" entry point on the Watchlist
-  // screen — it is a stack route under `tracker/catalog/browse/`, not a tab.
+  const destinations = [
+    {
+      icon: "bookmark-border",
+      activeIcon: "bookmark",
+      label: t("nav.watchlist"),
+    },
+    { icon: "search", activeIcon: "search", label: t("nav.catalog") },
+    {
+      icon: "notifications-none",
+      activeIcon: "notifications",
+      label: t("nav.history"),
+    },
+    { icon: "person-outline", activeIcon: "person", label: t("nav.account") },
+  ];
+
   return (
     <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: "#1A1A1A",
-        tabBarInactiveTintColor: "#999",
-        tabBarStyle: {
-          backgroundColor: "#FFFFFF",
-          borderTopColor: "#E5E5E5",
-          borderTopWidth: 1,
-          paddingTop: 8,
-          height: 84,
-        },
-        tabBarLabelStyle: {
-          fontFamily: "Inter",
-          fontWeight: "600",
-          fontSize: 11,
-          marginTop: 4,
-        },
-      }}
+      screenOptions={{ headerShown: false }}
+      tabBar={(props) => (
+        <NavigationBar
+          destinations={destinations}
+          activeIndex={props.state.index}
+          onDestinationPress={(index) =>
+            props.navigation.navigate(ROUTE_NAMES[index])
+          }
+        />
+      )}
     >
-      <Tabs.Screen
-        name="tracker/watchlist"
-        options={{
-          title: t("nav.watchlist"),
-          tabBarIcon: ({ focused }) => <TabIcon label="👁" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="tracker/history"
-        options={{
-          title: t("nav.history"),
-          tabBarIcon: ({ focused }) => <TabIcon label="📋" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="tracker/catalog"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="tracker/account"
-        options={{
-          href: null,
-        }}
-      />
+      <Tabs.Screen name="tracker/watchlist" />
+      <Tabs.Screen name="tracker/catalog" />
+      <Tabs.Screen name="tracker/history" />
+      <Tabs.Screen name="tracker/account" />
     </Tabs>
   );
 }

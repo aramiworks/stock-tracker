@@ -3,10 +3,15 @@ import { supabase } from "../../../lib/supabase";
 import { identifyUser, resetAnalytics } from "../../../lib/analytics";
 import { identifySentryUser, resetSentryUser } from "../../../lib/sentry";
 import { setSession } from "../models/auth.store";
+import { registerForPushNotifications } from "@/experiences/notifications";
 import { useAuthLifecycle } from "./auth.lifecycles";
 
 jest.mock("../models/auth.store", () => ({
   setSession: jest.fn(),
+}));
+
+jest.mock("@/experiences/notifications", () => ({
+  registerForPushNotifications: jest.fn().mockResolvedValue(null),
 }));
 
 jest.mock("../../../lib/analytics", () => ({
@@ -59,6 +64,7 @@ describe("useAuthLifecycle", () => {
 
     expect(identifyUser).toHaveBeenCalledWith("user-1");
     expect(identifySentryUser).toHaveBeenCalledWith("user-1");
+    expect(registerForPushNotifications).toHaveBeenCalledTimes(1);
   });
 
   it("calls setSession(null) when getSession returns null session", async () => {
@@ -144,6 +150,7 @@ describe("useAuthLifecycle", () => {
     expect(setSession).toHaveBeenCalledWith(newSession);
     expect(identifyUser).toHaveBeenCalledWith("user-2");
     expect(identifySentryUser).toHaveBeenCalledWith("user-2");
+    expect(registerForPushNotifications).toHaveBeenCalledTimes(1);
     expect(resetAnalytics).not.toHaveBeenCalled();
     expect(resetSentryUser).not.toHaveBeenCalled();
   });

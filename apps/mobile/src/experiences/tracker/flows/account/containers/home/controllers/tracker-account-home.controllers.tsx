@@ -8,6 +8,7 @@ import {
 import { useSuspenseQuery } from "@apollo/client/react";
 import { ME_QUERY } from "@/lib/graphql/queries";
 import { useAuthControllers } from "@/experiences/auth/controllers";
+import { unregisterFromPushNotifications } from "@/experiences/notifications";
 
 interface MeQueryData {
   me: {
@@ -37,6 +38,14 @@ export const TrackerAccountHomeControllers =
     const { signOut, isSigningOut } = useAuthControllers();
 
     const handleSignOut = useCallback(async () => {
+      // Deactivate this device's push token while the JWT is still valid — MUST
+      // run before signOut (which clears the session). Best-effort: never block
+      // logout on push cleanup; the backend sweep tolerates stale tokens.
+      try {
+        await unregisterFromPushNotifications();
+      } catch {
+        // swallow — logout proceeds regardless
+      }
       await signOut();
     }, [signOut]);
 

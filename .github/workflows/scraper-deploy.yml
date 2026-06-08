@@ -1,0 +1,61 @@
+name: Scraper Deploy
+
+# Deploys the Hermès scraper (apps/scraper) to Trigger.dev Cloud, which then runs
+# its scheduled tasks: poll-hermes, discover-hermes-urls, poll-discovered-hermes.
+#
+# Env is the single source of truth in Doppler: trigger.config.ts's syncEnvVars
+# pulls every secret from the config the deploy-time DOPPLER_TOKEN is scoped to
+# (CAPSOLVER_API_KEY, OXYLABS_*, PROXY_*, TRACKER_INGEST_*) into the deployed
+# runtime — no manual Trigger.dev dashboard entry.
+#
+# Required repo secrets:
+#   - TRIGGER_ACCESS_TOKEN   (one-time: Trigger.dev dashboard -> Personal Access Tokens)
+#   - TRIGGER_PROJECT_ID     (one-time: the Trigger.dev project ref, proj_...)
+#   - DOPPLER_TOKEN_DEVELOP / _STAGE / _MASTER  (already configured)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "develop"
+        type: choice
+        options: [develop, stage, master]
+
+concurrency:
+  group: scraper-deploy-${{ inputs.environment }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The scraper imports @stock-tracker/prisma; its client must exist before
+      # trigger deploy bundles the app. generate needs no live DB connection.
+      - name: Generate Prisma client
+        run: npm run db:generate
+        env:
+          DATABASE_URL: "postgresql://placeholder:placeholder@localhost:5432/placeholder"
+
+      - name: Deploy to Trigger.dev
+        working-directory: apps/scraper
+        run: npx trigger deploy
+        env:
+          TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
+          TRIGGER_PROJECT_ID: ${{ secrets.TRIGGER_PROJECT_ID }}
+          # Scopes the deploy-time env sync (fetchDopplerEnv) to the target config.
+          DOPPLER_TOKEN: ${{ inputs.environment == 'develop' && secrets.DOPPLER_TOKEN_DEVELOP || inputs.environment == 'stage' && secrets.DOPPLER_TOKEN_STAGE || secrets.DOPPLER_TOKEN_MASTER }}

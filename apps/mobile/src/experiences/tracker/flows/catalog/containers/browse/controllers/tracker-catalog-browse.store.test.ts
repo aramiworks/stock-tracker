@@ -4,6 +4,7 @@ describe("useTrackerCatalogBrowseStore", () => {
   beforeEach(() => {
     useTrackerCatalogBrowseStore.setState({
       selectedUnitIds: new Set<string>(),
+      selectedBrand: null,
     });
   });
 
@@ -49,5 +50,16 @@ describe("useTrackerCatalogBrowseStore", () => {
     useTrackerCatalogBrowseStore.getState().setUnits(["x"], true);
     const after = useTrackerCatalogBrowseStore.getState().selectedUnitIds;
     expect(after).not.toBe(before);
+  });
+
+  it("selectedBrand starts null", () => {
+    expect(useTrackerCatalogBrowseStore.getState().selectedBrand).toBeNull();
+  });
+
+  it("setSelectedBrand updates the selected brand", () => {
+    useTrackerCatalogBrowseStore.getState().setSelectedBrand("Cartier");
+    expect(useTrackerCatalogBrowseStore.getState().selectedBrand).toBe(
+      "Cartier",
+    );
   });
 });

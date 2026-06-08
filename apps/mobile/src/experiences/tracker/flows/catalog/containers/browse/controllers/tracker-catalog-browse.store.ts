@@ -14,11 +14,22 @@ interface TrackerCatalogBrowseStoreState {
   selectedUnitIds: Set<string>;
   toggleUnit: (id: string) => void;
   setUnits: (ids: Iterable<string>, value: boolean) => void;
+  /**
+   * Brand currently selected in the catalog's segmented filter (e.g. "Hermès").
+   *
+   * `null` means "not yet chosen" — the controller falls back to the first
+   * brand in the catalog. Persists across a tab swap (same as selectedUnitIds)
+   * but not an app reload.
+   */
+  selectedBrand: string | null;
+  setSelectedBrand: (brand: string) => void;
 }
 
 export const useTrackerCatalogBrowseStore =
   create<TrackerCatalogBrowseStoreState>((set) => ({
     selectedUnitIds: new Set<string>(),
+    selectedBrand: null,
+    setSelectedBrand: (brand) => set({ selectedBrand: brand }),
     toggleUnit: (id) =>
       set((state) => {
         const next = new Set(state.selectedUnitIds);

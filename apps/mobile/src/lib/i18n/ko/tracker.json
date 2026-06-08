@@ -182,6 +182,18 @@
       }
     }
   },
+  "dashboard": {
+    "emptyState": {
+      "cta": "새로고침",
+      "subtitle": "잠시 후 다시 시도해주세요",
+      "title": "표시할 내용이 없습니다"
+    },
+    "errorState": {
+      "retry": "다시 시도",
+      "subtitle": "네트워크 연결을 확인하고 다시 시도해주세요",
+      "title": "문제가 발생했습니다"
+    }
+  },
   "catalog": {
     "title": "카탈로그",
     "groupSubtitle": "전체",

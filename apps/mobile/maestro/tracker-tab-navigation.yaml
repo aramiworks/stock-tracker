@@ -3,9 +3,9 @@ name: Tracker - Tab Navigation
 tags:
   - authenticated
 ---
-# Shengsho-strict 2-tab nav (INF-1391 — Jace decision). Bottom bar collapses to
-# Watchlist + History. Catalog is no longer a top-level tab — it's reached via
-# the "+ 추가" entry point on the Watchlist screen.
+# Canonical 4-tab bottom nav (INF-1610 — Figma INF-1605/INF-1621):
+# Watchlist · Catalog · History · Account. Catalog is now a permanent tab and
+# is still also reachable via the "+ 추가" entry point on the Watchlist screen.
 
 - runFlow: helpers/launch-authenticated.yaml
 
@@ -13,23 +13,33 @@ tags:
 - assertVisible:
     id: "watchlist-list-screen"
 
-# Exactly the two configured tabs render — Catalog must NOT be visible in the
-# bottom bar (it's `href: null` per (app)/_layout.tsx).
+# All four tabs render in the bottom bar.
 - assertVisible: "관심목록"
+- assertVisible: "카탈로그"
 - assertVisible: "내역"
-- assertNotVisible: "카탈로그"
+- assertVisible: "계정"
 
-# History tab (내역 — INF-1478 alert-history browse)
+# Catalog tab → catalog browse screen.
+- tapOn: "카탈로그"
+- assertVisible:
+    id: "catalog-browse-screen"
+
+# History tab (내역 — INF-1478 alert-history browse).
 - tapOn: "내역"
 - assertVisible:
     id: "alert-history-screen"
 
-# Back to watchlist
+# Account tab → account home screen.
+- tapOn: "계정"
+- assertVisible:
+    id: "account-home-screen"
+
+# Back to watchlist via the Watchlist tab.
 - tapOn: "관심목록"
 - assertVisible:
     id: "watchlist-list-screen"
 
-# Catalog is reachable via the "+ 추가" entry point on the watchlist header.
+# Catalog is also reachable via the "+ 추가" entry point on the watchlist header.
 - tapOn:
     id: "watchlist-add-products-button"
 - assertVisible:

@@ -185,6 +185,8 @@ describe("TrackerWatchlistDetailControllers", () => {
     expect(captured?.payload?.dropEvents[0]?.skuDescriptor).toBe(
       "토고 · 골드 금장",
     );
+    // referenceCode is looked up from the sku map (null for Hermès SKUs).
+    expect(captured?.payload?.dropEvents[0]?.referenceCode).toBeNull();
   });
 
   it("maps inStock=false to state='out_of_stock' and inStock=null to state='unknown' across SKUs", () => {

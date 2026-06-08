@@ -5,6 +5,7 @@ import type { DetailDropEvent } from "../../models/tracker-watchlist-detail.type
 const base: DetailDropEvent = {
   id: "drop-1",
   kind: "restocked",
+  referenceCode: null,
   skuDescriptor: "토고 · 골드 금장",
   occurredAt: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
 };
@@ -19,4 +20,13 @@ describe("TrackerWatchlistDetailHistoryRowView", () => {
       expect(getByTestId("watchlist-detail-history-drop-1")).toBeTruthy();
     },
   );
+
+  it("includes referenceCode in the SKU line when present", () => {
+    const { getByText } = render(
+      <TrackerWatchlistDetailHistoryRowView
+        event={{ ...base, referenceCode: "WSTA0042" }}
+      />,
+    );
+    expect(getByText("WSTA0042 · 토고 · 골드 금장")).toBeTruthy();
+  });
 });

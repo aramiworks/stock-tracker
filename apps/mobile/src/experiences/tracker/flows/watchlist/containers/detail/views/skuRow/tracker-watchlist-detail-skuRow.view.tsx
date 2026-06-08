@@ -10,8 +10,8 @@ type Props = {
 /**
  * Detail SKU row — Figma 846-57 (Cartier multi-SKU canonical).
  *
- * Left column: reference code (or "Hermès 공식" source label when null)
- *              @ 13pt Medium #1a1a1a, descriptor @ 12pt Regular #808080.
+ * Left column: descriptor @ 15pt Medium #1a1a1a, then reference code
+ *              (or "Hermès 공식" source label when null) @ 12pt Regular #808080.
  * Right column: StatePill aligned to the right.
  */
 export const TrackerWatchlistDetailSkuRowView = memo(({ sku }: Props) => {
@@ -21,8 +21,8 @@ export const TrackerWatchlistDetailSkuRowView = memo(({ sku }: Props) => {
   return (
     <View style={styles.row} testID={testID}>
       <View style={styles.left}>
-        <Text style={styles.ref}>{referenceLabel}</Text>
         <Text style={styles.descriptor}>{sku.descriptor}</Text>
+        <Text style={styles.ref}>{referenceLabel}</Text>
       </View>
       <TrackerWatchlistListStatePillView
         state={sku.state}
@@ -47,13 +47,13 @@ const styles = StyleSheet.create({
   left: {
     flex: 1,
   },
-  ref: {
+  descriptor: {
     fontFamily: "Inter",
     fontWeight: "500",
-    fontSize: 13,
+    fontSize: 15,
     color: "#1a1a1a",
   },
-  descriptor: {
+  ref: {
     fontFamily: "Inter",
     fontWeight: "400",
     fontSize: 12,

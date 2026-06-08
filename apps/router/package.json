@@ -1,6 +1,6 @@
 {
   "name": "@stock-tracker/router",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "rover dev --supergraph-config supergraph.yaml --router-config router.yaml",

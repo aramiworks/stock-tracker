@@ -12,5 +12,5 @@ permissions:
 
 jobs:
   resolve:
-    uses: aramiworks/.github/.github/workflows/auto-resolve-conflicts.yml@main
+    uses: cheunjm/.github/.github/workflows/auto-resolve-conflicts.yml@main
     secrets: inherit

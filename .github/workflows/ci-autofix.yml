@@ -14,7 +14,7 @@ jobs:
       actions: read
       id-token: write
       statuses: read
-    uses: aramiworks/.github/.github/workflows/ci-autofix.yml@main
+    uses: cheunjm/.github/.github/workflows/ci-autofix.yml@main
     with:
       format_fix_command: "npx prettier --write '**/*.{ts,tsx,md,json}'"
       lint_fix_command: "npx eslint --fix ."
